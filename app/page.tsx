@@ -1,11 +1,12 @@
 import Container from "@/components/Container"
+import HomerBanner from "@/components/HomerBanner";
 
 
 export default function Home() {
   return (
    <div>
-    <Container>
-      <h1>Home Page</h1>
+    <Container className="py-10">
+      <HomerBanner/>
 
     </Container>
   
