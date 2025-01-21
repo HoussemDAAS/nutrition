@@ -63,6 +63,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .hoverEffect{
+    @apply transition-transform duration-300 ease-in-out cursor-pointer;
+  }
 }
 
 
