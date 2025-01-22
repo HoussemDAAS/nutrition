@@ -35,7 +35,7 @@ const SocialMedia: React.FC<SocialMediaProps> = ({className, iconClassName, tool
                             {social.icon}
                         </Link>
                     </TooltipTrigger>
-                    <TooltipContent className={cn('bg-white text-darkColor font-semibold', tooltipClassName)}>
+                    <TooltipContent className={cn('bg-white text-darkColor font-normal', tooltipClassName)}>
                         {social.name}
                     </TooltipContent>
                 </Tooltip>
