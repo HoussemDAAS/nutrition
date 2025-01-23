@@ -11,7 +11,9 @@ export default {
   	extend: {
   		colors: {
 			// Our colors start
-darkColor: '#151515',
+darkColor: '#0F2E4E',
+SecondaryColor: '#C9D1D9',
+AccentColor:'#DA1D3C',
 lightColor: '#52525b',
 lightOrange: '#fca99b',
 lightBlue: '#7688DB',

@@ -5,7 +5,7 @@ const PriceFormater = ({amount,className}:{amount:number | undefined,className?:
     const formatPrice = new Number(amount).toLocaleString('fr-FR', { 
         style: 'currency', 
         currency: 'TND',
-        minimumFractionDigits: 3
+        minimumFractionDigits: 0
       });
       
   return (
