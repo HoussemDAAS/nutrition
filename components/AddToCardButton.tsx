@@ -2,7 +2,7 @@ import { Produit } from "@/sanity.types";
 import React from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { Divide } from "lucide-react";
+
 import QuantityButtons from "./QuantityButtons";
 import PriceFormater from "./PriceFormater";
 interface AddToCardButtonProps {
@@ -11,9 +11,9 @@ interface AddToCardButtonProps {
 }
 const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
   const isOutOfStock = product?.stock === 0;
-  const itemCount = 4;
+  const itemCount = 0;
   return (
-    <div>
+    <div className="w-full">
       {itemCount ? (
         <div className="w-full text-sm">
           <div className="flex items-center justify-between">
