@@ -80,6 +80,10 @@ const SingleProductPage = async ({
     <p className="text-sm text-gray-500">Découvrez nos conseils pour une nutrition sportive efficace</p>
   </div>
 </div>
+<div className="mt-5 border-t border-gray-200 pt-5 text-sm space-y-2">
+  <h3 className="text-xl font-semibold mt-5">Description :</h3>
+  <p className="text-sm text-gray-600">{product?.description}</p>
+</div>
 
 
       </div>
