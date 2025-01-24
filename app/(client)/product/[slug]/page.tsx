@@ -1,3 +1,4 @@
+
 import AddToCardButton from "@/components/AddToCardButton";
 import Container from "@/components/Container";
 import ImageView from "@/components/ImageView";

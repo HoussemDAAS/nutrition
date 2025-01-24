@@ -1,19 +1,24 @@
+
 import { Produit } from "@/sanity.types";
 import React from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-
+import toast from 'react-hot-toast'
 import QuantityButtons from "./QuantityButtons";
 import PriceFormater from "./PriceFormater";
+import useCartStore from "@/store";
+
 interface AddToCardButtonProps {
   product: Produit;
   className?: string;
 }
 const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
-  const isOutOfStock = product?.stock === 0;
-  const itemCount = 0;
+  const { addItem, getItemCount } = useCartStore();
+
+  const itemCount = getItemCount(product?._id);
+  console.log(itemCount);
   return (
-    <div className="w-full">
+    <div className="w-full h-12 items-center">
       {itemCount ? (
         <div className="w-full text-sm">
           <div className="flex items-center justify-between">
@@ -31,7 +36,11 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
             "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
             className
           )}
-          disabled={isOutOfStock}
+          
+          onClick={() => {
+            addItem(product);
+            toast.success(`${product?.nom?.substring(0, 15)}... a été ajouté au panier`);
+          }}
         >
           <svg
             className="w-5 h-5 mr-2"

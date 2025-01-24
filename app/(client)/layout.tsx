@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import localFont from 'next/font/local'
+import { Toaster } from "react-hot-toast";
 const raleway = localFont({
   src: '../fonts/Raleway.woff2',
   variable:'--font-raleway',
@@ -31,6 +32,13 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <Toaster  position="bottom-right" toastOptions={{ 
+          duration: 5000,
+          style: {
+            color: '#fffff',
+            backgroundColor: '#C9D1D9',
+          },
+        }}/>
       </body>
     </html>
     </ClerkProvider>
