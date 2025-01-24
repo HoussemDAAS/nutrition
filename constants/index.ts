@@ -3,9 +3,9 @@
 export const headerData =[
     {title: 'Acceuil',href: '/'},
     {title: 'Promotion',href: '/Promotion'},
-    {title: 'Whey',href: '/whey'},
-    {title: 'Packs',href: '/packs'},
-    {title: 'Pre-Workout',href: '/Pre'}]
+    {title: 'Categorie',href: '/whey'},
+    {title: 'Brands',href: '/packs'},
+    {title: 'Contact',href: '/Pre'}]
 
     export const productType = [
         {title: 'Promotion',value: 'Promotion'},
@@ -18,8 +18,8 @@ export const headerData =[
             { title: 'Accueil', href: '/' },
             { title: 'À propos', href: '/about' },
             { title: 'Contactez-nous', href: '/contact' },
+            { title: 'Politique de confidentialité', href: '/privacy' },
             { title: 'Conditions générales', href: '/terms' },
-            { title: 'FAQ', href: '/faqs' },
         ]
         export const categoriesData = [
             { title: 'Whey Protein', description: 'High-quality protein to support muscle growth', href: '/categories/whey-protein' },
