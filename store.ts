@@ -57,11 +57,12 @@ const useCartStore = create<CartState>()(
 
         })); // remove product from cart
       },
-        DeleteItem: (productId) => {
-          set((state) => ({
-            items: state.items.filter((item)=> item.product._id === productId)
-          }));
-        },
+      DeleteItem: (productId) => {
+        set((state) => ({
+          items: state.items.filter((item) => item.product._id !== productId),
+        }));
+      },
+      
         clearCart: () => set({ items: [] }), // clear cart
         getTotalPrice: () => {
           const total = get().items.reduce((acc, item) => {

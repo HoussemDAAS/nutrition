@@ -31,7 +31,7 @@ const NoProducts = ({ selectedTab, className }: NoProductsProps) => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
             >
-                Nous sommes désolés, mais nous n'avons trouvé aucun produit correspondant 
+                Nous sommes désolés, mais nous n&apos;avons trouvé aucun produit correspondant 
                 à la catégorie{" "}
                 <span className="text-base font-semibold text-darkColor">{selectedTab}</span>{" "}
                 pour le moment. 
@@ -50,7 +50,7 @@ const NoProducts = ({ selectedTab, className }: NoProductsProps) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
             >
-                Veuillez revenir plus tard ou explorer d'autres catégories 
+                Veuillez revenir plus tard ou explorer d&apos;autres catégories 
                 pour découvrir nos produits de nutrition.
             </motion.p>
         </section>

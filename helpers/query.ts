@@ -13,3 +13,32 @@ const PRODUCT_BY_SLUG_Query= defineQuery(`*[_type == 'produit' && slug.current =
     console.error('Error fetching product by slug:', error);
  }
 }
+export const getProductCategorieBySlug = async (slug: string) => {
+   const CATEGORIE_BY_SLUG_QUERY=defineQuery(`*[_type == 'categorie' && slug.current == $slug] | order(nom asc)[0]`);
+   try {
+      
+      const categorie = await sanityFetch({
+          query: CATEGORIE_BY_SLUG_QUERY,
+      params: { slug },});
+      return categorie?.data || null;
+  
+   } catch (error) {
+      console.log("error fetching categorie product by slug", error);
+   }
+}
+export const getAllCategories = async () => {
+const CATEGORIES_QUERY=defineQuery(`*[_type == 'category'] | order(title asc)`);
+
+try {
+   
+const categories = await sanityFetch({
+    query: CATEGORIES_QUERY,
+});
+return categories?.data || [];
+} catch (error) {
+   
+console.log(error);
+return [];
+}
+
+}

@@ -1,4 +1,4 @@
-
+"use client";
 import { Produit } from "@/sanity.types";
 import React from "react";
 import { Button } from "./ui/button";
@@ -16,7 +16,7 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
   const { addItem, getItemCount } = useCartStore();
 
   const itemCount = getItemCount(product?._id);
-  console.log(itemCount);
+
   return (
     <div className="w-full h-12 items-center">
       {itemCount ? (

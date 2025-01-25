@@ -1,11 +1,11 @@
 import React from "react";
 import Container from "./Container";
 import FooterTop from "./FooterTop";
-import Logo from "./Logo";
 import SocialMedia from "./SocialMedia";
 import { Input } from "./ui/input";
 import { categoriesData, quickLinksData } from "@/constants";
 import Link from "next/link";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -13,9 +13,11 @@ const Footer = () => {
       <Container>
         <FooterTop />
        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ">
-       <div className="space-y-4">
-          <Logo className="italic">Nutrition</Logo>
-          <p className="text-gray-600 text-sm">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur, deserunt?</p>
+       <div className="gap-6 flex flex-col items-center justify-center">
+       <Link href={'/'}    className="flex items-center justify-center " >
+        <Image src={'/logo.png'} alt='logo' width={150} height={150} />
+      </Link>
+          <p className="text-gray-600 text-sm text-center">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur, deserunt?</p>
           <SocialMedia className="text-darkColor/60" iconClassName="border-darkColor/90 hover:border-darkColor hover:text-darkColor" tooltipClassName="bg-darkColor text-white"/>
         </div>
         <div>

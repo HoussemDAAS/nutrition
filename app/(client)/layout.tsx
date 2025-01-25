@@ -33,10 +33,9 @@ export default function RootLayout({
         {children}
         <Footer />
         <Toaster  position="bottom-right" toastOptions={{ 
-          duration: 5000,
+          duration: 1000,
           style: {
             color: '#fffff',
-            backgroundColor: '#C9D1D9',
           },
         }}/>
       </body>

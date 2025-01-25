@@ -15,9 +15,8 @@ const SingleProductPage = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
-  console.log(slug);
-  const product = await getProductBySlug(slug);
-  console.log(product);
+    const product = await getProductBySlug(slug);
+
   if (!product) {
     return notFound();
   }
