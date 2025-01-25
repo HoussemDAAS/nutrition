@@ -5,7 +5,7 @@ export const headerData =[
     {title: 'Promotion',href: '/Promotion'},
     {title: 'Catégories',href: '/Categories'},
     {title: 'Brands',href: '/Brands'},
-    {title: 'Contact',href: '/Contact'}]
+    {title: 'Contact',href: '/contact'}]
 
     export const productType = [
         {title: 'Promotion',value: 'Promotion'},
