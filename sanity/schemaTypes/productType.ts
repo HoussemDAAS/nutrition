@@ -36,6 +36,12 @@ export const productType = defineType({
       of: [{ type: "reference", to: [{ type: "category" }] }],
     }),
     defineField({
+      name: "brand",
+      title: "brand",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "brand" }] }],
+    }),
+    defineField({
       name: "description",
       title: "Description",
       type: "string",
