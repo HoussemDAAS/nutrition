@@ -31,7 +31,7 @@ const data: Props[] = [
 
 const FooterTop = () => {
   return (
-    <div className='grid grid-cols-2 md:grid-cols-4 gap-8 border-b'>
+    <div className='grid grid-cols-2 md:grid-cols-4 gap-2 border-b'>
       {data.map((item, index) => (
         <ContactItem key={index} icon={item?.icon} title={item?.title} subtitle={item?.subtitle} />))}
     </div>
@@ -41,7 +41,7 @@ const ContactItem = ({ title, subtitle, icon }: Props) => {
   return <div className='flex items-center gap-4 group hover:bg-gray-50 p-4 transition-colors'>
 {icon}
 <div className=''>
-    <h3 className='font-semibold text-gray-900 group-hover:text-darkColor transition-colors'>{title}</h3>
+    <h3 className='font-medium text-gray-900 group-hover:text-darkColor transition-colors'>{title}</h3>
     <p className='text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors'>{subtitle}</p>
 </div>
   </div>;

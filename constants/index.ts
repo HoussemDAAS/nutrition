@@ -3,8 +3,8 @@
 export const headerData =[
     {title: 'Acceuil',href: '/'},
     {title: 'Promotion',href: '/Promotion'},
-    {title: 'Catégories',href: '/Categories'},
-    {title: 'Brands',href: '/Brands'},
+    {title: 'Catégories',href: '/Category'},
+    {title: 'Brands',href: '/Brand'},
     {title: 'Contact',href: '/contact'}]
 
     export const productType = [

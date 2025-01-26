@@ -19,52 +19,53 @@ const Header = async () => {
 
 
   return (
-    <header className="bg-white border-b border-b-gray-300 py-4 sticky top-0 z-50 shadow-sm md:py-5">
-      <Container className="flex items-center justify-between gap-7 text-lightColor">
-        {/* Header Left */}
-        <HeaderMenu categories={categories} /> {/* Pass categories data here */}
+<header className="bg-white border-b border-gray-300 py-4 sticky top-0 z-50 shadow-sm md:py-5 w-full overflow-hidden">
+  <Container className="flex items-center justify-between gap-7 text-lightColor">
+    {/* Header Left */}
+    <HeaderMenu categories={categories} />
 
-        {/* Center Section */}
-        <div className="w-auto md:w-1/3 flex justify-center items-center gap-3">
-          <MobileMenu />
-          <Link href={'/'} className="flex items-center justify-center h-14 md:h-16">
-            <Image
-              src={'/logo.png'}
-              alt="logo"
-              width={100} 
-              height={100}
-              className="w-[100px] h-auto md:w-[120px]" 
-            />
+    {/* Center Section */}
+    <div className="w-auto md:w-1/3 flex justify-center items-center gap-3">
+      <MobileMenu />
+      <Link href={'/'} className="flex items-center justify-center h-14 md:h-16">
+      <Image
+  src={'/logo.png'}
+  alt="logo"
+  width={100}
+  height={100}
+  className="w-auto h-auto max-w-[80px] md:max-w-[120px] object-contain"
+/>
+      </Link>
+    </div>
+
+    {/* Header Right */}
+    <div className="w-auto md:w-1/3 flex items-center justify-end gap-5">
+      <SearchBar />
+      <Carticon />
+      <ClerkLoaded>
+        <SignedIn>
+          <Link href={'/orders'} className="group relative">
+            <ListOrdered className="h-5 w-5 group-hover:text-darkColor hoverEffect" />
+            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-darkColor text-xs text-white font-semibold">
+              0
+            </span>
           </Link>
-        </div>
+          <UserButton />
+        </SignedIn>
+        {!user && (
+          <SignInButton mode="modal">
+            <div>
+              <button className="text-sm font-semibold hover:text-darkColor hoverEffect">
+                Login
+              </button>
+            </div>
+          </SignInButton>
+        )}
+      </ClerkLoaded>
+    </div>
+  </Container>
+</header>
 
-        {/* Header Right */}
-        <div className="w-auto md:w-1/3 flex items-center justify-end gap-5">
-          <SearchBar />
-          <Carticon />
-          <ClerkLoaded>
-            <SignedIn>
-              <Link href={'/orders'} className="group relative">
-                <ListOrdered className="h-5 w-5 group-hover:text-darkColor hoverEffect" />
-                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-darkColor text-xs text-white font-semibold">
-                  0
-                </span>
-              </Link>
-              <UserButton />
-            </SignedIn>
-            {!user && (
-              <SignInButton mode="modal">
-                <div>
-                  <button className="text-sm font-semibold hover:text-darkColor hoverEffect">
-                    Login
-                  </button>
-                </div>
-              </SignInButton>
-            )}
-          </ClerkLoaded>
-        </div>
-      </Container>
-    </header>
   );
 };
 

@@ -6,7 +6,7 @@ interface props {
 }
 const Container = ({children,className}:props) => {
   return (
-    <div className={cn('max-w-screen-xl mx-auto px-4',className)}>
+    <div className={cn('max-w-full overflow-hidden mx-auto px-4',className)}>
       {children}
     </div>
   )

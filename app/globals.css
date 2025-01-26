@@ -75,8 +75,10 @@
   :root{
     --font-raleway:'Raleway', sans-serif;
   }
-  body{
+  *,html,body{
     font-family: var(--font-raleway);
+    margin: 0;
+    padding: 0;
 
  
   }

@@ -9,7 +9,7 @@ const PriceFormater = ({amount,className}:{amount:number | undefined,className?:
       });
       
   return (
-    <span className={cn('text-sm font-semibold text-darkColor ',className)}>
+    <span className={cn('md:text-sm font-semibold text-darkColor text-[10px] ',className)}>
       {formatPrice}
     </span>
   )

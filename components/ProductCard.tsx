@@ -12,7 +12,7 @@ const ProductCard = ({product}:{product:Produit}) => {
         {product?.images &&
       <Link href={'product/' + product?.slug?.current || '/'}>
       <Image src={urlFor(product?.images[0]).url()} alt={product?.nom || 'Product Image'} width={500} height={500} priority
-      className={`w-full h-72 object-contain overflow-hidden group-hover:scale-105 transition-all duration-500 hoverEffect ${product?.stock !== 0 &&'group-hover:scale-105' }`}/>
+      className={`w-full h-auto object-contain overflow-hidden group-hover:scale-105 transition-all duration-500 hoverEffect ${product?.stock !== 0 &&'group-hover:scale-105' }`}/>
        </Link>}
        <div className='absolute top-0 right-2 z-50'/>
         {product?.stock === 0 && (
@@ -24,7 +24,7 @@ const ProductCard = ({product}:{product:Produit}) => {
         <div className='py-2 px-2 flex flex-col gap-1.5 bg-zinc-50 border border-t-0 rounded-lg rounded-tr-none rounded-tl-none'>
         <h2 className='font-semibold line-clamp-1'>{product?.nom}</h2>
         <p className='line-clamp-1 text-sm text-gray-500'>{product?.intro}</p>
-        <PriceView price={product?.prix} discount={product?.remise} className='text-lg'/>
+        <PriceView price={product?.prix} discount={product?.remise} className='text-sm'/>
         <AddToCardButton product={product}/>
         </div>
       
