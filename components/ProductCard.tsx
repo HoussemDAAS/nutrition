@@ -12,7 +12,7 @@ const ProductCard = ({product}:{product:Produit}) => {
         {product?.images &&
       <Link href={'product/' + product?.slug?.current || '/'}>
       <Image
-   src={urlFor(product?.images[0]).width(500).height(500).fit('crop').quality(90).url()}
+  src={urlFor(product?.images[0]).url()}
   alt={product?.nom || 'Product Image'}
   width={500}
   height={500}
