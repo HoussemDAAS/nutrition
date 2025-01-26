@@ -1,5 +1,5 @@
 "use client";
-import { Category, Produit } from '@/sanity.types';
+import { Brand, Produit } from '@/sanity.types';
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Input } from './ui/input';
@@ -9,20 +9,20 @@ import { client } from '@/sanity/lib/client';
 import NoProducts from './NoProducts';
 import ProductCard from './ProductCard';
 
-interface CategoryProductsProps {
-  categories: Category[]; // Array of categories
-  slug: string; // Current category slug for filtering products
+interface BrandsProductsProps {
+  brands: Brand[];
+  slug: string; 
 }
 
-const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
+const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentslug, setCurrentSlug] = React.useState(slug);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [filteredCategories, setFilteredCategories] = React.useState<Category[]>(categories);
+  const [filteredBrands, setFilteredBrands] = React.useState<Brand[]>(brands);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = React.useState(false);
   const [products, setProducts] = React.useState<Produit[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedCategories, setSelectedCategories] = React.useState<string[]>([slug]); // Track selected categories by slug
+  const [selectedBrands, setSelectedBrands] = React.useState<string[]>([slug]); // Track selected categories by slug
 
   // Fetch products based on the selected category slugs
   const fetchProducts = async (categorySlugs: string[]) => {
@@ -39,7 +39,7 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
       const query = `*[_type == 'produit' && 
         ${categorySlugs
           .map((slug, index) => {
-            return `references(*[_type == 'category' && slug.current == $slug${index}]._id)`;
+            return `references(*[_type == 'brand' && slug.current == $slug${index}]._id)`;
           })
           .join(" && ")}
       ] | order(nom asc)`;
@@ -62,17 +62,17 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
 
   // Update filtered categories based on search term
   React.useEffect(() => {
-    setFilteredCategories(
-      categories.filter((category) =>
-        category?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    setFilteredBrands(
+      brands.filter((brand) =>
+        brand?.title?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-    fetchProducts(selectedCategories); // Fetch products when categories change
-  }, [searchTerm, categories, selectedCategories]);
+    fetchProducts(selectedBrands); // Fetch products when categories change
+  }, [searchTerm, brands, selectedBrands]);
 
   // Handle category selection and deselection
   const handleCategorySelection = (categorySlug: string) => {
-    setSelectedCategories((prevState) => {
+    setSelectedBrands((prevState) => {
       if (prevState.includes(categorySlug)) {
         // If the category is already selected, remove it
         return prevState.filter((slug) => slug !== categorySlug);
@@ -85,10 +85,10 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
 
   // When no categories are selected, show products from the default slug
   React.useEffect(() => {
-    if (selectedCategories.length === 0) {
-      setSelectedCategories([slug]);
+    if (selectedBrands.length === 0) {
+        setSelectedBrands([slug]);
     }
-  }, [selectedCategories, slug]);
+  }, [setSelectedBrands, slug, selectedBrands.length]);
 
   return (
     <div className="py-5 flex flex-col md:flex-row items-start gap-5">
@@ -110,15 +110,15 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
                     className="mb-3 w-full"
                   />
                   <div className="max-h-48 overflow-y-auto">
-                    {filteredCategories.map((category) => (
-                      <label key={category._id} className="flex items-center space-x-2 py-1">
+                    {filteredBrands.map((brand) => (
+                      <label key={brand._id} className="flex items-center space-x-2 py-1">
                         <input
                           type="checkbox"
                           className="form-checkbox h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-0"
-                          checked={selectedCategories.includes(category.slug?.current || '')}
-                          onChange={() => handleCategorySelection(category.slug?.current || '')}
+                          checked={selectedBrands.includes(brand.slug?.current || '')}
+                          onChange={() => handleCategorySelection(brand.slug?.current || '')}
                         />
-                        <span className="text-sm text-gray-800">{category.title || "Unnamed Category"}</span>
+                        <span className="text-sm text-gray-800">{brand.title || "Unnamed brand"}</span>
                       </label>
                     ))}
                   </div>
@@ -158,15 +158,15 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
                 className="mb-3 w-full"
               />
               <div className="max-h-64 overflow-y-auto">
-                {filteredCategories.map((category) => (
-                  <label key={category._id} className="flex items-center space-x-2 py-1">
+                {filteredBrands.map((brand) => (
+                  <label key={brand._id} className="flex items-center space-x-2 py-1">
                     <input
                       type="checkbox"
                       className="form-checkbox h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-0"
-                      checked={selectedCategories.includes(category.slug?.current || '')}
-                      onChange={() => handleCategorySelection(category.slug?.current || '')}
+                      checked={selectedBrands.includes(brand.slug?.current || '')}
+                      onChange={() => handleCategorySelection(brand.slug?.current || '')}
                     />
-                    <span className="text-sm text-gray-800">{category.title || "Unnamed Category"}</span>
+                    <span className="text-sm text-gray-800">{brand.title || "Unnamed Category"}</span>
                   </label>
                 ))}
               </div>
@@ -214,4 +214,4 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
   );
 };
 
-export default CategoryProducts;
+export default BrandProducts;

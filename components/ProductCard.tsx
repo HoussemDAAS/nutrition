@@ -11,8 +11,15 @@ const ProductCard = ({product}:{product:Produit}) => {
         <div className='bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-100 overflow-hidden relative'>
         {product?.images &&
       <Link href={'product/' + product?.slug?.current || '/'}>
-      <Image src={urlFor(product?.images[0]).url()} alt={product?.nom || 'Product Image'} width={500} height={500} priority
-      className={`w-full h-auto object-contain overflow-hidden group-hover:scale-105 transition-all duration-500 hoverEffect ${product?.stock !== 0 &&'group-hover:scale-105' }`}/>
+      <Image
+   src={urlFor(product?.images[0]).width(500).height(500).fit('crop').quality(90).url()}
+  alt={product?.nom || 'Product Image'}
+  width={500}
+  height={500}
+  priority
+  className={`w-full h-[300px] object-cover overflow-hidden group-hover:scale-105 transition-all duration-500 hoverEffect ${product?.stock !== 0 && 'group-hover:scale-105'}`}
+/>
+
        </Link>}
        <div className='absolute top-0 right-2 z-50'/>
         {product?.stock === 0 && (

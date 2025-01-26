@@ -1,22 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
-
 import { headerData } from "@/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SocialMedia from "./SocialMedia";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import Image from "next/image";
+import { Brand, Category } from "@/sanity.types";
 
 interface SideBarProps {
   isOpen: boolean;
   onClose: () => void;
+  categories: Category[];
+  brands: Brand[];
 }
 
-const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose }) => {
+const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }) => {
   const Pathname = usePathname();
   const SideBarRef = useOutsideClick<HTMLDivElement>(onClose);
+
+  const [isCategoryOpen, setCategoryOpen] = useState(false);
+  const [isBrandOpen, setBrandOpen] = useState(false);
+
+  const toggleCategory = () => {
+    setCategoryOpen((prev) => !prev);
+    if (isBrandOpen) setBrandOpen(false);  // Close the brand menu if open
+  };
+
+  const toggleBrand = () => {
+    setBrandOpen((prev) => !prev);
+    if (isCategoryOpen) setCategoryOpen(false);  // Close the category menu if open
+  };
 
   return (
     <div
@@ -25,20 +40,19 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose }) => {
       }`}
     >
       <motion.div
-        className="min-x-72 max-w-96 bg-darkColor text-white/70 h-screen p-8 border-r border-r-gray-300 flex flex-col gap-6"
+        className="min-x-72 max-w-96 bg-darkColor text-white/70 h-screen p-8 border-r border-r-gray-300 flex flex-col gap-6 overflow-y-auto"
         ref={SideBarRef}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between pb-8">
           <Link href={"/"} onClick={onClose}>
-          <Image
-  src={"/logo.png"}
-  alt="logo"
-  width={140} // Slightly increased from 120 to 140
-  height={140} // Increased to match the width
-  className="w-36 h-36 object-contain mx-auto" // Tailwind utility for consistent centering
-/>
-
+            <Image
+              src={"/logo.png"}
+              alt="logo"
+              width={140}
+              height={140}
+              className="w-36 h-36 object-contain mx-auto"
+            />
           </Link>
           <button className="hover:text-red-500" onClick={onClose}>
             <X className="w-8 h-8 text-white" />
@@ -47,23 +61,89 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose }) => {
 
         {/* Navigation Links */}
         <div className="flex flex-col gap-5 text-lg font-semibold tracking-wide">
-          {headerData.map((item, index) => (
-            <Link
-              className={`hover:text-white hoverEffect relative group ${
-                Pathname === item?.href && "text-white"
-              }`}
-              href={item?.href}
-              key={index}
-              onClick={onClose}
-            >
-              {item?.title}
-              <span
-                className={`absolute h-0.5 w-full bg-white bottom-0 left-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out ${
-                  Pathname === item?.href && "scale-x-100"
+          {headerData.map((item, index) => {
+            if (item.title === "Catégories") {
+              return (
+                <div className="relative" key={index}>
+                  <button
+                    onClick={toggleCategory}
+                    className={`relative hover:text-white transition-all duration-300 ${isCategoryOpen ? "text-white" : ""} group`}
+                  >
+                    {item.title}
+                    <span
+                      className={`absolute h-0.5 w-full bg-white bottom-0 left-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out ${
+                        isCategoryOpen && "scale-x-100"
+                      }`}
+                    />
+                  </button>
+                  {isCategoryOpen && (
+                    <div className="grid grid-cols-1 gap-4 p-4 bg-darkColor text-white rounded-lg mt-2">
+                      {categories.map((category, idx) => (
+                        <Link
+                          key={idx}
+                          href={`/category/${category?.slug?.current}`}
+                          className="block py-2 px-4 hover:bg-gray-700 rounded-lg text-sm font-medium"
+                          onClick={onClose}
+                        >
+                          {category?.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            if (item.title === "Brands") {
+              return (
+                <div key={index} className="relative">
+                  <button
+                    onClick={toggleBrand}
+                    className={`relative hover:text-white transition-all duration-300 ${isBrandOpen ? "text-white" : ""} group`}
+                  >
+                    {item.title}
+                    <span
+                      className={`absolute h-0.5 w-full bg-white bottom-0 left-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out ${
+                        isBrandOpen && "scale-x-100"
+                      }`}
+                    />
+                  </button>
+                  {isBrandOpen && (
+                    <div className="grid grid-cols-1 gap-4 p-4 bg-darkColor text-white rounded-lg mt-2">
+                      {brands.map((brand, idx) => (
+                        <Link
+                          key={idx}
+                          href={`/brand/${brand?.slug?.current}`}
+                          className="block py-2 px-4 hover:bg-gray-700 rounded-lg text-sm font-medium"
+                          onClick={onClose}
+                        >
+                          {brand?.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={index}
+                className={`hover:text-white relative group transition-all duration-300 ${
+                  Pathname === item?.href && "text-white"
                 }`}
-              />
-            </Link>
-          ))}
+                href={item?.href}
+                onClick={onClose}
+              >
+                {item?.title}
+                <span
+                  className={`absolute h-0.5 w-full bg-white bottom-0 left-0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out ${
+                    Pathname === item?.href && "scale-x-100"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </div>
 
         {/* Social Media Section */}

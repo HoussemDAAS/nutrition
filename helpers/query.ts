@@ -41,4 +41,22 @@ console.log(error);
 return [];
 }
 
+
 }
+export const getAllBrands = async () => {
+   const CATEGORIES_QUERY=defineQuery(`*[_type == 'brand'] | order(title asc)`);
+   
+   try {
+      
+   const categories = await sanityFetch({
+       query: CATEGORIES_QUERY,
+   });
+   return categories?.data || [];
+   } catch (error) {
+      
+   console.log(error);
+   return [];
+   }
+   
+   
+   }
