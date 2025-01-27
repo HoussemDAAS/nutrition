@@ -42,6 +42,7 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
             toast.success(`${product?.nom?.substring(0, 15)}... a été ajouté au panier`);
           }}
         >
+          <div className="hidden md:block">
           <svg
             className="w-4 h-4 mr-0.5"
             fill="none"
@@ -56,6 +57,8 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5M10 21h4m-4-4h4"
             ></path>
           </svg>
+          </div>
+         
           Ajouter au panier
         </Button>
       )}
