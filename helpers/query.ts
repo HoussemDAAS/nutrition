@@ -60,3 +60,22 @@ export const getAllBrands = async () => {
    
    
    }
+
+
+   export const getAllSlides = async () => {
+      const CATEGORIES_QUERY=defineQuery(`*[_type == 'slider'] | order(title asc)`);
+      
+      try {
+         
+      const categories = await sanityFetch({
+          query: CATEGORIES_QUERY,
+      });
+      return categories?.data || [];
+      } catch (error) {
+         
+      console.log(error);
+      return [];
+      }
+      
+      
+      }
