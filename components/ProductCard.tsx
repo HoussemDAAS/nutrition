@@ -10,7 +10,7 @@ const ProductCard = ({product}:{product:Produit}) => {
     <div className='rounded-lg group text-sm overflow-hidden'>
         <div className='bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-100 overflow-hidden relative'>
         {product?.images &&
-      <Link href={'product/' + product?.slug?.current || '/'}>
+      <Link href={`/product/${product?.slug?.current || ''}`}>
       <Image
   src={urlFor(product?.images[0]).url()}
   alt={product?.nom || 'Product Image'}
