@@ -195,7 +195,7 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
         ) : (
           <>
             {products?.length ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-10 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 w-full">
                 {products.map((product: Produit) => (
                   <AnimatePresence key={product._id}>
                     <motion.div layout initial={{ opacity: 0.2 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
