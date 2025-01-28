@@ -10,21 +10,20 @@ import { urlFor } from "@/sanity/lib/image";
 const Sliders = ({ sliders }: { sliders: Slider[] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Auto-slide effect
   useEffect(() => {
     const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % sliders.length); // Cycle through slides
-    }, 3000); // Change slide every 3 seconds
+      setCurrentSlide((prev) => (prev + 1) % sliders.length);
+    }, 3000);
 
     return () => clearInterval(slideInterval);
   }, [sliders.length]);
 
   return (
-    <div className="relative w-full overflow-hidden aspect-[16/9]">
+    <div className="relative w-full overflow-hidden h-[220px] md:h-[280px] lg:h-[420px]">
       <motion.div
         className="flex w-full h-full"
         animate={{
-          x: `-${currentSlide * 100}%`, // Move horizontally
+          x: `-${currentSlide * 100}%`,
         }}
         transition={{
           duration: 1.5,
@@ -41,8 +40,8 @@ const Sliders = ({ sliders }: { sliders: Slider[] }) => {
               src={slide?.image ? urlFor(slide.image).url() : ""}
               alt={slide?.title || "Slide Image"}
               fill
-              priority={index === 0} // Preload the first image
-              className="object-cover"
+              priority={index === 0}
+              className="object-cover object-center w-full h-full"
             />
 
             {/* Hover Content */}
@@ -56,13 +55,6 @@ const Sliders = ({ sliders }: { sliders: Slider[] }) => {
           </div>
         ))}
       </motion.div>
-
-      {/* Style for fixed height */}
-      <style jsx>{`
-        .relative {
-          height: auto;
-        }
-      `}</style>
     </div>
   );
 };
