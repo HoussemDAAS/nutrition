@@ -23,7 +23,7 @@ export default function LogoCarousel({ Brands }: { Brands: Brand[] }) {
   const infiniteBrands = [...Brands, ...Brands, ...Brands, ...Brands];
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden my-10">
       {/* Logo Container with Infinite Scroll */}
       <div
         ref={carouselRef}

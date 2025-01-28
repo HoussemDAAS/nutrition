@@ -19,7 +19,7 @@ const Sliders = ({ sliders }: { sliders: Slider[] }) => {
   }, [sliders.length]);
 
   return (
-    <div className="relative w-full overflow-hidden h-[220px] md:h-[280px] lg:h-[420px]">
+    <div className="relative w-full overflow-hidden h-[220px] md:h-[280px] lg:h-[600px]">
       <motion.div
         className="flex w-full h-full"
         animate={{

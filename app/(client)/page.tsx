@@ -1,11 +1,13 @@
 import Container from "@/components/Container";
-import HomerBanner from "@/components/HomerBanner";
+// import HomerBanner from "@/components/HomerBanner";
 import LogoCarousel from "@/components/LogoCarrousel";
-import ProductGrid from "@/components/ProductGrid";
+import ProductCarousel from "@/components/ProductCarousel";
+// import ProductGrid from "@/components/ProductGrid";
 import Scrollableliste from "@/components/ScrollableList";
 import Skeleton from "@/components/Skeleton";
 import Sliders from "@/components/Slider";
-import TitleAcceuil from "@/components/TitleAcceuil";
+import TitleSection from "@/components/TitleSection";
+import PosterDisplay from "@/components/ui/PosterDisplay";
  // Reusable skeleton loader
 
 import { getAllBrands, getAllCategories, getAllSlides } from "@/helpers/query";
@@ -32,12 +34,8 @@ export default async function Home() {
       <Container className="py-10">
         {/* Title Section */}
         <section>
-          <TitleAcceuil
-            title={"Nos Catégories"}
-            subtitle={
-              "Ne manquez pas cette opportunité à un tarif spécial uniquement pour cette semaine."
-            }
-          />
+         <TitleSection title={"Categories"} />
+          
         </section>
 
         {/* Scrollable List Section */}
@@ -48,23 +46,22 @@ export default async function Home() {
             <Skeleton className="h-100 w-full bg-gray-500" />
           )}
         </section>
-
-
         <section>
-          <TitleAcceuil
-            title={"Brands populaires"}
-            subtitle={
-              "Découvrer les marques les plus populaires de la semaine."
-            }
-          />
+        <TitleSection title={"Packs Exclusifs"} />
+        </section>
+        <section>
+       <ProductCarousel variant={"Packs Exclusifs"} />
+        </section>
+        <section>
+        <TitleSection title={"Promotion"} />
+        </section>
+      <PosterDisplay />
+        <section>
+        <TitleSection title={"Marques"} />
         </section>
         <section>
          <LogoCarousel Brands={brands} />
         </section>
-
-        {/* Static Sections */}
-        <HomerBanner />
-        <ProductGrid />
       </Container>
     </div>
   );
