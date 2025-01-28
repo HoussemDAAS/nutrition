@@ -85,6 +85,10 @@ lightBg: '#F8F8FB',
   					height: '0'
   				}
   			},
+			  marquee: {
+				'0%': { transform: 'translateX(0)' },
+				'100%': { transform: 'translateX(-100%)' },
+			  },
 			"move-left": {
 			  "0%": {
 				transform: "translateX(0)",
@@ -98,6 +102,7 @@ lightBg: '#F8F8FB',
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
 			  'move-left': 'move-left 5s linear infinite',
+			  marquee: 'marquee 30s linear infinite',
   		},
 		 
   	}
