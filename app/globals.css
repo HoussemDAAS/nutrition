@@ -94,20 +94,49 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 .animate-move-left {
-  will-change: transform; /* Optimize for animation */
+  will-change: transform; 
 }
 
 
 .hover\:shadow-lg {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-@media (max-width: 768px) {
-  @keyframes infinite-scroll {
-    100% { transform: translateX(calc(-100% - 1rem)); }
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer {
+  animation: shimmer 1.5s infinite;
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(255,255,255,0.5) 50%,
+    transparent 75%
+  );
+  opacity: 0.3;
+}
+@keyframes infinite-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-infinite-scroll {
+  animation: infinite-scroll 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-infinite-scroll {
+    animation: none;
   }
 }

@@ -1,19 +1,14 @@
 import Container from "@/components/Container";
-// import HomerBanner from "@/components/HomerBanner";
 import LogoCarousel from "@/components/LogoCarrousel";
 import ProductCarousel from "@/components/ProductCarousel";
-// import ProductGrid from "@/components/ProductGrid";
 import Scrollableliste from "@/components/ScrollableList";
 import Skeleton from "@/components/Skeleton";
 import Sliders from "@/components/Slider";
 import TitleSection from "@/components/TitleSection";
 import PosterDisplay from "@/components/ui/PosterDisplay";
- // Reusable skeleton loader
-
 import { getAllBrands, getAllCategories, getAllSlides } from "@/helpers/query";
 
 export default async function Home() {
-  // Fetch data concurrently
   const slidersPromise = getAllSlides();
   const categoriesPromise = getAllCategories();
   const brandsPromise = getAllBrands();
@@ -22,7 +17,6 @@ export default async function Home() {
 
   return (
     <div>
-      {/* Sliders Section */}
       <section>
         {sliders.length > 0 ? (
           <Sliders sliders={sliders} />
@@ -32,42 +26,54 @@ export default async function Home() {
       </section>
 
       <Container className="py-10">
-        {/* Title Section */}
         <section>
-         <TitleSection title={"Nouveau Produits"} />
-          
+          <TitleSection title={"Nouveau Produits"} />
         </section>
         <section>
-       <ProductCarousel status="Nouveau"  />
+          <ProductCarousel status="Nouveau" />
         </section>
+        
         <section>
-         <TitleSection title={"Categories"} />
-          
+          <TitleSection title={"Categories"} />
         </section>
 
-        {/* Scrollable List Section */}
         <section>
           {categories.length > 0 ? (
             <Scrollableliste categories={categories} />
           ) : (
-            <Skeleton className="h-100 w-full bg-gray-500" />
+            <div className="flex space-x-4 overflow-hidden">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-32 rounded-lg bg-gray-200" />
+              ))}
+            </div>
           )}
         </section>
+
         <section>
-        <TitleSection title={"Packs Exclusifs"} />
+          <TitleSection title={"Packs Exclusifs"} />
         </section>
         <section>
-       <ProductCarousel variant={"Packs Exclusifs"} />
+          <ProductCarousel variant={"Packs Exclusifs"} />
+        </section>
+        
+        <section>
+          <TitleSection title={"Promotion"} />
+        </section>
+        <PosterDisplay />
+        
+        <section>
+          <TitleSection title={"Marques"} />
         </section>
         <section>
-        <TitleSection title={"Promotion"} />
-        </section>
-      <PosterDisplay />
-        <section>
-        <TitleSection title={"Marques"} />
-        </section>
-        <section>
-         <LogoCarousel Brands={brands} />
+          {brands.length > 0 ? (
+            <LogoCarousel Brands={brands} />
+          ) : (
+            <div className="flex space-x-4 overflow-hidden animate-pulse">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-24 w-48 bg-gray-200 rounded-lg" />
+              ))}
+            </div>
+          )}
         </section>
       </Container>
     </div>
