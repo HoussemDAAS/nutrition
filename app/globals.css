@@ -98,3 +98,16 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+.animate-move-left {
+  will-change: transform; /* Optimize for animation */
+}
+
+
+.hover\:shadow-lg {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (max-width: 768px) {
+  @keyframes infinite-scroll {
+    100% { transform: translateX(calc(-100% - 1rem)); }
+  }
+}
