@@ -1,37 +1,54 @@
-import { Produit } from '@/sanity.types'
-import { urlFor } from '@/sanity/lib/image'
-import Link from 'next/link'
-import React from 'react'
-import Image from 'next/image'
-import PriceView from './PriceView'
-import AddToCardButton from './AddToCardButton'
+import { Produit } from '@/sanity.types';
 
-const ProductCard = ({ product }: { product: Produit }) => {
-  // Calculate discount percentage
- 
+import Link from 'next/link';
+import React from 'react';
+import Image from 'next/image';
+import PriceView from './PriceView';
+import AddToCardButton from './AddToCardButton';
+import { urlFor } from '@/sanity/lib/image';
 
+const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boolean }) => {
   return (
     <div className='rounded-lg group text-sm overflow-hidden'>
       <div className='bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-100 overflow-hidden relative'>
-        {product?.images &&
+        {product?.images && (
           <Link href={`/product/${product?.slug?.current || ''}`}>
-            <Image
-              src={urlFor(product?.images[0]).url()}
-              alt={product?.nom || 'Product Image'}
-              width={500}
-              height={500}
-              priority
-              className='w-full h-[300px] object-contain overflow-hidden transition-all duration-500 hoverEffect group-hover:scale-95'
-            />
-          </Link>}
-        <div className='absolute top-0 right-2 z-50'/>
-        {product?.stock === 0 && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-            En rupture de stock
-          </div>
+            <div className="relative w-full h-[300px]">
+              <Image
+                src={urlFor(product?.images[0]).url()}
+                alt={product?.nom || 'Product Image'}
+                width={500}
+                height={500}
+                priority
+                className={`w-full h-full object-contain transition-all duration-500 ${product?.images[1] ? 'hover:opacity-0' : 'group-hover:scale-95'}`}
+              />
+              {product?.images[1] && (
+                <Image
+                  src={urlFor(product?.images[1]).url()}
+                  alt={product?.nom || 'Product Image'}
+                  width={500}
+                  height={500}
+                  priority
+                  className="absolute top-0 left-0 w-full h-full object-contain opacity-0 transition-all duration-500 hover:opacity-100"
+                />
+              )}
+            </div>
+          </Link>
         )}
+        <div className='absolute top-2 left-2 flex space-x-2'>
+          {isNew && product.Status === "Nouveau" && (
+            <div className="animate-bounce bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+              Nouveau
+            </div>
+          )}
+          {product?.stock === 0 && (
+            <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+              En rupture de stock
+            </div>
+          )}
+        </div>
         {(product?.remise ?? 0) > 0 && (
-          <div className="absolute top-2 left-2 bg-AccentColor text-white text-xs font-bold px-2 py-1 rounded">
+          <div className="absolute top-2 right-2 bg-AccentColor text-white text-xs font-bold px-2 py-1 rounded">
             -{product.remise || 0}%
           </div>
         )}
@@ -43,7 +60,7 @@ const ProductCard = ({ product }: { product: Produit }) => {
         <AddToCardButton product={product} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductCard
+export default ProductCard;

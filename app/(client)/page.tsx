@@ -34,6 +34,13 @@ export default async function Home() {
       <Container className="py-10">
         {/* Title Section */}
         <section>
+         <TitleSection title={"Nouveau Produits"} />
+          
+        </section>
+        <section>
+       <ProductCarousel status="Nouveau"  />
+        </section>
+        <section>
          <TitleSection title={"Categories"} />
           
         </section>

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import NoProducts from "./NoProducts";
 
-const ProductCarousel = ({ variant }: { variant: string }) => {
+const ProductCarousel = ({ variant, status }: { variant?: string, status?: string }) => {
   const [products, setProducts] = useState<Produit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -17,8 +17,14 @@ const ProductCarousel = ({ variant }: { variant: string }) => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const query = `*[_type == 'produit' && variantes == $variant] | order(_createdAt desc)`;
-        const params = { variant };
+        let query, params;
+        if (status) {
+          query = `*[_type == 'produit' && Status == $status] | order(_createdAt desc)`;
+          params = { status };
+        } else {
+          query = `*[_type == 'produit' && variantes == $variant] | order(_createdAt desc)`;
+          params = { variant };
+        }
         const response = await client.fetch(query, params);
         setProducts(response);
       } catch (error) {
@@ -28,7 +34,7 @@ const ProductCarousel = ({ variant }: { variant: string }) => {
       }
     };
     fetchData();
-  }, [variant]);
+  }, [variant, status]);
 
   const handleScroll = () => {
     if (carouselRef.current) {
@@ -51,7 +57,7 @@ const ProductCarousel = ({ variant }: { variant: string }) => {
         <>
           <motion.div
             ref={carouselRef}
-            className="flex space-x-4 overflow-x-auto pb-4 snap-x snap-mandatory no-scrollbar w-full justify-center"
+            className="flex space-x-4 overflow-x-auto pb-4 snap-x snap-mandatory no-scrollbar w-full "
             whileTap={{ cursor: "grabbing" }}
             onScroll={handleScroll}
           >
@@ -60,17 +66,16 @@ const ProductCarousel = ({ variant }: { variant: string }) => {
                 key={product._id}
                 className="flex-shrink-0 w-[250px] snap-center"
               >
-                <ProductCard product={product} />
+                <ProductCard product={product} isNew={product.Status === "Nouveau"} />
               </motion.div>
             ))}
           </motion.div>
-           <div className="md:hidden">
-          <IndicatorPagination total={products.length} currentIndex={currentIndex} />
-
-           </div>
+          <div className="md:hidden">
+            <IndicatorPagination total={products.length} currentIndex={currentIndex} />
+          </div>
         </>
       ) : (
-        <NoProducts selectedTab={variant} />
+        <NoProducts selectedTab={variant || status || "default"} />
       )}
     </div>
   );
@@ -93,5 +98,3 @@ const IndicatorPagination = ({ total, currentIndex }: { total: number; currentIn
 };
 
 export default ProductCarousel;
-
-// Add the following styles in your global CSS file (e.g., globals.css)
