@@ -68,6 +68,39 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type Command = {
+  _id: string;
+  _type: "command";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  customer?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    birthdate?: string;
+  };
+  items?: Array<{
+    product?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "produit";
+    };
+    quantity?: number;
+    price?: number;
+    _type: "orderItem";
+    _key: string;
+  }>;
+  coupon?: string;
+  total?: number;
+  status?: "pending" | "confirmed" | "shipped" | "delivered";
+  createdAt?: string;
+};
+
 export type Poster = {
   _id: string;
   _type: "poster";
@@ -262,5 +295,5 @@ export type Slug = {
   source?: string;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Poster | Slider | Brand | Category | Produit | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | Slug;
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Command | Poster | Slider | Brand | Category | Produit | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | Slug;
 export declare const internalGroqTypeReferenceTo: unique symbol;
