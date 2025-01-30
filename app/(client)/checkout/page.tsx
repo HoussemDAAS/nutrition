@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import useCartStore from '@/store';
+import useCartStore, { CartItem } from '@/store';
 import PriceFormater from '@/components/PriceFormater';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,12 +13,50 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { client } from '@/sanity/lib/client';
 
+interface FormData {
+  customer: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    address: string;
+    city: string;
+    birthdate: string;
+    phone: string;
+  };
+  coupon: string;
+}
 
+interface InputFieldProps {
+  label: string;
+  type?: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+interface CouponSectionProps {
+  coupon: string;
+  onChange: (value: string) => void;
+  onApply: () => void;
+}
+
+interface OrderSummaryProps {
+  total: number;
+  couponApplied: boolean;
+  items: CartItem[];
+  onSubmit: () => void;
+}
+
+interface ConfirmationDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  submitting: boolean;
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     customer: {
       firstName: '',
       lastName: '',
@@ -28,7 +66,6 @@ export default function CheckoutPage() {
       birthdate: '',
       phone: '',
     },
-    agreed: false,
     coupon: '',
   });
   const [submitting, setSubmitting] = useState(false);
@@ -40,20 +77,16 @@ export default function CheckoutPage() {
   const items = getGroupedItems();
   const total = getTotalPrice();
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  useEffect(() => setIsMounted(true), []);
 
-  const handleApplyCoupon = () => {
-    setCouponApplied(true);
-  };
+  const handleApplyCoupon = () => setCouponApplied(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      const command = {
+      await client.create({
         _type: 'command',
         ...formData,
         items: items.map(item => ({
@@ -66,9 +99,7 @@ export default function CheckoutPage() {
         total: couponApplied ? total * 0.9 : total,
         status: 'pending',
         createdAt: new Date().toISOString(),
-      };
-
-      await client.create(command);
+      });
       clearCart();
       setOrderSuccess(true);
     } catch (error) {
@@ -79,20 +110,6 @@ export default function CheckoutPage() {
       setShowConfirmation(false);
     }
   };
-
-  const MobileHeader = () => (
-    <div className="md:hidden fixed top-0 left-0 right-0 bg-white p-4 border-b flex items-center z-50 shadow-sm">
-      <button 
-        onClick={() => router.back()}
-        className="text-AccentColor hover:text-blue-700 flex items-center gap-2 text-sm"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Retour
-      </button>
-    </div>
-  );
 
   if (!isMounted) return null;
 
@@ -132,239 +149,223 @@ export default function CheckoutPage() {
 
   return (
     <div className="relative">
-      <MobileHeader />
-      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-gray-50 min-h-screen p-4 md:p-8 pt-20 md:pt-8"
       >
-        <form onSubmit={(e) => { e.preventDefault(); setShowConfirmation(true); }} className="max-w-4xl mx-auto">
-          <div className="grid lg:grid-cols-3 md:gap-8">
-            {/* Left Column */}
-            <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-              <h2 className="text-2xl font-bold mb-6">Informations de Livraison</h2>
+        <div className="max-w-4xl mx-auto">
+          <button 
+            onClick={() => router.back()}
+            className="text-AccentColor hover:text-blue-700 flex items-center gap-2 text-sm mb-6"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Retour
+          </button>
+          
+          <form onSubmit={(e) => { e.preventDefault(); setShowConfirmation(true); }}>
+            <div className="grid lg:grid-cols-3 md:gap-8">
+              {/* Left Column */}
+              <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 className="text-2xl font-bold mb-6">Informations de Livraison</h2>
 
-              <div className="space-y-6">
-                {/* Name Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block mb-2">Prénom *</label>
-                    <Input
-                      required
+                <div className="space-y-6">
+                  {/* Form Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField 
+                      label="Prénom *" 
                       value={formData.customer.firstName}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        customer: {...formData.customer, firstName: e.target.value}
-                      })}
-                      className="focus:ring-2 focus:ring-AccentColor"
+                      onChange={v => setFormData({...formData, customer: {...formData.customer, firstName: v}})}
                     />
-                  </div>
-                  <div>
-                    <label className="block mb-2">Nom *</label>
-                    <Input
-                      required
+                    <InputField 
+                      label="Nom *" 
                       value={formData.customer.lastName}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        customer: {...formData.customer, lastName: e.target.value}
-                      })}
-                      className="focus:ring-2 focus:ring-AccentColor"
+                      onChange={v => setFormData({...formData, customer: {...formData.customer, lastName: v}})}
                     />
                   </div>
-                </div>
 
-                {/* Email */}
-                <div>
-                  <label className="block mb-2">Email *</label>
-                  <Input
-                    required
+                  <InputField 
+                    label="Email *" 
                     type="email"
                     value={formData.customer.email}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      customer: {...formData.customer, email: e.target.value}
-                    })}
-                    className="focus:ring-2 focus:ring-AccentColor"
+                    onChange={v => setFormData({...formData, customer: {...formData.customer, email: v}})}
                   />
-                </div>
 
-                {/* Address */}
-                <div>
-                  <label className="block mb-2">Adresse *</label>
-                  <Input
-                    required
+                  <InputField 
+                    label="Adresse *" 
                     value={formData.customer.address}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      customer: {...formData.customer, address: e.target.value}
-                    })}
-                    className="focus:ring-2 focus:ring-AccentColor"
+                    onChange={v => setFormData({...formData, customer: {...formData.customer, address: v}})}
                   />
-                </div>
 
-                {/* City & Birthdate */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block mb-2">Ville *</label>
-                    <Input
-                      required
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField 
+                      label="Ville *" 
                       value={formData.customer.city}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        customer: {...formData.customer, city: e.target.value}
-                      })}
-                      className="focus:ring-2 focus:ring-AccentColor"
+                      onChange={v => setFormData({...formData, customer: {...formData.customer, city: v}})}
                     />
-                  </div>
-                  <div>
-                    <label className="block mb-2">Date de naissance *</label>
-                    <Input
+                    <InputField 
+                      label="Date de naissance *" 
                       type="date"
-                      required
                       value={formData.customer.birthdate}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        customer: {...formData.customer, birthdate: e.target.value}
-                      })}
-                      className="focus:ring-2 focus:ring-AccentColor"
+                      onChange={v => setFormData({...formData, customer: {...formData.customer, birthdate: v}})}
                     />
                   </div>
-                </div>
 
-                {/* Phone */}
-                <div>
-                  <label className="block mb-2">Téléphone *</label>
-                  <Input
-                    required
+                  <InputField 
+                    label="Téléphone *" 
                     type="tel"
                     value={formData.customer.phone}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      customer: {...formData.customer, phone: e.target.value}
-                    })}
-                    className="focus:ring-2 focus:ring-AccentColor"
+                    onChange={v => setFormData({...formData, customer: {...formData.customer, phone: v}})}
                   />
-                </div>
 
-                {/* Coupon */}
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="coupon">
-                    <AccordionTrigger className="text-AccentColor hover:no-underline">
-                      Ajouter un code promo
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <div className="flex gap-3">
-                        <Input
-                          placeholder="Entrez votre code promo"
-                          value={formData.coupon}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            coupon: e.target.value
-                          })}
-                          className="focus:ring-2 focus:ring-AccentColor"
-                        />
-                        <Button 
-                          onClick={handleApplyCoupon}
-                          className="bg-AccentColor hover:bg-blue-700"
-                        >
-                          Appliquer
-                        </Button>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-
-                {/* Terms */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="terms"
-                    checked={formData.agreed}
-                    onCheckedChange={(checked) => setFormData({
-                      ...formData,
-                      agreed: !!checked
-                    })}
-                    className="focus:ring-2 focus:ring-AccentColor"
+                  <CouponSection 
+                    coupon={formData.coupon}
+                    onChange={v => setFormData({...formData, coupon: v})}
+                    onApply={handleApplyCoupon}
                   />
-                  <label htmlFor="terms" className="text-sm leading-none">
-                    J&apos;accepte les termes et conditions *
-                  </label>
+
+                  <TermsCheckbox />
                 </div>
               </div>
-            </div>
 
-            {/* Right Column */}
-            <div className="lg:col-span-1 mt-8 lg:mt-0">
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm sticky top-6">
-                <h2 className="text-xl font-semibold mb-4">Récapitulatif</h2>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>Sous-total</span>
-                    <PriceFormater amount={total} />
-                  </div>
-                  {couponApplied && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Réduction</span>
-                      <PriceFormater amount={total * 0.1} />
-                    </div>
-                  )}
-                  <Separator />
-                  <div className="flex justify-between font-bold">
-                    <span>Total</span>
-                    <PriceFormater amount={couponApplied ? total * 0.9 : total} />
-                  </div>
-                </div>
-                
-                <Button
-                  type="submit"
-                  disabled={!formData.agreed || items.length === 0}
-                  className="w-full mt-6 bg-AccentColor hover:bg-blue-700"
-                >
-                  Confirmer la commande
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Order Summary */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
-            <div className="p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium">Total:</span>
-                <PriceFormater 
-                  amount={couponApplied ? total * 0.9 : total}
-                  className="text-lg font-bold"
+              {/* Right Column (Desktop) */}
+              <div className="lg:col-span-1 mt-8 lg:mt-0 hidden md:block">
+                <OrderSummary 
+                  total={total}
+                  couponApplied={couponApplied}
+                  items={items}
+                  onSubmit={() => setShowConfirmation(true)}
                 />
               </div>
-              <Button 
-                className="w-full bg-AccentColor hover:bg-blue-700"
-                onClick={() => setShowConfirmation(true)}
-              >
-                Confirmer
-              </Button>
             </div>
-          </div>
 
-          <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirmer la commande</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <p>Êtes-vous sûr de vouloir passer cette commande?</p>
-                <div className="flex justify-end gap-4">
-                  <Button variant="outline" onClick={() => setShowConfirmation(false)}>
-                    Annuler
-                  </Button>
-                  <Button onClick={handleSubmit} disabled={submitting}>
-                    {submitting ? 'En cours...' : 'Confirmer'}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </form>
+            {/* Mobile Order Summary */}
+            <div className="md:hidden mt-8 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <OrderSummary 
+                total={total}
+                couponApplied={couponApplied}
+                items={items}
+                onSubmit={() => setShowConfirmation(true)}
+              />
+            </div>
+
+            <ConfirmationDialog 
+              open={showConfirmation}
+              onClose={() => setShowConfirmation(false)}
+              onSubmit={handleSubmit}
+              submitting={submitting}
+            />
+          </form>
+        </div>
       </motion.div>
     </div>
   );
 }
+
+// Reusable Components
+const InputField: React.FC<InputFieldProps> = ({ label, type = 'text', value, onChange }) => (
+  <div>
+    <label className="block mb-2 text-sm font-medium text-gray-700">{label}</label>
+    <Input
+      required
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full rounded-lg focus:ring-2 focus:ring-AccentColor"
+    />
+  </div>
+);
+
+const CouponSection: React.FC<CouponSectionProps> = ({ coupon, onChange, onApply }) => (
+  <Accordion type="single" collapsible>
+    <AccordionItem value="coupon">
+      <AccordionTrigger className="text-AccentColor hover:no-underline py-2">
+        Ajouter un code promo
+      </AccordionTrigger>
+      <AccordionContent className="pt-2">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Entrez votre code promo"
+            value={coupon}
+            onChange={(e) => onChange(e.target.value)}
+            className="flex-1 focus:ring-2 focus:ring-AccentColor"
+          />
+          <Button onClick={onApply} className="bg-AccentColor hover:bg-blue-700">
+            Appliquer
+          </Button>
+        </div>
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
+);
+
+const TermsCheckbox = () => (
+  <div className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg">
+    <Checkbox
+      id="terms"
+      required
+      className="mt-1 focus:ring-2 focus:ring-AccentColor"
+    />
+    <label htmlFor="terms" className="text-sm text-gray-600">
+      J&apos;accepte les termes et conditions *
+    </label>
+  </div>
+);
+
+const OrderSummary: React.FC<OrderSummaryProps> = ({ total, couponApplied, items, onSubmit }) => (
+  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+    <h2 className="text-xl font-semibold mb-4">Récapitulatif</h2>
+    <div className="space-y-3">
+      <div className="flex justify-between text-gray-600">
+        <span>Sous-total</span>
+        <PriceFormater amount={total} />
+      </div>
+      {couponApplied && (
+        <div className="flex justify-between text-green-600">
+          <span>Réduction</span>
+          <PriceFormater amount={total * 0.1} />
+        </div>
+      )}
+      <Separator className="my-2" />
+      <div className="flex justify-between font-bold">
+        <span>Total</span>
+        <PriceFormater amount={couponApplied ? total * 0.9 : total} />
+      </div>
+      <Button
+        type="submit"
+        disabled={items.length === 0}
+        className="w-full mt-4 bg-AccentColor hover:bg-blue-700"
+        onClick={onSubmit}
+      >
+        Confirmer la commande
+      </Button>
+    </div>
+  </div>
+);
+
+const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ open, onClose, onSubmit, submitting }) => (
+  <Dialog open={open} onOpenChange={onClose}>
+    <DialogContent className="rounded-lg max-w-[90%] md:max-w-md">
+      <DialogHeader>
+        <DialogTitle className="text-lg">Confirmer la commande</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-4">
+        <p className="text-gray-600">Êtes-vous sûr de vouloir passer cette commande?</p>
+        <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose} className="px-4 py-2">
+            Annuler
+          </Button>
+          <Button 
+            onClick={onSubmit} 
+            disabled={submitting}
+            className="bg-AccentColor hover:bg-blue-700 px-4 py-2"
+          >
+            {submitting ? 'En cours...' : 'Confirmer'}
+          </Button>
+        </div>
+      </div>
+    </DialogContent>
+  </Dialog>
+);

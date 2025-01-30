@@ -7,11 +7,11 @@ import Link from "next/link";
 
 export default function ScrollableList({ categories }: { categories: Category[] }) {
   return (
-    <div className="relative w-full py-4 md:py-8 mx-auto max-w-[90vw] 
+    <div className="relative w-full py-6 md:py-8 mx-auto max-w-[90vw] 
       [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
       
       {/* Changed class from hide-scrollbar to no-scrollbar */}
-      <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 scroll-smooth no-scrollbar">
+      <div className="flex gap-4 md:gap-6 overflow-x-auto pb-6 scroll-smooth no-scrollbar py-2">
         {categories.map((category) => (
           <Link
             href={`/category/${category?.slug?.current}`}

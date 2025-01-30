@@ -4,15 +4,15 @@ import Container from './Container';
 import MobileMenu from './MobileMenu';
 import SearchBar from './SearchBar';
 import Carticon from './Carticon';
-import { currentUser } from '@clerk/nextjs/server';
-import { ClerkLoaded, SignedIn, SignInButton, UserButton } from '@clerk/nextjs';
+// import { currentUser } from '@clerk/nextjs/server';
+// import { ClerkLoaded, SignedIn, SignInButton, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
-import { ListOrdered } from 'lucide-react';
+// import { ListOrdered } from 'lucide-react';
 import Image from 'next/image';
 import { getAllBrands, getAllCategories } from '@/helpers/query'; // Ensure correct import
 
 const Header = async () => {
-  const user = await currentUser();
+  // const user = await currentUser();
 
   // Fetch categories data
   const categories = await getAllCategories();
@@ -43,7 +43,7 @@ const Header = async () => {
         <div className="w-auto md:w-1/3 flex items-center justify-end gap-5">
           <SearchBar />
           <Carticon />
-          <ClerkLoaded>
+          {/* <ClerkLoaded>
             <SignedIn>
               <Link href={'/orders'} className="group relative">
                 <ListOrdered className="h-5 w-5 group-hover:text-darkColor hoverEffect" />
@@ -62,7 +62,7 @@ const Header = async () => {
                 </div>
               </SignInButton>
             )}
-          </ClerkLoaded>
+          </ClerkLoaded> */}
         </div>
       </Container>
     </header>

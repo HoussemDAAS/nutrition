@@ -1,22 +1,43 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 import { headerData } from "@/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useRef } from "react";
 import { Brand, Category } from "@/sanity.types";
 
 interface HeaderMenuProps {
   categories: Category[];
-  brands:Brand[],
+  brands: Brand[];
 }
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ categories,brands }) => {
+// Custom hook to detect clicks outside of a component
+const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callback]);
+};
+
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ categories, brands }) => {
   const [isCategoryOpen, setCategoryOpen] = useState(false);
   const [isBrandOpen, setBrandOpen] = useState(false);
   const pathname = usePathname();
 
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
 
+  // @ts-ignore
+  useClickOutside(categoryRef, () => setCategoryOpen(false));
+  // @ts-ignore
+  useClickOutside(brandRef, () => setBrandOpen(false));
 
   const toggleCategory = () => {
     setCategoryOpen((prev) => !prev);
@@ -38,7 +59,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ categories,brands }) => {
       {headerData.map((item, index) => {
         if (item.title === "Catégories") {
           return (
-            <div className="relative" key={index}>
+            <div className="relative" key={index} ref={categoryRef}>
               <button
                 onClick={toggleCategory}
                 className={`relative hover:text-darkColor transition-all duration-300 ${
@@ -76,7 +97,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ categories,brands }) => {
 
         if (item.title === "Brands") {
           return (
-            <div key={index} className="relative">
+            <div key={index} className="relative" ref={brandRef}>
               <button
                 onClick={toggleBrand}
                 className={`relative hover:text-darkColor transition-all duration-300 ${

@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
-
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import useCartStore from "@/store";
 import Image from "next/image";
 import PriceFormater from "./PriceFormater";
@@ -11,40 +11,52 @@ import { X } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 
-const CartModel = () => {
-  const {
-    getTotalPrice,
-    getGroupedItems,
-    getItemCount,
-    DeleteItem,
-  } = useCartStore();
-
-  const cartProducts = getGroupedItems();
-  const [showCart, setShowCart] = useState(true);
-
+// Custom hook to detect clicks outside of a component
+const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
   useEffect(() => {
-    setShowCart(true);
-  }, [cartProducts]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callback]);
+};
+
+interface CartModelProps {
+  onClose: () => void;
+}
+
+const CartModel = ({ onClose }: CartModelProps) => {
+  const { getTotalPrice, getGroupedItems, getItemCount, DeleteItem } = useCartStore();
+  const cartProducts = getGroupedItems();
+  const cartRef = useRef<HTMLDivElement>(null);
+  // @ts-ignore
+  // Close cart when clicking outside
+  useClickOutside(cartRef, onClose);
+
   return (
     <>
-      {/* Cart Sidebar */}
+      {/* Mobile Cart Sidebar */}
       <div
-        className={`fixed inset-y-0 right-0 z-50 bg-white/80 shadow-xl transition-transform duration-500 ${showCart ? "translate-x-0" : "translate-x-full"} md:hidden`}
+        className="fixed inset-y-0 right-0 z-50 bg-white/80 shadow-xl transition-transform duration-500 translate-x-0 md:hidden"
+        ref={cartRef}
       >
         <motion.div className="bg-white w-72 h-full p-6 border-l border-gray-300 flex flex-col gap-4">
           {/* Close Button */}
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold">Shopping Cart</h2>
-            <button onClick={() => setShowCart(false)}>
+            <button onClick={onClose}>
               <X className="w-6 h-6 text-gray-600" />
             </button>
           </div>
 
           {/* Cart Items */}
           {!cartProducts.length ? (
-            <div>
-                
-                Cart is empty</div>
+            <div>Cart is empty</div>
           ) : (
             <div className="flex flex-col gap-4 overflow-y-auto flex-1">
               {cartProducts.map(({ product }, index) => {
@@ -100,7 +112,6 @@ const CartModel = () => {
               <Link href={"/cart"} className="w-full">
                 <Button className="w-full">View Cart</Button>
               </Link>
-
               <Link href={"/checkout"} className="w-full">
                 <Button className="w-full bg-AccentColor">Checkout</Button>
               </Link>
@@ -109,8 +120,11 @@ const CartModel = () => {
         </motion.div>
       </div>
 
-      {/* Desktop Cart (fixed position) */}
-      <div className="w-max absolute p-3 rounded-md shadow-lg bg-white top-12 right-0 flex flex-col gap-4 z-20 max-w-[85vw] sm:max-w-[350px] hidden md:block">
+      {/* Desktop Cart */}
+      <div
+        className="w-max absolute p-3 rounded-md shadow-lg bg-white top-12 right-0 flex flex-col gap-4 z-20 max-w-[85vw] sm:max-w-[350px] hidden md:block"
+        ref={cartRef}
+      >
         {!cartProducts.length ? (
           <div className="text-center p-5">pas de produit</div>
         ) : (
@@ -172,7 +186,6 @@ const CartModel = () => {
                 <Link href={"/cart"} className="w-full">
                   <Button className="w-full">View Cart</Button>
                 </Link>
-
                 <Link href={"/checkout"} className="w-full">
                   <Button className="w-full bg-AccentColor">Checkout</Button>
                 </Link>
