@@ -8,7 +8,8 @@ import { BoxIcon, ListOrderedIcon, LucideMessageCircleQuestion, Share2Icon } fro
 import { notFound } from "next/navigation";
 import { Metadata } from 'next';
 import { urlFor } from "@/sanity/lib/image";
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+// Import your Sanity product type
 
 export async function generateMetadata({
   params,
@@ -19,6 +20,8 @@ export async function generateMetadata({
   
   if (!product) return {};
   
+  const mainImage = product.images?.[0] ? urlFor(product.images[0]).width(1200).height(630).url() : '';
+
   return {
     title: `${product.nom} | Nutrition Hub`,
     description: product.description?.substring(0, 160),
@@ -27,11 +30,7 @@ export async function generateMetadata({
       description: product.description?.substring(0, 160),
       images: [
         {
-          url: urlFor(product.images?.[0])
-            .width(1200)
-            .height(630)
-            .format('webp')
-            .url(),
+          url: mainImage,
           width: 1200,
           height: 630,
           alt: product.nom,
@@ -42,7 +41,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: product.nom,
       description: product.description?.substring(0, 160),
-      images: [urlFor(product.images?.[0]).width(1200).height(630).url()],
+      images: [mainImage],
     },
   };
 }
@@ -84,16 +83,13 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
       />
       
       <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-        {/* Image Gallery */}
         <ImageView 
           images={product.images || []} 
           productName={product.nom}
           className="w-full md:w-1/2"
         />
 
-        {/* Product Details */}
         <div className="w-full md:w-1/2 flex flex-col gap-4 md:gap-6">
-          {/* Product Header */}
           <header className="space-y-2">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               {product.nom}
@@ -106,27 +102,16 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
             <StockStatus stock={product.stock} />
           </header>
 
-          {/* Product Actions */}
           <div className="flex items-center gap-3 justify-center">
-          <AddToCardButton
-            product={product}
-            className="bg-darkColor/80 text-white  hover:bg-darkColor hoverEffect"
-          />
-            {/* <button 
-              aria-label="Ajouter aux favoris"
-              className="p-2.5 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              <Heart className="w-4 h-4 text-gray-600" />
-            </button> */}
+            <AddToCardButton
+              product={product}
+              className="bg-darkColor/80 text-white hover:bg-darkColor hoverEffect"
+            />
           </div>
 
-          {/* Product Features */}
           <ProductCaracteristique product={product} />
-
-          {/* Service Features */}
           <ServiceFeatures />
 
-          {/* Delivery Info Cards */}
           <div className="grid md:grid-cols-2 gap-4">
             <InfoCard 
               title="Livraison gratuite"
@@ -138,7 +123,6 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
             />
           </div>
 
-          {/* Product Description */}
           <section className="border-t border-gray-200 pt-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-900">Description</h2>
             <div className="prose max-w-none text-gray-600">
@@ -151,7 +135,7 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
   );
 };
 
-// Sub-components for better organization
+// Sub-components with proper TypeScript typing
 const StockStatus = ({ stock }: { stock?: number }) => (
   <p className={`w-fit px-3 py-1.5 text-sm font-medium rounded-md ${
     stock === 0 
@@ -184,7 +168,12 @@ const ServiceFeatures = () => (
   </div>
 );
 
-const InfoCard = ({ title, text }: { title: string; text: string }) => (
+interface InfoCardProps {
+  title: string;
+  text: string;
+}
+
+const InfoCard = ({ title, text }: InfoCardProps) => (
   <div className="p-4 border border-gray-200 rounded-lg hover:border-primary transition-colors">
     <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
     <p className="text-sm text-gray-600">{text}</p>
