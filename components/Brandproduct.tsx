@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { Brand, Produit } from '@/sanity.types';
 import React from 'react';
@@ -8,6 +9,7 @@ import { Loader2, X } from 'lucide-react';
 import { client } from '@/sanity/lib/client';
 import NoProducts from './NoProducts';
 import ProductCard from './ProductCard';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface BrandsProductsProps {
   brands: Brand[];
@@ -15,44 +17,39 @@ interface BrandsProductsProps {
 }
 
 const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentslug, setCurrentSlug] = React.useState(slug);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [filteredBrands, setFilteredBrands] = React.useState<Brand[]>(brands);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = React.useState(false);
   const [products, setProducts] = React.useState<Produit[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedBrands, setSelectedBrands] = React.useState<string[]>([slug]); // Track selected categories by slug
+  const [selectedBrands, setSelectedBrands] = React.useState<string[]>([slug]);
+  const [selectedSort, setSelectedSort] = React.useState('nom-asc');
 
-  // Fetch products based on the selected category slugs
-  const fetchProducts = async (categorySlugs: string[]) => {
+  const fetchProducts = async (brandSlugs: string[]) => {
     try {
       setIsLoading(true);
   
-      // If no categories are selected, don't fetch products
-      if (categorySlugs.length === 0) {
+      if (brandSlugs.length === 0) {
         setProducts([]);
         return;
       }
-  
-      // Create a GROQ query where products need to reference all selected categories
+
+      const [sortField, sortDirection] = selectedSort.split('-');
       const query = `*[_type == 'produit' && 
-        ${categorySlugs
-          .map((slug, index) => {
-            return `references(*[_type == 'brand' && slug.current == $slug${index}]._id)`;
-          })
-          .join(" && ")}
-      ] | order(nom asc)`;
-  
-      // Dynamically pass the slugs as parameters
-      const params = categorySlugs.reduce<Record<string, string>>((acc, slug, index) => {
+        ${brandSlugs
+          .map((slug, index) => 
+            `references(*[_type == 'brand' && slug.current == $slug${index}]._id)`
+          ).join(" && ")}
+      ] | order(${sortField} ${sortDirection})`;
+
+      const params = brandSlugs.reduce<Record<string, string>>((acc, slug, index) => {
         acc[`slug${index}`] = slug;
         return acc;
       }, {});
-  
+
       const data = await client.fetch(query, params);
       setProducts(data);
-      console.log('Fetched products:', data);
     } catch (error) {
       console.log("Error fetching products:", error);
     } finally {
@@ -60,35 +57,28 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
     }
   };
 
-  // Update filtered categories based on search term
   React.useEffect(() => {
     setFilteredBrands(
       brands.filter((brand) =>
         brand?.title?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-    fetchProducts(selectedBrands); // Fetch products when categories change
-  }, [searchTerm, brands, selectedBrands]);
+    fetchProducts(selectedBrands);
+  }, [searchTerm, brands, selectedBrands, selectedSort]);
 
-  // Handle category selection and deselection
-  const handleCategorySelection = (categorySlug: string) => {
-    setSelectedBrands((prevState) => {
-      if (prevState.includes(categorySlug)) {
-        // If the category is already selected, remove it
-        return prevState.filter((slug) => slug !== categorySlug);
-      } else {
-        // If the category is not selected, add it
-        return [...prevState, categorySlug];
-      }
-    });
+  const handleBrandSelection = (brandSlug: string) => {
+    setSelectedBrands((prev) => 
+      prev.includes(brandSlug) 
+        ? prev.filter(s => s !== brandSlug) 
+        : [...prev, brandSlug]
+    );
   };
 
-  // When no categories are selected, show products from the default slug
   React.useEffect(() => {
     if (selectedBrands.length === 0) {
-        setSelectedBrands([slug]);
+      setSelectedBrands([slug]);
     }
-  }, [setSelectedBrands, slug, selectedBrands.length]);
+  }, [selectedBrands, slug]);
 
   return (
     <div className="py-5 flex flex-col md:flex-row items-start gap-5">
@@ -96,10 +86,10 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
       <div className="flex flex-col md:min-w-78">
         {/* Desktop Filters */}
         <div className="hidden md:block w-64">
-          <Accordion type="single" collapsible={false}>
-            <AccordionItem value="categories">
+          <Accordion type="single" collapsible={false} defaultValue="brands">
+            <AccordionItem value="brands">
               <AccordionTrigger className="text-left text-lg text-AccentColor tracking-wide uppercase">
-                Categories
+                Marques
               </AccordionTrigger>
               <AccordionContent>
                 <div className="p-2">
@@ -109,16 +99,16 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="mb-3 w-full"
                   />
-                  <div className="max-h-48 overflow-y-auto">
+                  <div className="h-[calc(100vh-250px)]">
                     {filteredBrands.map((brand) => (
-                      <label key={brand._id} className="flex items-center space-x-2 py-1">
+                      <label key={brand._id} className="flex items-center space-x-2 py-1.5">
                         <input
                           type="checkbox"
                           className="form-checkbox h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-0"
                           checked={selectedBrands.includes(brand.slug?.current || '')}
-                          onChange={() => handleCategorySelection(brand.slug?.current || '')}
+                          onChange={() => handleBrandSelection(brand.slug?.current || '')}
                         />
-                        <span className="text-sm text-gray-800">{brand.title || "Unnamed brand"}</span>
+                        <span className="text-sm text-gray-800">{brand.title || "Marque inconnue"}</span>
                       </label>
                     ))}
                   </div>
@@ -130,10 +120,11 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
 
         {/* Mobile Filters */}
         <button
-          className="md:hidden px-4 py-2 bg-AccentColor text-white rounded-lg"
+          className="md:hidden px-4 py-2 bg-AccentColor text-white rounded-lg flex items-center gap-2"
           onClick={() => setIsMobileFilterOpen(true)}
         >
-          Filter
+          <X className="w-4 h-4" />
+          Filtres
         </button>
 
         {isMobileFilterOpen && (
@@ -145,7 +136,7 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
             className="fixed inset-0 bg-white z-50 shadow-lg"
           >
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <h2 className="text-lg font-bold">Filter</h2>
+              <h2 className="text-lg font-bold">Filtres</h2>
               <button onClick={() => setIsMobileFilterOpen(false)} className="hover:text-red-500">
                 <X className="w-6 h-6" />
               </button>
@@ -159,14 +150,14 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
               />
               <div className="max-h-64 overflow-y-auto">
                 {filteredBrands.map((brand) => (
-                  <label key={brand._id} className="flex items-center space-x-2 py-1">
+                  <label key={brand._id} className="flex items-center space-x-2 py-1.5">
                     <input
                       type="checkbox"
                       className="form-checkbox h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-0"
                       checked={selectedBrands.includes(brand.slug?.current || '')}
-                      onChange={() => handleCategorySelection(brand.slug?.current || '')}
+                      onChange={() => handleBrandSelection(brand.slug?.current || '')}
                     />
-                    <span className="text-sm text-gray-800">{brand.title || "Unnamed Category"}</span>
+                    <span className="text-sm text-gray-800">{brand.title || "Marque inconnue"}</span>
                   </label>
                 ))}
               </div>
@@ -180,6 +171,38 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
 
       {/* Products Section */}
       <div className="w-full">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <h2 className="text-lg font-medium text-gray-700">
+            {products.length} {products.length === 1 ? 'résultat' : 'résultats'}
+          </h2>
+          
+          <Select value={selectedSort} onValueChange={setSelectedSort}>
+            <SelectTrigger className="w-full md:w-48 bg-white border-gray-200 hover:bg-gray-50 rounded-lg focus:ring-2 focus:ring-AccentColor/50">
+              <SelectValue placeholder={<span className="text-gray-500">Trier par</span>} />
+            </SelectTrigger>
+            <SelectContent className="border-gray-200 shadow-md rounded-lg">
+              <SelectItem value="nom-asc" className="text-sm hover:bg-gray-50">
+                Nom (A-Z)
+              </SelectItem>
+              <SelectItem value="nom-desc" className="text-sm hover:bg-gray-50">
+                Nom (Z-A)
+              </SelectItem>
+              <SelectItem value="prix-asc" className="text-sm hover:bg-gray-50">
+                Prix ↑
+              </SelectItem>
+              <SelectItem value="prix-desc" className="text-sm hover:bg-gray-50">
+                Prix ↓
+              </SelectItem>
+              <SelectItem value="_createdAt-asc" className="text-sm hover:bg-gray-50">
+                Récent
+              </SelectItem>
+              <SelectItem value="_createdAt-desc" className="text-sm hover:bg-gray-50">
+                Ancien
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-10 min-h-80 space-y-4 text-center bg-gray-100 rounded-lg w-full mt-10">
             <motion.div
@@ -189,13 +212,13 @@ const BrandProducts = ({ brands, slug }: BrandsProductsProps) => {
               transition={{ duration: 0.5 }}
             >
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span className="text-lg font-semibold">Loading...</span>
+              <span className="text-lg font-semibold">Chargement...</span>
             </motion.div>
           </div>
         ) : (
           <>
             {products?.length ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-10 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 w-full">
                 {products.map((product: Produit) => (
                   <AnimatePresence key={product._id}>
                     <motion.div layout initial={{ opacity: 0.2 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

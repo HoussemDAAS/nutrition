@@ -4,11 +4,11 @@ import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Input } from './ui/input';
 import { AnimatePresence, motion } from 'motion/react';
-import { Loader2, X } from 'lucide-react';
+import { Filter, Loader2, X } from 'lucide-react';
 import { client } from '@/sanity/lib/client';
 import NoProducts from './NoProducts';
 import ProductCard from './ProductCard';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 interface CategoryProductsProps {
   categories: Category[]; // Array of categories
   slug: string; // Current category slug for filtering products
@@ -23,7 +23,7 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
   const [products, setProducts] = React.useState<Produit[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([slug]); // Track selected categories by slug
-
+  const [selectedSort, setSelectedSort] = React.useState('nom-asc');
   // Fetch products based on the selected category slugs
   const fetchProducts = async (categorySlugs: string[]) => {
     try {
@@ -35,14 +35,14 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
         return;
       }
   
-      // Create a GROQ query where products need to reference all selected categories
+      const [sortField, sortDirection] = selectedSort.split('-');
       const query = `*[_type == 'produit' && 
         ${categorySlugs
           .map((slug, index) => {
             return `references(*[_type == 'category' && slug.current == $slug${index}]._id)`;
           })
           .join(" && ")}
-      ] | order(nom asc)`;
+      ] | order(${sortField} ${sortDirection})`;
   
       // Dynamically pass the slugs as parameters
       const params = categorySlugs.reduce<Record<string, string>>((acc, slug, index) => {
@@ -68,7 +68,7 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
       )
     );
     fetchProducts(selectedCategories); // Fetch products when categories change
-  }, [searchTerm, categories, selectedCategories]);
+  }, [searchTerm, categories, selectedCategories, selectedSort]);
 
   // Handle category selection and deselection
   const handleCategorySelection = (categorySlug: string) => {
@@ -96,44 +96,46 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
       <div className="flex flex-col md:min-w-78">
         {/* Desktop Filters */}
         <div className="hidden md:block w-64">
-          <Accordion type="single" collapsible={false}>
-            <AccordionItem value="categories">
-              <AccordionTrigger className="text-left text-lg text-AccentColor tracking-wide uppercase">
-                Categories
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="p-2">
-                  <Input
-                    placeholder="Recherche"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mb-3 w-full"
-                  />
-                  <div className="max-h-48 overflow-y-auto">
-                    {filteredCategories.map((category) => (
-                      <label key={category._id} className="flex items-center space-x-2 py-1">
-                        <input
-                          type="checkbox"
-                          className="form-checkbox h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-0"
-                          checked={selectedCategories.includes(category.slug?.current || '')}
-                          onChange={() => handleCategorySelection(category.slug?.current || '')}
-                        />
-                        <span className="text-sm text-gray-800">{category.title || "Unnamed Category"}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+  <Accordion type="single" collapsible={false} defaultValue="categories">
+    <AccordionItem value="categories">
+      <AccordionTrigger className="text-left text-lg text-AccentColor tracking-wide uppercase">
+        Categories
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className="p-2">
+          <Input
+            placeholder="Recherche"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mb-3 w-full"
+          />
+          {/* Changed this div */}
+          <div className="h-[calc(100vh-250px)]">
+            {filteredCategories.map((category) => (
+              <label key={category._id} className="flex items-center space-x-2 py-1.5">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-0"
+                  checked={selectedCategories.includes(category.slug?.current || '')}
+                  onChange={() => handleCategorySelection(category.slug?.current || '')}
+                />
+                <span className="text-sm text-gray-800">{category.title || "Unnamed Category"}</span>
+              </label>
+            ))}
+          </div>
         </div>
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
+</div>
 
         {/* Mobile Filters */}
         <button
-          className="md:hidden px-4 py-2 bg-AccentColor text-white rounded-lg"
-          onClick={() => setIsMobileFilterOpen(true)}
-        >
-          Filter
+  className="md:hidden px-4 py-2 bg-AccentColor text-white rounded-lg flex items-center gap-2"
+  onClick={() => setIsMobileFilterOpen(true)}
+>
+           <Filter className="w-4 h-4" />
+           Filter
         </button>
 
         {isMobileFilterOpen && (
@@ -180,6 +182,59 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
 
       {/* Products Section */}
       <div className="w-full">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+  <h2 className="text-lg font-medium text-gray-700">
+    {products.length} {products.length === 1 ? 'résultat' : 'résultats'}
+  </h2>
+  
+  <Select value={selectedSort} onValueChange={setSelectedSort}>
+    <SelectTrigger className="w-full md:w-48 bg-white border-gray-200 hover:bg-gray-50 rounded-lg focus:ring-2 focus:ring-AccentColor/50">
+      <SelectValue 
+        placeholder={
+          <span className="text-gray-500">Trier par</span>
+        } 
+      />
+    </SelectTrigger>
+    <SelectContent className="border-gray-200 shadow-md rounded-lg">
+      <SelectItem 
+        value="nom-asc" 
+        className="text-sm hover:bg-gray-50 focus:bg-gray-50"
+      >
+        Nom (A-Z)
+      </SelectItem>
+      <SelectItem 
+        value="nom-desc" 
+        className="text-sm hover:bg-gray-50 focus:bg-gray-50"
+      >
+        Nom (Z-A)
+      </SelectItem>
+      <SelectItem 
+        value="prix-asc" 
+        className="text-sm hover:bg-gray-50 focus:bg-gray-50"
+      >
+        Prix ↑
+      </SelectItem>
+      <SelectItem 
+        value="prix-desc" 
+        className="text-sm hover:bg-gray-50 focus:bg-gray-50"
+      >
+        Prix ↓
+      </SelectItem>
+      <SelectItem 
+        value="_createdAt-asc" 
+        className="text-sm hover:bg-gray-50 focus:bg-gray-50"
+      >
+        Récent
+      </SelectItem>
+      <SelectItem 
+        value="_createdAt-desc" 
+        className="text-sm hover:bg-gray-50 focus:bg-gray-50"
+      >
+        Ancien
+      </SelectItem>
+    </SelectContent>
+  </Select>
+</div>
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-10 min-h-80 space-y-4 text-center bg-gray-100 rounded-lg w-full mt-10">
             <motion.div

@@ -2,7 +2,7 @@
 
 export const headerData =[
     {title: 'Acceuil',href: '/'},
-    {title: 'Promotion',href: '/Promotion'},
+    {title: 'Promotion',href: '/promotion'},
     {title: 'Catégories',href: '/Category'},
     {title: 'Brands',href: '/Brand'},
     {title: 'Contact',href: '/contact'}]

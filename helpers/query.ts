@@ -61,7 +61,21 @@ export const getAllBrands = async () => {
    
    }
 
-
+   export const getPromotionProducts = async () => {
+      const PROMOTION_QUERY = defineQuery(`
+       *[_type == 'produit' && variantes == "Promotion"] | order(nom asc)
+      `);
+    
+      try {
+        const products = await sanityFetch({
+          query: PROMOTION_QUERY,
+        });
+        return products?.data || [];
+      } catch (error) {
+        console.error('Error fetching promotion products:', error);
+        return [];
+      }
+    }
    export const getAllSlides = async () => {
       const CATEGORIES_QUERY=defineQuery(`*[_type == 'slider'] | order(title asc)`);
       
