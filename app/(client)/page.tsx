@@ -1,4 +1,5 @@
 import Container from "@/components/Container";
+import InfinitePromoBanner from "@/components/InfinitePromoBanner";
 import LogoCarousel from "@/components/LogoCarrousel";
 import ProductCarousel from "@/components/ProductCarousel";
 import Scrollableliste from "@/components/ScrollableList";
@@ -26,9 +27,11 @@ export default async function Home() {
       </section>
 
       <Container className="py-10">
+   
         <section>
           <TitleSection title={"Nouveau Produits"} />
         </section>
+        <InfinitePromoBanner />
         <section>
           <ProductCarousel status="Nouveau" />
         </section>
@@ -59,6 +62,7 @@ export default async function Home() {
         <section>
           <TitleSection title={"Promotion"} />
         </section>
+       
         <PosterDisplay />
         
         <section>
