@@ -31,11 +31,11 @@ export default async function Home() {
         <section>
           <TitleSection title={"Nouveau Produits"} />
         </section>
-        <InfinitePromoBanner />
+      
         <section>
           <ProductCarousel status="Nouveau" />
         </section>
-        
+        <InfinitePromoBanner />
         <section>
           <TitleSection title={"Categories"} />
         </section>
