@@ -9,7 +9,7 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
-  menuTrigger: boolean;
+  isCartOpen: boolean;
   addItem: (product: Produit) => void;
   removeItem: (productId: string) => void;
   DeleteItem: (productId: string) => void;
@@ -18,15 +18,17 @@ getTotalPrice: () => number;
 getSubTotalPrice: () => number;
 getItemCount:(productId: string) => number;
 getGroupedItems: () => CartItem[];
-triggerMenu: () => void;
-resetMenuTrigger: () => void;
+openCart: () => void; // Add this
+closeCart: () => void;
 }
 
 const useCartStore = create<CartState>()(
   persist(
     (set,get) => ({
       items: [],
-      menuTrigger: false,
+      isCartOpen: false,
+      openCart: () => set({ isCartOpen: true }),
+      closeCart: () => set({ isCartOpen: false }),
       addItem: (product) => {
         set((state) => {
           const existingItem = state.items.find(
@@ -39,15 +41,12 @@ const useCartStore = create<CartState>()(
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
               ),
-              menuTrigger: true,
             };
           } else {
-            return { 
-              items: [...state.items, { product, quantity: 1 }],
-              menuTrigger: true 
-            };
+            return { items: [...state.items, { product, quantity: 1 }] };
           }
         });
+        get().openCart();  // add product to cart
       },
       removeItem: (productId) => {
         set((state) => ({
@@ -65,8 +64,6 @@ const useCartStore = create<CartState>()(
 
         })); // remove product from cart
       },
-      triggerMenu: () => set({ menuTrigger: true }),
-      resetMenuTrigger: () => set({ menuTrigger: false }),
       DeleteItem: (productId) => {
         set((state) => ({
           items: state.items.filter((item) => item.product._id !== productId),

@@ -14,13 +14,11 @@ interface AddToCardButtonProps {
 }
 
 const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
-  const { addItem, getItemCount, triggerMenu } = useCartStore();
-
+  const { addItem, getItemCount } = useCartStore();
   const itemCount = getItemCount(product?._id);
 
   const handleAddToCart = () => {
-    addItem(product);
-    triggerMenu(); // Trigger menu state
+    addItem(product); // This will automatically open the cart via the store
     toast.success(`${product?.nom?.substring(0, 15)}... a été ajouté au panier`);
   };
 
@@ -43,7 +41,7 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
             "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
             className
           )}
-          onClick={handleAddToCart}
+          onClick={handleAddToCart} // Use the handler function here
         >
           <div className="hidden md:block">
             <svg
