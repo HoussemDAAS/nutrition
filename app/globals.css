@@ -140,3 +140,17 @@
     animation: none;
   }
 }
+@layer utilities {
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+}
+.image-scale {
+  transition: transform 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-scale {
+    transition: none;
+  }
+}

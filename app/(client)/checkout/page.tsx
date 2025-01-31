@@ -77,7 +77,12 @@ export default function CheckoutPage() {
   const items = getGroupedItems();
   const total = getTotalPrice();
 
-  useEffect(() => setIsMounted(true), []);
+  useEffect(() => {
+    setIsMounted(true);
+    if (orderSuccess) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [orderSuccess]);
 
   const handleApplyCoupon = () => setCouponApplied(true);
 
@@ -104,7 +109,7 @@ export default function CheckoutPage() {
       setOrderSuccess(true);
     } catch (error) {
       console.error('Order submission failed:', error);
-      alert('Order submission failed. Please try again.');
+      alert('Échec de la soumission de la commande. Veuillez réessayer.');
     } finally {
       setSubmitting(false);
       setShowConfirmation(false);
@@ -118,27 +123,27 @@ export default function CheckoutPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen flex items-center justify-center bg-gray-50"
+        className="min-h-screen flex items-center justify-center bg-gray-50 scroll-smooth"
       >
-        <div className="text-center p-8 max-w-2xl">
-          <div className="mb-6">
-            <svg className="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center p-6 max-w-2xl mx-4">
+          <div className="mb-5">
+            <svg className="mx-auto h-14 w-14 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold mb-4">Merci pour votre commande!</h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold mb-4">Merci pour votre commande!</h1>
+          <p className="text-base md:text-lg text-gray-600 mb-6">
             Nous avons bien reçu votre commande et vous contacterons sous peu pour confirmer les détails de livraison.
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col md:flex-row gap-3 justify-center">
             <Link href="/" legacyBehavior passHref>
-              <Button className="bg-AccentColor hover:bg-blue-700">
+              <Button className="bg-AccentColor hover:bg-AccentColor/90 text-sm md:text-base">
                 Retour à l&apos;accueil
               </Button>
             </Link>
             <Link href="/orders" legacyBehavior passHref>
-              <Button variant="outline">
-                View Your Orders
+              <Button variant="outline" className="text-sm md:text-base">
+                Voir mes commandes
               </Button>
             </Link>
           </div>
@@ -148,16 +153,16 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative scroll-smooth">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gray-50 min-h-screen p-4 md:p-8 pt-20 md:pt-8"
+        className="bg-gray-50 min-h-screen p-4 md:p-8 pt-20 md:pt-8 pb-24 md:pb-8"
       >
         <div className="max-w-4xl mx-auto">
           <button 
             onClick={() => router.back()}
-            className="text-AccentColor hover:text-blue-700 flex items-center gap-2 text-sm mb-6"
+            className="text-AccentColor hover:text-AccentColor/80 flex items-center gap-2 text-sm mb-6"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -166,14 +171,13 @@ export default function CheckoutPage() {
           </button>
           
           <form onSubmit={(e) => { e.preventDefault(); setShowConfirmation(true); }}>
-            <div className="grid lg:grid-cols-3 md:gap-8">
+            <div className="grid lg:grid-cols-3 md:gap-6">
               {/* Left Column */}
-              <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h2 className="text-2xl font-bold mb-6">Informations de Livraison</h2>
+              <div className="lg:col-span-2 bg-white p-4 md:p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 className="text-xl md:text-2xl font-bold mb-4">Informations de Livraison</h2>
 
-                <div className="space-y-6">
-                  {/* Form Fields */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField 
                       label="Prénom *" 
                       value={formData.customer.firstName}
@@ -199,7 +203,7 @@ export default function CheckoutPage() {
                     onChange={v => setFormData({...formData, customer: {...formData.customer, address: v}})}
                   />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField 
                       label="Ville *" 
                       value={formData.customer.city}
@@ -230,8 +234,8 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Right Column (Desktop) */}
-              <div className="lg:col-span-1 mt-8 lg:mt-0 hidden md:block">
+              {/* Desktop Order Summary */}
+              <div className="lg:col-span-1 mt-6 lg:mt-0 hidden md:block">
                 <OrderSummary 
                   total={total}
                   couponApplied={couponApplied}
@@ -242,7 +246,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Mobile Order Summary */}
-            <div className="md:hidden mt-8 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
               <OrderSummary 
                 total={total}
                 couponApplied={couponApplied}
@@ -273,7 +277,7 @@ const InputField: React.FC<InputFieldProps> = ({ label, type = 'text', value, on
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded-lg focus:ring-2 focus:ring-AccentColor"
+      className="w-full rounded-lg focus:ring-2 focus:ring-AccentColor text-sm md:text-base"
     />
   </div>
 );
@@ -281,7 +285,7 @@ const InputField: React.FC<InputFieldProps> = ({ label, type = 'text', value, on
 const CouponSection: React.FC<CouponSectionProps> = ({ coupon, onChange, onApply }) => (
   <Accordion type="single" collapsible>
     <AccordionItem value="coupon">
-      <AccordionTrigger className="text-AccentColor hover:no-underline py-2">
+      <AccordionTrigger className="text-AccentColor hover:no-underline py-2 text-sm md:text-base">
         Ajouter un code promo
       </AccordionTrigger>
       <AccordionContent className="pt-2">
@@ -290,9 +294,12 @@ const CouponSection: React.FC<CouponSectionProps> = ({ coupon, onChange, onApply
             placeholder="Entrez votre code promo"
             value={coupon}
             onChange={(e) => onChange(e.target.value)}
-            className="flex-1 focus:ring-2 focus:ring-AccentColor"
+            className="flex-1 focus:ring-2 focus:ring-AccentColor text-sm"
           />
-          <Button onClick={onApply} className="bg-AccentColor hover:bg-blue-700">
+          <Button 
+            onClick={onApply} 
+            className="bg-AccentColor hover:bg-AccentColor/90 text-sm"
+          >
             Appliquer
           </Button>
         </div>
@@ -315,28 +322,28 @@ const TermsCheckbox = () => (
 );
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ total, couponApplied, items, onSubmit }) => (
-  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-    <h2 className="text-xl font-semibold mb-4">Récapitulatif</h2>
-    <div className="space-y-3">
-      <div className="flex justify-between text-gray-600">
+  <div className="bg-white p-4 md:p-6 rounded-lg border border-gray-200 shadow-sm">
+    <h2 className="text-lg md:text-xl font-semibold mb-3">Récapitulatif</h2>
+    <div className="space-y-2">
+      <div className="flex justify-between text-sm md:text-base">
         <span>Sous-total</span>
         <PriceFormater amount={total} />
       </div>
       {couponApplied && (
-        <div className="flex justify-between text-green-600">
+        <div className="flex justify-between text-green-600 text-sm md:text-base">
           <span>Réduction</span>
           <PriceFormater amount={total * 0.1} />
         </div>
       )}
-      <Separator className="my-2" />
-      <div className="flex justify-between font-bold">
+      <Separator className="my-1 md:my-2" />
+      <div className="flex justify-between font-bold text-base md:text-lg">
         <span>Total</span>
         <PriceFormater amount={couponApplied ? total * 0.9 : total} />
       </div>
       <Button
         type="submit"
         disabled={items.length === 0}
-        className="w-full mt-4 bg-AccentColor hover:bg-blue-700"
+        className="w-full mt-3 bg-AccentColor hover:bg-AccentColor/90 text-sm md:text-base"
         onClick={onSubmit}
       >
         Confirmer la commande
@@ -354,15 +361,19 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ open, onClose, 
       <div className="space-y-4">
         <p className="text-gray-600">Êtes-vous sûr de vouloir passer cette commande?</p>
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose} className="px-4 py-2">
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            className="px-4 py-2 text-sm md:text-base"
+          >
             Annuler
           </Button>
           <Button 
             onClick={onSubmit} 
             disabled={submitting}
-            className="bg-AccentColor hover:bg-blue-700 px-4 py-2"
+            className="bg-AccentColor hover:bg-AccentColor/90 px-4 py-2 text-sm md:text-base"
           >
-            {submitting ? 'En cours...' : 'Confirmer'}
+            {submitting ? 'Traitement...' : 'Confirmer'}
           </Button>
         </div>
       </div>

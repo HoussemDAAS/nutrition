@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import localFont from 'next/font/local'
 import { Toaster } from "react-hot-toast";
 
@@ -33,6 +33,7 @@ export default function RootLayout({
         <Header />
       
         {children}
+        <SpeedInsights dsn="5iV1AJTNj13san7iTNVYYug2J14" />
         <Footer />
         <Toaster  position="bottom-right" toastOptions={{ 
           duration: 1000,
