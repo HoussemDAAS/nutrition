@@ -12,10 +12,17 @@ interface AddToCardButtonProps {
   product: Produit;
   className?: string;
 }
+
 const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
-  const { addItem, getItemCount } = useCartStore();
+  const { addItem, getItemCount, triggerMenu } = useCartStore();
 
   const itemCount = getItemCount(product?._id);
+
+  const handleAddToCart = () => {
+    addItem(product);
+    triggerMenu(); // Trigger menu state
+    toast.success(`${product?.nom?.substring(0, 15)}... a été ajouté au panier`);
+  };
 
   return (
     <div className="w-full h-12 items-center">
@@ -36,29 +43,24 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
             "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
             className
           )}
-          
-          onClick={() => {
-            addItem(product);
-            toast.success(`${product?.nom?.substring(0, 15)}... a été ajouté au panier`);
-          }}
+          onClick={handleAddToCart}
         >
           <div className="hidden md:block">
-          <svg
-            className="w-4 h-4 mr-0.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5M10 21h4m-4-4h4"
-            ></path>
-          </svg>
+            <svg
+              className="w-4 h-4 mr-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5M10 21h4m-4-4h4"
+              ></path>
+            </svg>
           </div>
-         
           Ajouter au panier
         </Button>
       )}

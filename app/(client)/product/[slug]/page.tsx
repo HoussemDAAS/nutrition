@@ -9,25 +9,31 @@ import { notFound } from "next/navigation";
 import { Metadata } from 'next';
 import { urlFor } from "@/sanity/lib/image";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
-// Import your Sanity product type
 
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug);
+  // Properly await params first
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
   
-  if (!product) return {};
-  
-  const mainImage = product.images?.[0] ? urlFor(product.images[0]).width(1200).height(630).url() : '';
+  if (!product) return {
+    title: "Produit non trouvé | Nutrition Hub",
+    description: "Produit non disponible"
+  };
+
+  const mainImage = product.images?.[0] 
+    ? urlFor(product.images[0]).width(1200).height(630).url() 
+    : '/default-product-image.jpg';
 
   return {
     title: `${product.nom} | Nutrition Hub`,
-    description: product.description?.substring(0, 160),
+    description: product.description?.substring(0, 160) || 'Découvrez ce produit de qualité supérieure',
     openGraph: {
       title: product.nom,
-      description: product.description?.substring(0, 160),
+      description: product.description?.substring(0, 160) || 'Découvrez ce produit de qualité supérieure',
       images: [
         {
           url: mainImage,
@@ -40,14 +46,16 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: product.nom,
-      description: product.description?.substring(0, 160),
+      description: product.description?.substring(0, 160) || 'Découvrez ce produit de qualité supérieure',
       images: [mainImage],
     },
   };
 }
 
 const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
-  const product = await getProductBySlug(params.slug);
+  // Properly await params first
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return notFound();
@@ -67,7 +75,7 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
     },
     offers: {
       '@type': 'Offer',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/products/${params.slug}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/products/${slug}`, // Use destructured slug
       priceCurrency: 'TND',
       price: product.prix,
       availability: product.stock > 0 ? 'InStock' : 'OutOfStock',

@@ -40,7 +40,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
       }`}
     >
       <motion.div
-        className="min-x-72 max-w-96 bg-darkColor text-white/70 h-screen p-8 border-r border-r-gray-300 flex flex-col gap-6 overflow-y-auto"
+        className="min-x-72 max-w-72 bg-darkColor text-white/70 h-screen p-8 border-r border-r-gray-300 flex flex-col gap-6 overflow-y-auto"
         ref={SideBarRef}
       >
         {/* Logo Section */}
