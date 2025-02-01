@@ -41,6 +41,7 @@
     "react-hot-toast": "^2.5.1",
     "react-intersection-observer": "^9.15.1",
     "sanity": "^3.71.0",
+    "sonner": "^1.7.4",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",

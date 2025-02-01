@@ -81,7 +81,6 @@ export type Command = {
     phone?: string;
     address?: string;
     city?: string;
-    birthdate?: string;
   };
   items?: Array<{
     product?: {

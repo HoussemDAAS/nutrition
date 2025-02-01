@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import useCartStore, { CartItem } from '@/store';
 import PriceFormater from '@/components/PriceFormater';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { client } from '@/sanity/lib/client';
+import { Toaster } from 'sonner';
 
 interface FormData {
   customer: {
@@ -20,16 +22,17 @@ interface FormData {
     email: string;
     address: string;
     city: string;
-    birthdate: string;
     phone: string;
   };
   coupon: string;
+  termsAccepted: boolean;
 }
 
 interface InputFieldProps {
   label: string;
   type?: string;
   value: string;
+  error?: string;
   onChange: (value: string) => void;
 }
 
@@ -44,6 +47,7 @@ interface OrderSummaryProps {
   couponApplied: boolean;
   items: CartItem[];
   onSubmit: () => void;
+  isValid: boolean;
 }
 
 interface ConfirmationDialogProps {
@@ -51,6 +55,12 @@ interface ConfirmationDialogProps {
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
   submitting: boolean;
+}
+
+interface TermsCheckboxProps {
+  checked: boolean;
+  error?: string;
+  onChange: (checked: boolean) => void;
 }
 
 export default function CheckoutPage() {
@@ -63,16 +73,17 @@ export default function CheckoutPage() {
       email: '',
       address: '',
       city: '',
-      birthdate: '',
       phone: '',
     },
     coupon: '',
+    termsAccepted: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
-  
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const { getGroupedItems, getTotalPrice, clearCart } = useCartStore();
   const items = getGroupedItems();
   const total = getTotalPrice();
@@ -84,10 +95,78 @@ export default function CheckoutPage() {
     }
   }, [orderSuccess]);
 
-  const handleApplyCoupon = () => setCouponApplied(true);
+  // This validateForm function will still set error messages if you need them.
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    const { firstName, lastName, email, address, city, phone } = formData.customer;
+
+    if (!firstName.trim()) newErrors.firstName = 'Le prénom est requis';
+    if (!lastName.trim()) newErrors.lastName = 'Le nom de famille est requis';
+
+    if (!email.trim()) {
+      newErrors.email = "L'email est requis";
+    } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      newErrors.email = "Format d'email invalide";
+    }
+
+    if (!address.trim()) newErrors.address = "L'adresse est requise";
+    if (!city.trim()) newErrors.city = 'La ville est requise';
+
+    if (!phone.trim()) {
+      newErrors.phone = 'Le numéro de téléphone est requis';
+    } else if (!/^\d{1,8}$/.test(phone)) {
+      newErrors.phone = 'Le numéro de téléphone doit contenir entre 1 et 8 chiffres';
+    }
+
+    if (!formData.termsAccepted) {
+      newErrors.terms = 'Vous devez accepter les termes et conditions';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleApplyCoupon = () => {
+    if (formData.coupon === 'DISCOUNT10') {
+      setCouponApplied(true);
+      toast.success('Code promo appliqué avec succès');
+    } else {
+      setCouponApplied(false);
+      toast.error('Code promo invalide');
+    }
+  };
+
+  // Compute if the form is complete.
+  const isFormComplete = useMemo(() => {
+    const { firstName, lastName, email, address, city, phone } = formData.customer;
+    return (
+      firstName.trim() !== '' &&
+      lastName.trim() !== '' &&
+      email.trim() !== '' &&
+      address.trim() !== '' &&
+      city.trim() !== '' &&
+      phone.trim() !== '' &&
+      formData.termsAccepted
+    );
+  }, [formData]);
+
+  // This function will be triggered when the form is submitted (via pressing Enter on a field)
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      toast.error('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+    setShowConfirmation(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // (Double-check in case the dialog is somehow confirmed while form is incomplete.)
+    if (!isFormComplete) {
+      toast.error('Veuillez remplir tous les champs requis et accepter les conditions.');
+      return;
+    }
     setSubmitting(true);
 
     try {
@@ -107,9 +186,10 @@ export default function CheckoutPage() {
       });
       clearCart();
       setOrderSuccess(true);
+      toast.success('Commande passée avec succès!');
     } catch (error) {
-      console.error('Order submission failed:', error);
-      alert('Échec de la soumission de la commande. Veuillez réessayer.');
+      console.error('Échec de la commande:', error);
+      toast.error('Échec de la commande. Veuillez réessayer.');
     } finally {
       setSubmitting(false);
       setShowConfirmation(false);
@@ -154,13 +234,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="relative scroll-smooth">
+      <Toaster position="top-center" richColors />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-gray-50 min-h-screen p-4 md:p-8 pt-20 md:pt-8 pb-24 md:pb-8"
       >
         <div className="max-w-4xl mx-auto">
-          <button 
+          <button
             onClick={() => router.back()}
             className="text-AccentColor hover:text-AccentColor/80 flex items-center gap-2 text-sm mb-6"
           >
@@ -169,93 +250,142 @@ export default function CheckoutPage() {
             </svg>
             Retour
           </button>
-          
-          <form onSubmit={(e) => { e.preventDefault(); setShowConfirmation(true); }}>
+
+          {/* The form itself */}
+          <form onSubmit={handleFormSubmit}>
             <div className="grid lg:grid-cols-3 md:gap-6">
               {/* Left Column */}
               <div className="lg:col-span-2 bg-white p-4 md:p-6 rounded-lg border border-gray-200 shadow-sm">
                 <h2 className="text-xl md:text-2xl font-bold mb-4">Informations de Livraison</h2>
-
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <InputField 
-                      label="Prénom *" 
+                    <InputField
+                      label="Prénom *"
                       value={formData.customer.firstName}
-                      onChange={v => setFormData({...formData, customer: {...formData.customer, firstName: v}})}
+                      onChange={v =>
+                        setFormData({
+                          ...formData,
+                          customer: { ...formData.customer, firstName: v },
+                        })
+                      }
+                      error={errors.firstName}
                     />
-                    <InputField 
-                      label="Nom *" 
+                    <InputField
+                      label="Nom *"
                       value={formData.customer.lastName}
-                      onChange={v => setFormData({...formData, customer: {...formData.customer, lastName: v}})}
+                      onChange={v =>
+                        setFormData({
+                          ...formData,
+                          customer: { ...formData.customer, lastName: v },
+                        })
+                      }
+                      error={errors.lastName}
                     />
                   </div>
 
-                  <InputField 
-                    label="Email *" 
+                  <InputField
+                    label="Email *"
                     type="email"
                     value={formData.customer.email}
-                    onChange={v => setFormData({...formData, customer: {...formData.customer, email: v}})}
+                    onChange={v =>
+                      setFormData({
+                        ...formData,
+                        customer: { ...formData.customer, email: v },
+                      })
+                    }
+                    error={errors.email}
                   />
 
-                  <InputField 
-                    label="Adresse *" 
+                  <InputField
+                    label="Adresse *"
                     value={formData.customer.address}
-                    onChange={v => setFormData({...formData, customer: {...formData.customer, address: v}})}
+                    onChange={v =>
+                      setFormData({
+                        ...formData,
+                        customer: { ...formData.customer, address: v },
+                      })
+                    }
+                    error={errors.address}
                   />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <InputField 
-                      label="Ville *" 
+                    <InputField
+                      label="Ville *"
                       value={formData.customer.city}
-                      onChange={v => setFormData({...formData, customer: {...formData.customer, city: v}})}
+                      onChange={v =>
+                        setFormData({
+                          ...formData,
+                          customer: { ...formData.customer, city: v },
+                        })
+                      }
+                      error={errors.city}
                     />
-                    <InputField 
-                      label="Date de naissance *" 
-                      type="date"
-                      value={formData.customer.birthdate}
-                      onChange={v => setFormData({...formData, customer: {...formData.customer, birthdate: v}})}
+                    <InputField
+                      label="Téléphone *"
+                      type="tel"
+                      value={formData.customer.phone}
+                      onChange={v =>
+                        setFormData({
+                          ...formData,
+                          customer: { ...formData.customer, phone: v },
+                        })
+                      }
+                      error={errors.phone}
                     />
                   </div>
 
-                  <InputField 
-                    label="Téléphone *" 
-                    type="tel"
-                    value={formData.customer.phone}
-                    onChange={v => setFormData({...formData, customer: {...formData.customer, phone: v}})}
-                  />
-
-                  <CouponSection 
+                  <CouponSection
                     coupon={formData.coupon}
-                    onChange={v => setFormData({...formData, coupon: v})}
+                    onChange={v => setFormData({ ...formData, coupon: v })}
                     onApply={handleApplyCoupon}
                   />
 
-                  <TermsCheckbox />
+                  <TermsCheckbox
+                    checked={formData.termsAccepted}
+                    onChange={(checked) =>
+                      setFormData({ ...formData, termsAccepted: checked })
+                    }
+                    error={errors.terms}
+                  />
                 </div>
               </div>
 
               {/* Desktop Order Summary */}
               <div className="lg:col-span-1 mt-6 lg:mt-0 hidden md:block">
-                <OrderSummary 
+                <OrderSummary
                   total={total}
                   couponApplied={couponApplied}
                   items={items}
-                  onSubmit={() => setShowConfirmation(true)}
+                  onSubmit={() => {
+                    if (!isFormComplete) {
+                      toast.error('Veuillez remplir tous les champs requis et accepter les conditions.');
+                    } else {
+                      setShowConfirmation(true);
+                    }
+                  }}
+                  isValid={isFormComplete}
                 />
               </div>
             </div>
 
             {/* Mobile Order Summary */}
             <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
-              <OrderSummary 
+              <OrderSummary
                 total={total}
                 couponApplied={couponApplied}
                 items={items}
-                onSubmit={() => setShowConfirmation(true)}
+                onSubmit={() => {
+                  if (!isFormComplete) {
+                    toast.error('Veuillez remplir tous les champs requis et accepter les conditions.');
+                  } else {
+                    setShowConfirmation(true);
+                  }
+                }}
+                isValid={isFormComplete}
               />
             </div>
 
-            <ConfirmationDialog 
+            <ConfirmationDialog
               open={showConfirmation}
               onClose={() => setShowConfirmation(false)}
               onSubmit={handleSubmit}
@@ -269,7 +399,8 @@ export default function CheckoutPage() {
 }
 
 // Reusable Components
-const InputField: React.FC<InputFieldProps> = ({ label, type = 'text', value, onChange }) => (
+
+const InputField: React.FC<InputFieldProps> = ({ label, type = 'text', value, onChange, error }) => (
   <div>
     <label className="block mb-2 text-sm font-medium text-gray-700">{label}</label>
     <Input
@@ -279,6 +410,11 @@ const InputField: React.FC<InputFieldProps> = ({ label, type = 'text', value, on
       onChange={(e) => onChange(e.target.value)}
       className="w-full rounded-lg focus:ring-2 focus:ring-AccentColor text-sm md:text-base"
     />
+    {error && (
+      <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 text-sm mt-1">
+        {error}
+      </motion.p>
+    )}
   </div>
 );
 
@@ -296,10 +432,7 @@ const CouponSection: React.FC<CouponSectionProps> = ({ coupon, onChange, onApply
             onChange={(e) => onChange(e.target.value)}
             className="flex-1 focus:ring-2 focus:ring-AccentColor text-sm"
           />
-          <Button 
-            onClick={onApply} 
-            className="bg-AccentColor hover:bg-AccentColor/90 text-sm"
-          >
+          <Button onClick={onApply} className="bg-AccentColor hover:bg-AccentColor/90 text-sm">
             Appliquer
           </Button>
         </div>
@@ -308,20 +441,29 @@ const CouponSection: React.FC<CouponSectionProps> = ({ coupon, onChange, onApply
   </Accordion>
 );
 
-const TermsCheckbox = () => (
-  <div className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg">
-    <Checkbox
-      id="terms"
-      required
-      className="mt-1 focus:ring-2 focus:ring-AccentColor"
-    />
-    <label htmlFor="terms" className="text-sm text-gray-600">
-      J&apos;accepte les termes et conditions *
-    </label>
+const TermsCheckbox: React.FC<TermsCheckboxProps> = ({ checked, error, onChange }) => (
+  <div className="flex flex-col">
+    <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
+      <Checkbox
+        id="terms"
+        checked={checked}
+        // Use onCheckedChange instead of onChange for proper behavior.
+        onCheckedChange={(checked) => onChange(!!checked)}
+        className="mt-1 focus:ring-2 focus:ring-AccentColor"
+      />
+      <label htmlFor="terms" className="text-sm text-gray-600">
+        J&apos;accepte les termes et conditions *
+      </label>
+    </div>
+    {error && (
+      <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-500 text-sm mt-1">
+        {error}
+      </motion.p>
+    )}
   </div>
 );
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({ total, couponApplied, items, onSubmit }) => (
+const OrderSummary: React.FC<OrderSummaryProps> = ({ total, couponApplied, items, onSubmit, isValid }) => (
   <div className="bg-white p-4 md:p-6 rounded-lg border border-gray-200 shadow-sm">
     <h2 className="text-lg md:text-xl font-semibold mb-3">Récapitulatif</h2>
     <div className="space-y-2">
@@ -341,8 +483,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ total, couponApplied, items
         <PriceFormater amount={couponApplied ? total * 0.9 : total} />
       </div>
       <Button
-        type="submit"
-        disabled={items.length === 0}
+        type="button"
+        disabled={items.length === 0 || !isValid}
         className="w-full mt-3 bg-AccentColor hover:bg-AccentColor/90 text-sm md:text-base"
         onClick={onSubmit}
       >
@@ -361,18 +503,10 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ open, onClose, 
       <div className="space-y-4">
         <p className="text-gray-600">Êtes-vous sûr de vouloir passer cette commande?</p>
         <div className="flex justify-end gap-3">
-          <Button 
-            variant="outline" 
-            onClick={onClose} 
-            className="px-4 py-2 text-sm md:text-base"
-          >
+          <Button variant="outline" onClick={onClose} className="px-4 py-2 text-sm md:text-base">
             Annuler
           </Button>
-          <Button 
-            onClick={onSubmit} 
-            disabled={submitting}
-            className="bg-AccentColor hover:bg-AccentColor/90 px-4 py-2 text-sm md:text-base"
-          >
+          <Button onClick={onSubmit} disabled={submitting} className="bg-AccentColor hover:bg-AccentColor/90 px-4 py-2 text-sm md:text-base">
             {submitting ? 'Traitement...' : 'Confirmer'}
           </Button>
         </div>

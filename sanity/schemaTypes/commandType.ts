@@ -46,12 +46,12 @@ export const commandType = defineType({
           title: 'City',
           validation: Rule => Rule.required()
         }),
-        defineField({
-          name: 'birthdate',
-          type: 'date',
-          title: 'Birthdate',
-          validation: Rule => Rule.required()
-        }),
+        // defineField({
+        //   name: 'birthdate',
+        //   type: 'date',
+        //   title: 'Birthdate',
+        //   validation: Rule => Rule.required()
+        // }),
       ]
     }),
     defineField({

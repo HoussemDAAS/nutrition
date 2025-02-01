@@ -406,13 +406,6 @@
                 "type": "string"
               },
               "optional": true
-            },
-            "birthdate": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
             }
           }
         },
