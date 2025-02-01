@@ -49,55 +49,45 @@ export const productType = defineType({
         {
           type: "block",
           styles: [
-            {title: "Normal", value: "normal"},
-            {title: "H2", value: "h2"},
-            {title: "H3", value: "h3"},
-            {title: "Quote", value: "blockquote"}
-          ],
-          lists: [
-            {title: "Bullet", value: "bullet"},
-            {title: "Numbered", value: "number"}
+            { title: "Normal", value: "normal" },
+            { title: "H2", value: "h2" },
+            { title: "H3", value: "h3" },
+            { title: "Quote", value: "blockquote" }
           ],
           marks: {
             decorators: [
-              {title: "Strong", value: "strong"},
-              {title: "Emphasis", value: "em"}
+              { title: "Strong", value: "strong" },
+              { title: "Emphasis", value: "em" }
             ],
             annotations: [
               {
                 name: "link",
                 type: "object",
                 title: "URL",
-                fields: [
-                  {
-                    title: "URL",
-                    name: "href",
-                    type: "url"
-                  }
-                ]
+                fields: [{ name: "href", type: "url" }]
               }
             ]
           }
         },
-        {
-          type: "image",
-          options: { hotspot: true },
+        defineField({
+          name: 'image',
+          type: 'image',
+          title: 'Image',
           fields: [
             defineField({
-              name: "alt",
-              title: "Alternative Text",
-              type: "string",
-           
+              name: 'alt',
+              type: 'string',
+              title: 'Alternative Text',
             }),
             defineField({
-              name: "caption",
-              title: "Caption",
-              type: "string"
+              name: 'caption',
+              type: 'string',
+              title: 'Caption',
             })
           ]
-        }
+        })
       ],
-      validation: (Rule) => Rule.required(),
+      validation: Rule => Rule.required()
     }),
     defineField({
       name: "prix",
