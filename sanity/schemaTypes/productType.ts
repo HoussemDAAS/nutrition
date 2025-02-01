@@ -44,7 +44,59 @@ export const productType = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "string",
+      type: "array",
+      of: [
+        {
+          type: "block",
+          styles: [
+            {title: "Normal", value: "normal"},
+            {title: "H2", value: "h2"},
+            {title: "H3", value: "h3"},
+            {title: "Quote", value: "blockquote"}
+          ],
+          lists: [
+            {title: "Bullet", value: "bullet"},
+            {title: "Numbered", value: "number"}
+          ],
+          marks: {
+            decorators: [
+              {title: "Strong", value: "strong"},
+              {title: "Emphasis", value: "em"}
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "URL",
+                fields: [
+                  {
+                    title: "URL",
+                    name: "href",
+                    type: "url"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+           
+            }),
+            defineField({
+              name: "caption",
+              title: "Caption",
+              type: "string"
+            })
+          ]
+        }
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({

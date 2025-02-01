@@ -2,11 +2,15 @@ import AddToCardButton from "@/components/AddToCardButton";
 import Container from "@/components/Container";
 import ImageView from "@/components/ImageView";
 import PriceView from "@/components/PriceView";
+import Image from "next/image";
 import ProductCaracteristique from "@/components/ProductCaracteristique";
 import { getProductBySlug } from "@/helpers/query";
+
 import { BoxIcon, ListOrderedIcon, LucideMessageCircleQuestion, Share2Icon } from "lucide-react";
 import { notFound } from "next/navigation";
 import React from "react";
+import { PortableTextComponent } from "@/components/PortableTextComponent";
+import { PortableText } from "next-sanity";
 
 const SingleProductPage = async ({
   params,
@@ -27,6 +31,17 @@ const SingleProductPage = async ({
           <h2 className="text-3xl md:text-4xl font-bold mb-2">
             {product?.nom}
           </h2>
+          {product.brand && product.brand[0]?.image && (
+            <div className="mb-3">
+              <Image
+                src={product.brand[0].image.asset.url}
+                alt={product.brand[0].name || "Brand logo"}
+                width={product.brand[0].image.asset.metadata?.dimensions?.width || 80}
+                height={product.brand[0].image.asset.metadata?.dimensions?.height || 40}
+                className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
+              />
+            </div>
+          )}
           <PriceView
             price={product?.prix}
             discount={product?.remise}
@@ -79,9 +94,14 @@ const SingleProductPage = async ({
     <p className="text-sm text-gray-500">Découvrez nos conseils pour une nutrition sportive efficace</p>
   </div>
 </div>
-<div className="mt-5 border-t border-gray-200 pt-5 text-sm space-y-2">
-  <h3 className="text-xl font-semibold mt-5">Description :</h3>
-  <p className="text-sm text-gray-600">{product?.description}</p>
+<div className="mt-5 border-t border-gray-200 pt-5">
+  <h3 className="text-xl font-semibold mb-4">Description :</h3>
+  <div className="prose max-w-none text-gray-600">
+  <PortableText
+    value={product.description}
+    components={PortableTextComponent}
+  />
+  </div>
 </div>
 
 

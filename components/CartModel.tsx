@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
   useEffect(() => {
@@ -48,13 +49,21 @@ const CartModel = ({ onClose }: CartModelProps) => {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [onClose]);
-
+  const mobileCartVariants = {
+    hidden: { x: "100%", opacity: 0 },
+    visible: { x: "0%", opacity: 1, transition: { type: "tween", duration: 0.3 } },
+    exit: { x: "100%", opacity: 0, transition: { type: "tween", duration: 0.4, ease: "easeInOut" } },
+  };
   return (
     <>
       {/* Mobile Cart */}
-      <div
+      <motion.div
         ref={mobileCartRef}
-        className="fixed inset-y-0 right-0 z-50 bg-white shadow-xl md:hidden w-[85vw] max-w-sm"
+        className="fixed inset-y-0 right-0 z-50 bg-white shadow-xl md:hidden w-[85vw] max-w-sm hoverEffect"
+        variants={mobileCartVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
       >
         <div className="h-full flex flex-col p-4 border-l border-gray-200">
           <div className="flex justify-between items-center pb-3 mb-3 border-b">
@@ -142,7 +151,8 @@ const CartModel = ({ onClose }: CartModelProps) => {
             </>
           )}
         </div>
-      </div>
+      </motion.div>
+
 
       {/* Desktop Cart */}
       <div

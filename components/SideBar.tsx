@@ -185,18 +185,21 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
               >
                 {/* Primary Nav Links */}
                 <div className="flex flex-col">
-                  {headerData.map((item, index) => (
-                    <Link
-                      key={index}
-                      href={item.href}
-                      className={`block py-4 px-4 hover:bg-gray-200 rounded-md text-sm font-semibold border-b border-gray-200 ${
-                        pathname === item.href ? "text-AccentColor" : "text-black/80"
-                      } uppercase`}
-                      onClick={onClose}
-                    >
-                      {item.title}
-                    </Link>
-                  ))}
+                {headerData.map((item, index) => {
+                  if (item.title === "Brands" || item.title === "Catégories") return null;
+                  return (
+                  <Link
+                    key={index}
+                    href={item.href}
+                    className={`block py-4 px-4 hover:bg-gray-200 rounded-md text-sm font-semibold border-b border-gray-200 ${
+                    pathname === item.href ? "text-AccentColor" : "text-black/80"
+                    } uppercase`}
+                    onClick={onClose}
+                  >
+                    {item.title}
+                  </Link>
+                  );
+                })}
                 </div>
 
                 {/* Brands Accordion */}

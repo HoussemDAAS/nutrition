@@ -46,7 +46,7 @@ const useCartStore = create<CartState>()(
             return { items: [...state.items, { product, quantity: 1 }] };
           }
         });
-        get().openCart();  // add product to cart
+        // get().openCart();  // add product to cart
       },
       removeItem: (productId) => {
         set((state) => ({

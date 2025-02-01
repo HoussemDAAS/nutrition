@@ -1,18 +1,55 @@
 import { sanityFetch } from "@/sanity/lib/live";
 import { defineQuery } from "next-sanity"
 
-export const getProductBySlug = async (slug: string) => {
-
-const PRODUCT_BY_SLUG_Query= defineQuery(`*[_type == 'produit' && slug.current == $slug] | order(nom asc)[0]`);
- try {
-    const product = await sanityFetch({
-        query: PRODUCT_BY_SLUG_Query,
-    params: { slug },});
-    return product?.data || null;
- } catch (error) {
-    console.error('Error fetching product by slug:', error);
- }
-}
+export const getProductBySlug = async (slug: string) => {  const PRODUCT_BY_SLUG_Query = defineQuery(`
+   *[_type == "produit" && slug.current == $slug][0] {
+     ...,
+     description[] {
+        ...,
+        _type == "image" => {
+          ...,
+          asset->
+        }
+      },
+     images[]{
+       ...,
+       asset->
+     },
+     categorie[]->{
+       _id,
+       name,
+       "slug": slug.current
+     },
+     brand[]->{
+       _id,
+       name,
+       "slug": slug.current,
+       image {
+         asset->{
+           url,
+           metadata {
+             dimensions
+           }
+         },
+         alt
+       }
+     },
+     "slug": slug.current
+   }
+ `);
+ 
+   try {
+     const product = await sanityFetch({
+       query: PRODUCT_BY_SLUG_Query,
+       params: { slug },
+     });
+     
+     return product?.data || null;
+   } catch (error) {
+     console.error('Error fetching product by slug:', error);
+     return null;
+   }
+ };
 export const getProductCategorieBySlug = async (slug: string) => {
    const CATEGORIE_BY_SLUG_QUERY=defineQuery(`*[_type == 'categorie' && slug.current == $slug] | order(nom asc)[0]`);
    try {
