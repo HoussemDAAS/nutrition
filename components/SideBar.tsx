@@ -1,19 +1,23 @@
 "use client";
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
-
+import { usePathname } from "next/navigation";
+import Image from "next/image";
 import SocialMedia from "./SocialMedia";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import Image from "next/image";
 import { Brand, Category } from "@/sanity.types";
+import { headerData } from "@/constants"; // Array of your primary nav links (e.g. Accueil, Promotion, etc)
 
-// Helper function: group categories by the first word (lowercased)
+// ----------------------
+// Helper: Group Categories
+// ----------------------
 const groupCategories = (categories: Category[]) => {
   const groups: Record<string, Category[]> = {};
   categories.forEach((cat) => {
     if (!cat?.title) return;
+    // Use the first word as the group key (all lowercase)
     const key = cat.title.split(" ")[0].toLowerCase();
     if (!groups[key]) groups[key] = [];
     groups[key].push(cat);
@@ -21,6 +25,9 @@ const groupCategories = (categories: Category[]) => {
   return groups;
 };
 
+// ----------------------
+// SideBar Props
+// ----------------------
 interface SideBarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,135 +35,202 @@ interface SideBarProps {
   brands: Brand[];
 }
 
+// ----------------------
+// SideBar Component
+// ----------------------
 const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }) => {
-
+  const pathname = usePathname();
   const sidebarRef = useOutsideClick<HTMLDivElement>(onClose);
 
-  // Tab state: "categories" or "brands"
-  const [activeTab, setActiveTab] = useState<"categories" | "brands">("categories");
+  // Tab state: "categories" (default) or "liens" (renamed "Menu")
+  const [activeTab, setActiveTab] = useState<"categories" | "liens">("categories");
 
-  // For grouped categories, keep track of open/closed state per group key.
-  const [openGroupKeys, setOpenGroupKeys] = useState<Record<string, boolean>>({});
+  // For grouped categories, track each group’s open state.
+  const [openGroup, setOpenGroup] = useState<Record<string, boolean>>({});
+
+  // For the brands accordion (inside the Menu tab), track its open state.
+  const [isBrandOpen, setBrandOpen] = useState(true);
 
   const toggleGroup = (groupKey: string) => {
-    setOpenGroupKeys((prev) => ({
+    setOpenGroup((prev) => ({
       ...prev,
       [groupKey]: !prev[groupKey],
     }));
   };
 
-  // Group categories by first word
-  const groupedCategories = groupCategories(categories);
+  // Group categories using the helper
+  const grouped = groupCategories(categories);
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 bg-darkColor/50 shadow-xl transition-transform duration-500 ${
+      className={`fixed inset-y-0 left-0 z-50 bg-white transition-transform duration-500 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <motion.div
-        ref={sidebarRef}
-        className="min-w-[18rem] max-w-[18rem] bg-darkColor text-white h-screen p-6 flex flex-col overflow-y-auto"
-      >
+      <motion.div ref={sidebarRef} className="w-72 bg-white h-screen flex flex-col">
         {/* Header: Logo and Close Button */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between p-4 shadow-b">
           <Link href="/" onClick={onClose}>
             <Image
               src="/logo.png"
               alt="Logo"
               width={140}
               height={140}
-              className="w-32 h-auto object-contain"
+              className="w-28 h-auto object-contain"
             />
           </Link>
-          <button onClick={onClose} className="text-white hover:text-red-500">
+          <button onClick={onClose} className="hover:text-red-400">
             <X size={28} />
           </button>
         </div>
 
-        {/* Tabs for Categories and Brands */}
-        <div className="flex border-b border-gray-600 mb-4">
+        {/* Tabs */}
+        <div className="flex bg-gray-100">
           <button
             onClick={() => setActiveTab("categories")}
-            className={`flex-1 py-2 text-center text-lg font-semibold ${
-              activeTab === "categories" ? "border-b-2 border-white" : "text-gray-400"
+            className={`flex-1 py-4 text-center text-sm font-medium uppercase ${
+              activeTab === "categories"
+                ? "border-b-2 border-darkColor text-AccentColor bg-gray-200"
+                : "text-black"
             }`}
           >
             Catégories
           </button>
           <button
-            onClick={() => setActiveTab("brands")}
-            className={`flex-1 py-2 text-center text-lg font-semibold ${
-              activeTab === "brands" ? "border-b-2 border-white" : "text-gray-400"
+            onClick={() => setActiveTab("liens")}
+            className={`flex-1 py-4 text-center text-sm font-medium uppercase ${
+              activeTab === "liens"
+                ? "border-b-2 border-darkColor text-AccentColor bg-gray-200"
+                : "text-black"
             }`}
           >
-            Marques
+            Menu
           </button>
         </div>
 
-        {/* Content Area */}
-        {activeTab === "categories" && (
-          <div className="space-y-4">
-            {Object.entries(groupedCategories).map(([groupKey, groupCats]) => {
-              if (groupCats.length > 1) {
-                const isGroupOpen = openGroupKeys[groupKey] ?? true; // default open
-                return (
-                  <div key={groupKey} className="flex flex-col">
-                    <button
-                      onClick={() => toggleGroup(groupKey)}
-                      className="flex items-center justify-between w-full py-2 px-4 bg-gray-700 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
-                    >
-                      <span>{groupKey.charAt(0).toUpperCase() + groupKey.slice(1)}</span>
-                      {isGroupOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
-                    {isGroupOpen &&
-                      groupCats.map((cat, idx) => (
-                        <Link
-                          key={cat?._id || idx}
-                          href={`/category/${cat?.slug?.current}`}
-                          className="block py-2 pl-8 pr-4 hover:bg-gray-600 rounded-lg text-sm"
-                          onClick={onClose}
-                        >
-                          {cat?.title}
-                        </Link>
-                      ))}
-                  </div>
-                );
-              } else {
-                // If there is only one category in this group, render it as a simple link.
-                const cat = groupCats[0];
-                return (
-                  <Link
-                    key={cat?._id || groupKey}
-                    href={`/category/${cat?.slug?.current}`}
-                    className="block py-2 px-4 hover:bg-gray-600 rounded-lg text-sm font-medium"
-                    onClick={onClose}
-                  >
-                    {cat?.title}
-                  </Link>
-                );
-              }
-            })}
-          </div>
-        )}
-
-        {activeTab === "brands" && (
-          <div className="space-y-4">
-            {brands.map((brand, idx) => (
-              <Link
-                key={brand?._id || idx}
-                href={`/brand/${brand?.slug?.current}`}
-                className="block py-2 px-4 hover:bg-gray-600 rounded-lg text-sm font-medium"
-                onClick={onClose}
+        {/* Content Area with Smooth Transition */}
+        <div className="flex-1 overflow-y-auto py-4">
+          <AnimatePresence mode="wait">
+            {activeTab === "categories" && (
+              <motion.div
+                key="categories"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
               >
-                {brand?.title}
-              </Link>
-            ))}
-          </div>
-        )}
+                {Object.entries(grouped).map(([groupKey, cats]) => {
+                  // If more than one category in this group, render a collapsible group.
+                  if (cats.length > 1) {
+                    const isOpenGroup = openGroup[groupKey] ?? true; // default open
+                    return (
+                      <div key={groupKey} className="flex flex-col">
+                        <button
+                          onClick={() => toggleGroup(groupKey)}
+                          className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200 hover:bg-gray-300 transition-colors"
+                        >
+                          <span className="text-darkColor text-sm font-medium uppercase">
+                            {groupKey.charAt(0).toUpperCase() + groupKey.slice(1)}
+                          </span>
+                          {isOpenGroup ? (
+                            <ChevronUp size={16} className="border-l pl-1 border-gray-200" />
+                          ) : (
+                            <ChevronDown size={16} className="border-l pl-1 border-gray-200" />
+                          )}
+                        </button>
+                        {isOpenGroup &&
+                          cats.map((cat, idx) => (
+                            <Link
+                              key={cat?._id || idx}
+                              href={`/category/${cat?.slug?.current}`}
+                              className="block py-2 pl-10 pr-4 hover:bg-gray-200 text-sm font-medium border-b border-gray-200 uppercase"
+                              onClick={onClose}
+                            >
+                              {cat?.title}
+                            </Link>
+                          ))}
+                      </div>
+                    );
+                  } else {
+                    // Single category group: show a simple link.
+                    const cat = cats[0];
+                    return (
+                      <Link
+                        key={cat?._id || groupKey}
+                        href={`/category/${cat?.slug?.current}`}
+                        className="block py-2 px-4 hover:bg-gray-200 text-darkColor text-sm font-medium border-b border-gray-200 uppercase"
+                        onClick={onClose}
+                      >
+                        {cat?.title}
+                      </Link>
+                    );
+                  }
+                })}
+              </motion.div>
+            )}
 
-        {/* Social Media Section at the Bottom */}
-        <div className="mt-auto pt-6">
+            {activeTab === "liens" && (
+              <motion.div
+                key="liens"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
+              >
+                {/* Primary Nav Links */}
+                <div className="flex flex-col">
+                  {headerData.map((item, index) => (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      className={`block py-2 px-4 hover:bg-gray-200 rounded-md text-sm font-medium border-b border-gray-200 ${
+                        pathname === item.href ? "text-AccentColor" : "text-darkColor"
+                      } uppercase`}
+                      onClick={onClose}
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Brands Accordion - Without Divider & Positioned directly below primary nav links */}
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => setBrandOpen((prev) => !prev)}
+                    className={`flex items-center justify-between w-full px-4 py-2 border-b border-gray-200 transition-colors ${
+                      isBrandOpen
+                        ? "bg-red-500 border-l-4 border-red-500 text-white"
+                        : "hover:bg-gray-300 text-darkColor"
+                    }`}
+                  >
+                    <span className="text-sm font-medium uppercase">Marques</span>
+                    {isBrandOpen ? (
+                      <ChevronUp size={16} className="border-l pl-1 border-gray-200" />
+                    ) : (
+                      <ChevronDown size={16} className="border-l pl-1 border-gray-200" />
+                    )}
+                  </button>
+                  {isBrandOpen &&
+                    brands.map((brand, idx) => (
+                      <Link
+                        key={brand?._id || idx}
+                        href={`/brand/${brand?.slug?.current}`}
+                        className="block py-2 px-4 hover:bg-gray-200 rounded-md text-sm font-medium border-b border-gray-200 uppercase"
+                        onClick={onClose}
+                      >
+                        {brand?.title}
+                      </Link>
+                    ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Footer: Social Media */}
+        <div className="p-4 border-t border-gray-700">
           <SocialMedia />
         </div>
       </motion.div>
