@@ -118,7 +118,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-4"
+                className=""
               >
                 {Object.entries(grouped).map(([groupKey, cats]) => {
                   // If more than one category in this group, render a collapsible group.
@@ -128,9 +128,13 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                       <div key={groupKey} className="flex flex-col">
                         <button
                           onClick={() => toggleGroup(groupKey)}
-                          className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200 hover:bg-gray-300 transition-colors"
+                          className={`flex items-center justify-between w-full px-4 py-4 border-b border-gray-200 transition-colors ${
+                            isOpenGroup
+                              ? "bg-red-500 border-l-4 border-red-500 text-white"
+                              : "hover:bg-gray-300 text-black/80"
+                          }`}
                         >
-                          <span className="text-darkColor text-sm font-medium uppercase">
+                          <span className="text-sm font-semibold uppercase ">
                             {groupKey.charAt(0).toUpperCase() + groupKey.slice(1)}
                           </span>
                           {isOpenGroup ? (
@@ -144,7 +148,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                             <Link
                               key={cat?._id || idx}
                               href={`/category/${cat?.slug?.current}`}
-                              className="block py-2 pl-10 pr-4 hover:bg-gray-200 text-sm font-medium border-b border-gray-200 uppercase"
+                              className="block py-2 pl-12 pr-4 hover:bg-gray-200 text-sm font-medium border-b border-gray-200 uppercase"
                               onClick={onClose}
                             >
                               {cat?.title}
@@ -159,7 +163,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                       <Link
                         key={cat?._id || groupKey}
                         href={`/category/${cat?.slug?.current}`}
-                        className="block py-2 px-4 hover:bg-gray-200 text-darkColor text-sm font-medium border-b border-gray-200 uppercase"
+                        className="block py-4 px-4 hover:bg-gray-200 text-black/80 text-sm font-semibold border-b border-gray-200 uppercase"
                         onClick={onClose}
                       >
                         {cat?.title}
@@ -177,7 +181,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-4"
+                className=""
               >
                 {/* Primary Nav Links */}
                 <div className="flex flex-col">
@@ -185,8 +189,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                     <Link
                       key={index}
                       href={item.href}
-                      className={`block py-2 px-4 hover:bg-gray-200 rounded-md text-sm font-medium border-b border-gray-200 ${
-                        pathname === item.href ? "text-AccentColor" : "text-darkColor"
+                      className={`block py-4 px-4 hover:bg-gray-200 rounded-md text-sm font-semibold border-b border-gray-200 ${
+                        pathname === item.href ? "text-AccentColor" : "text-black/80"
                       } uppercase`}
                       onClick={onClose}
                     >
@@ -195,17 +199,17 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                   ))}
                 </div>
 
-                {/* Brands Accordion - Without Divider & Positioned directly below primary nav links */}
+                {/* Brands Accordion */}
                 <div className="flex flex-col">
                   <button
                     onClick={() => setBrandOpen((prev) => !prev)}
-                    className={`flex items-center justify-between w-full px-4 py-2 border-b border-gray-200 transition-colors ${
+                    className={`flex items-center justify-between w-full px-4 py-4 border-b border-gray-200 transition-colors ${
                       isBrandOpen
                         ? "bg-red-500 border-l-4 border-red-500 text-white"
-                        : "hover:bg-gray-300 text-darkColor"
+                        : "hover:bg-gray-300 text-black/80"
                     }`}
                   >
-                    <span className="text-sm font-medium uppercase">Marques</span>
+                    <span className="text-sm font-semibold uppercase">Marques</span>
                     {isBrandOpen ? (
                       <ChevronUp size={16} className="border-l pl-1 border-gray-200" />
                     ) : (
@@ -230,7 +234,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
         </div>
 
         {/* Footer: Social Media */}
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4">
           <SocialMedia />
         </div>
       </motion.div>
