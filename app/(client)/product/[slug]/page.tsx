@@ -74,7 +74,7 @@ const SingleProductPage = async ({
         <div className="flex items-center gap-2.5 lg:gap-5">
           <AddToCardButton
             product={product}
-            className="bg-darkColor/80 text-white  hover:bg-darkColor hoverEffect"
+            className="bg-AccentColor/80 text-white  hover:bg-AccentColor hoverEffect border-AccentColor/30 "
           />
           {/* <button className=" border-2 border-darkColor/30 text-darkColor/60 px-2.5 py-1.5 rounded-md  hover:bg-darkColor hover:border-darkColor hover:text-white hoverEffect">
             <Heart className="w-5 h-5" />

@@ -97,7 +97,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
         <h2 className='font-semibold line-clamp-1'>{product?.nom}</h2>
         <p className='line-clamp-1 text-sm text-gray-500'>{product?.intro}</p>
         <PriceView price={product?.prix} discount={product?.remise} className='text-sm' />
-        <AddToCardButton product={product} />
+        <AddToCardButton product={product} className='text-AccentColor hover:bg-AccentColor' />
       </div>
     </div>
   );

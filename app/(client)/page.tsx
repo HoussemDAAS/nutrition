@@ -1,4 +1,5 @@
 import Container from "@/components/Container";
+import Gamme from "@/components/Gamme";
 import InfinitePromoBanner from "@/components/InfinitePromoBanner";
 import LogoCarousel from "@/components/LogoCarrousel";
 import ProductCarousel from "@/components/ProductCarousel";
@@ -27,7 +28,10 @@ export default async function Home() {
       </section>
 
       <Container className="py-10">
-   
+      <section>
+          <TitleSection title="Nos Gammes" />
+          <Gamme />
+        </section>
         <section>
           <TitleSection title={"Nouveau Produits"} />
         </section>

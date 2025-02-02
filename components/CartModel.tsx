@@ -218,10 +218,10 @@ const CartModel = ({ onClose }: CartModelProps) => {
               </div>
               <div className="flex justify-between text-sm gap-3 mt-3">
                 <Link href={"/cart"} className="w-full">
-                  <Button className="w-full">View Cart</Button>
+                  <Button className="w-full">Voir le panier</Button>
                 </Link>
                 <Link href={"/checkout"} className="w-full">
-                  <Button className="w-full bg-AccentColor">Checkout</Button>
+                  <Button className="w-full bg-AccentColor">Commander</Button>
                 </Link>
               </div>
             </div>
