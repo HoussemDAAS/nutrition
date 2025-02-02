@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { Produit } from '@/sanity.types';
 import Link from 'next/link';
 import React, { useState } from 'react';

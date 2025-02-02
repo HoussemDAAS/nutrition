@@ -1,15 +1,14 @@
+// components/ImageView.tsx
 "use client";
-import {
-  internalGroqTypeReferenceTo,
-  SanityImageCrop,
-  SanityImageHotspot,
-} from "@/sanity.types";
-import React from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import { useState } from "react";
+import { internalGroqTypeReferenceTo, SanityImageCrop, SanityImageHotspot } from "@/sanity.types";
+
+
 interface ImageViewProps {
-  images: Array<{
+images: Array<{
     asset?: {
       _ref: string;
       _type: "reference";
@@ -21,43 +20,81 @@ interface ImageViewProps {
     _type: "image";
     _key: string;
   }>;
+  productName: string;
 }
-const ImageView = ({ images = [] }: ImageViewProps) => {
-  const [selectedImage, setSelectedImage] = React.useState(images[0]);
+
+const ImageView = ({ images = [], productName }: ImageViewProps) => {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [zoomStyle, setZoomStyle] = useState({ backgroundPosition: '0% 0%' });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomStyle({ backgroundPosition: `${x}% ${y}%` });
+  };
+
   return (
-    <div className="w-full md:w-1/2 space-y-2 md:space-y-4">
-      <AnimatePresence mode="wait">
-        <motion.div
-        key={selectedImage?._key}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-    
-        className="w-full max-h-[550px] min-h-[450px] border border-darkColor/10 rounded-md group overflow-hidden">
-          <Image
-            src={urlFor(selectedImage).url()}
-            width={700}
-            height={700}
-            alt="Product Image"
-            priority
-            className="w-full h-96 max-h-[500px] min-h-[500px] object-contain group-hover:scale-105 transition-all duration-500 rounded-md"
-          />
-        </motion.div>
-      </AnimatePresence>
-      <div className="grid grid-cols-6 gap-2 h-20 md:h-28">
-        {images.map((image) => (
-          <button
-            key={image?._key}
-            onClick={() => setSelectedImage(image)}
-            className={`border rounded-md overflow-hidden ${selectedImage?._key === image?._key ? "ring-2 ring-darkColor" : "border-gray-200"}`}
+    <div className="w-full md:w-1/2 space-y-4">
+      <div 
+        className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setZoomStyle({ backgroundPosition: '0% 0%' })}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedImage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="relative w-full h-full"
           >
             <Image
-              src={urlFor(image).url()}
-              width={100}
-              height={100}
-              alt="Product Image"
-              className="w-full h-auto object-contain"
+              src={urlFor(images[selectedImage]).width(800).format('webp').url()}
+              alt={productName?.toLowerCase() || 'Product Image'}
+              fill
+              className="object-contain"
+              quality={95}
+              priority
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+            
+            {/* Zoom overlay */}
+            <div 
+              className="hidden md:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{
+                backgroundImage: `url(${urlFor(images[selectedImage]).width(1200).format('webp').url()})`,
+                ...zoomStyle,
+                backgroundSize: '150%',
+                backgroundRepeat: 'no-repeat',
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="absolute bottom-2 right-2 bg-white/90 px-2 py-1 rounded-full text-sm flex items-center gap-1">
+          <span>Survoler pour zoomer</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-5 gap-2">
+        {images.map((image, index) => (
+          <button
+            key={image._key}
+            onClick={() => setSelectedImage(index)}
+            className={`aspect-square relative rounded-lg overflow-hidden border-2 transition-all ${
+              selectedImage === index ? 'border-primary' : 'border-transparent'
+            }`}
+          >
+            <Image
+              src={urlFor(image).width(200).format('webp').url()}
+              alt=""
+              fill
+              className="object-cover"
+              loading="lazy"
+              quality={70}
+              sizes="(max-width: 768px) 20vw, 8vw"
             />
           </button>
         ))}
@@ -65,82 +102,5 @@ const ImageView = ({ images = [] }: ImageViewProps) => {
     </div>
   );
 };
-// "use client";
-// import React from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import Image from "next/image";
-// import { urlFor } from "@/sanity/lib/image";
-// import { internalGroqTypeReferenceTo, SanityImageCrop, SanityImageHotspot } from "@/sanity.types";
-
-// interface ImageViewProps {
-//   images: Array<{
-//     asset?: {
-//       _ref: string;
-//       _type: "reference";
-//       _weak?: boolean;
-//       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-//     };
-//     hotspot?: SanityImageHotspot;
-//     crop?: SanityImageCrop;
-//     _type: "image";
-//     _key: string;
-//   }>;
-//   productName: string;
-//   className?: string;
-// }
-
-// const ImageView = ({ images = [], productName, className }: ImageViewProps) => {
-//   const [selectedImage, setSelectedImage] = React.useState(images[0]);
-
-//   return (
-//     <div className={`${className} space-y-2 md:space-3`}>
-//       <AnimatePresence mode="wait">
-//         <motion.div
-//           key={selectedImage?._key}
-//           initial={{ opacity: 0 }}
-//           animate={{ opacity: 1 }}
-//           exit={{ opacity: 0 }}
-//           transition={{ duration: 0.2 }}
-//           className="relative w-full aspect-[4/3] border border-gray-200 rounded-lg overflow-hidden"
-//         >
-//           <Image
-//             src={urlFor(selectedImage).width(600).format('webp').url()}
-//             fill
-//             alt={productName}
-//             priority
-//             sizes="(max-width: 768px) 90vw, 40vw"
-//             className="object-contain"
-//             quality={80}
-//           />
-//         </motion.div>
-//       </AnimatePresence>
-
-//       <div className="grid grid-cols-4 md:grid-cols-5 gap-1.5">
-//         {images.map((image) => (
-//           <button
-//             key={image?._key}
-//             onClick={() => setSelectedImage(image)}
-//             className={`relative aspect-square border rounded-md overflow-hidden ${
-//               selectedImage?._key === image?._key 
-//                 ? "ring-1.5 ring-primary" 
-//                 : "border-gray-200"
-//             }`}
-//             aria-label={`View ${productName} - Image ${images.indexOf(image) + 1}`}
-//           >
-//             <Image
-//               src={urlFor(image).width(150).format('webp').url()}
-//               fill
-//               alt=""
-//               loading="lazy"
-//               className="object-cover"
-//               sizes="(max-width: 768px) 20vw, 8vw"
-//               quality={60}
-//             />
-//           </button>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
 
 export default ImageView;

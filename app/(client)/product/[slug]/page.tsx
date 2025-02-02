@@ -8,10 +8,12 @@ import { getProductBySlug } from "@/helpers/query";
 
 import { BoxIcon, ListOrderedIcon, LucideMessageCircleQuestion, Share2Icon } from "lucide-react";
 import { notFound } from "next/navigation";
-import React from "react";
+// import React, { useState } from "react";
 
 import { PortableText } from '@portabletext/react'
 import SanityImage from "@/components/SanityImage";
+import SimilarProducts from "@/components/SimilarProducts";
+// import ProductVariants from "@/components/ProductVariants";
 
 
 
@@ -23,13 +25,15 @@ const SingleProductPage = async ({
   const { slug } = await params;
     const product = await getProductBySlug(slug);
     // console.log('Image asset:', product.description.find((item: { _type: string; }) => item._type === 'image')?.asset)
-
+    // const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]);
   if (!product) {
     return notFound();
   }
   return (
-    <Container className="py-10 flex flex-col md:flex-row gap-8 md:gap-12">
-      {product?.images && <ImageView images={product?.images} />}
+    <>
+    <Container className="py-10 flex flex-col gap-8 ">
+      <div className="py-10 flex flex-col md:flex-row gap-8 md:gap-12">
+      {product?.images && <ImageView images={product?.images} productName={product?.noms}  />}
       <div className="w-full md:w-1/2 flex flex-col gap-6">
         <div>
           <h2 className="text-3xl md:text-4xl font-bold mb-2">
@@ -46,12 +50,19 @@ const SingleProductPage = async ({
               />
             </div>
           )}
-          <PriceView
+         <PriceView
             price={product?.prix}
             discount={product?.remise}
             className="text-lg font-bold"
           />
         </div>
+        {/* {product.variants && (
+          <ProductVariants 
+            variants={product.variants}
+            onVariantChange={setSelectedVariant}
+          />
+        )} */}
+      
         {product?.stock && (
           <p
             className={`w-fit p-2.5 text-sm text-center font-semibold rounded-lg ${product?.stock === 0 ? "text-red-500 bg-red-100" : "text-green-500 bg-green-100"}`}
@@ -144,7 +155,20 @@ const SingleProductPage = async ({
 </div>
 
       </div>
+      </div>
+      {product.categorie && product.categorie.length > 0 && (
+    <div className=" w-full">
+      <SimilarProducts 
+        categoryId={product.categorie[0]._id} 
+        currentProductId={product._id} 
+      />
+    </div>
+  )}
+   
     </Container>
+  
+    </>
+    
   );
 };
 
