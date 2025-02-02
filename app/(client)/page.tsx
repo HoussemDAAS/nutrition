@@ -8,15 +8,23 @@ import Skeleton from "@/components/Skeleton";
 import Sliders from "@/components/Slider";
 import TitleSection from "@/components/TitleSection";
 import PosterDisplay from "@/components/ui/PosterDisplay";
+import ScrollToTop from "@/components/ScrollToTop";
 import { getAllBrands, getAllCategories, getAllSlides } from "@/helpers/query";
+import { client } from "@/sanity/lib/client";
 
 export default async function Home() {
   const slidersPromise = getAllSlides();
   const categoriesPromise = getAllCategories();
   const brandsPromise = getAllBrands();
 
-  const [sliders, categories, brands] = await Promise.all([slidersPromise, categoriesPromise, brandsPromise]);
-
+  const [sliders, categories, brands] = await Promise.all([
+    slidersPromise,
+    categoriesPromise,
+    brandsPromise,
+  ]);
+  const promoProducts = await client.fetch(
+    `*[_type == "produit" && Status == "Promotion"] | order(_createdAt desc)[0...3]`
+  );
   return (
     <div>
       <section>
@@ -28,47 +36,39 @@ export default async function Home() {
       </section>
 
       <Container className="py-10">
-      <section>
-          <TitleSection title="Nos Gammes" />
-          <Gamme />
-        </section>
         <section>
-          <TitleSection title={"Nouveau Produits"} />
-        </section>
-      
-        <section>
-          <ProductCarousel status="Nouveau" />
-        </section>
-        <InfinitePromoBanner />
-        <section>
-          <TitleSection title={"Categories"} />
+
+          <InfinitePromoBanner products={promoProducts} />
         </section>
 
-        <section>
+        <section className="py-10">
+          <TitleSection title={"Nouveau Produits"} />
+          <ProductCarousel status="Nouveau" />
+        </section>
+        <section className="py-10">
+          <TitleSection title={"Categories"} />
           {categories.length > 0 ? (
             <Scrollableliste categories={categories} />
           ) : (
             <div className="flex space-x-4 overflow-hidden">
               {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-32 w-32 rounded-lg bg-gray-200" />
+                <Skeleton
+                  key={i}
+                  className="h-32 w-32 rounded-lg bg-gray-200"
+                />
               ))}
             </div>
           )}
         </section>
-
         <section>
           <TitleSection title={"Packs Exclusifs"} />
-        </section>
-        <section>
           <ProductCarousel variant={"Packs Exclusifs"} />
         </section>
-        
-        <section>
-          <TitleSection title={"Promotion"} />
-        </section>
-       
         <PosterDisplay />
-        
+        <section>
+          <TitleSection title="Nos Gammes" />
+          <Gamme />
+        </section>
         <section>
           <TitleSection title={"Marques"} />
         </section>
@@ -84,6 +84,8 @@ export default async function Home() {
           )}
         </section>
       </Container>
+      {/* Add the ScrollToTop arrow so it appears on every page */}
+      <ScrollToTop />
     </div>
   );
 }

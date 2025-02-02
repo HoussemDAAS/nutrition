@@ -1,165 +1,142 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// components/InfinitePromoBanner.tsx
 "use client";
-import { motion, useInView } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Produit } from '@/sanity.types';
 import { useEffect, useRef, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
+import { urlFor } from '@/sanity/lib/image';
+import PriceView from './PriceView';
 
-const BannierePromoInfinie = () => {
-  const ref = useRef(null);
-  const [tempsRestant, setTempsRestant] = useState('14j 00:00:00');
+const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  // @ts-nocheck
+  const timeoutRef = useRef<NodeJS.Timeout>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Date de fin ajustée
-  const [dateFin] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 14);
-    return date;
-  });
-
+  // Auto-rotate featured products
   useEffect(() => {
-    const timer = setInterval(() => {
-      const maintenant = new Date();
-      const difference = dateFin.getTime() - maintenant.getTime();
-      
-      const jours = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const heures = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const secondes = Math.floor((difference % (1000 * 60)) / 1000);
-      
-      setTempsRestant(
-        `${jours}j ${heures.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secondes.toString().padStart(2, '0')}`
-      );
-    }, 1000);
+    timeoutRef.current = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % products.length);
+    }, 5000);
 
-    return () => clearInterval(timer);
-  }, [dateFin]);
+    return () => clearInterval(timeoutRef.current as NodeJS.Timeout);
+  }, [products.length]);
 
-  // Suggestions de photos :
-  const imagesSuggestions = [
-    "/whey-protein-isole.jpg", // Pot de whey isolée avec fond de gym
-    "/pack-supplements.jpg", // Collection de suppléments alignés
-    "/athlete-training.jpg", // Athlète en plein effort
-    "/nutrition-coach.jpg" // Coach montrant un plan nutritionnel
-  ];
+  // Scroll to current slide
+  useEffect(() => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({
+        left: carouselRef.current.offsetWidth * currentSlide,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentSlide]);
+
+  if (!products.length) return null;
 
   return (
-    <section className="relative py-12 overflow-hidden" ref={ref}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
-      >
-        {/* Arrière-plan avec image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={imagesSuggestions[2]} // Choisir l'image appropriée
-            alt="Nouveaux produits"
-            fill
-            className="object-cover opacity-20"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0F2E4E] to-[#0F2E4E]/90" />
+    <section className="relative overflow-hidden rounded-md bg-gradient-to-br from-[#a4c3e2] via-[#398fe6] to-[#144585] py-16 my-12">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-12 ">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold text-[#0F2E4E] mb-4 uppercase"
+          >
+            Promotions
+            <span className='text-AccentColor'>.</span>
+          </motion.h2>
+          <p className="text-xl text-[#DA1D3C] font-medium">
+            Économisez jusqu&apos;à 50% sur nos meilleurs produits
+          </p>
         </div>
 
-        {/* Contenu recentré */}
-        <div className="relative z-10 flex flex-col items-center text-center rounded-3xl p-8 overflow-hidden">
-          {/* Titres */}
-          <motion.div
-            initial={{ y: 20 }}
-            animate={{ y: 0 }}
-            className="space-y-6 mb-8"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-[#DA1D3C]">
-              Nouveau Site Web ! 🚀
-            </h2>
-            <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-              Offres spéciales de lancement - Ne manquez pas ça !
-            </p>
-          </motion.div>
-
-          {/* Compte à rebours centré */}
-          <motion.div
-            className="bg-[#DA1D3C]/20 p-6 rounded-2xl mb-8 w-full max-w-md"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-          >
-            <div className="flex items-center justify-center gap-4">
-              <HorlogeIcon className="h-8 w-8 text-[#DA1D3C]" />
-              <div className="font-mono text-2xl font-bold text-[#DA1D3C]">
-                {tempsRestant}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Bouton CTA */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="mb-12"
-          >
-            <Link
-              href="/promotion"
-              className="flex items-center gap-3 bg-[#DA1D3C] text-white px-10 py-5 rounded-xl font-bold text-xl shadow-xl hover:bg-[#DA1D3C]/90 transition-all"
+        {/* Products Carousel */}
+        <div 
+          ref={carouselRef}
+          className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar pb-8"
+        >
+          {products.map((product) => (
+            <motion.div 
+              key={product._id}
+              className="flex-shrink-0 w-full px-4 snap-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
             >
-              Voir les offres <ArrowRight className="h-6 w-6" />
-            </Link>
-          </motion.div>
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col md:grid md:grid-cols-2 gap-8 h-auto min-h-[400px]">
+                {/* Product Image */}
+                <div className="relative h-64 md:h-full">
+                  <Image
+                    src={product.images?.[0] ? urlFor(product.images[0]).width(1200).url() : '/placeholder.jpg'}
+                    alt={product.nom || 'Product image'}
+                    fill
+                    className="object-contain p-6"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  {product.remise && (
+                    <div className="absolute top-4 right-4 bg-[#DA1D3C] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
+                      -{product.remise}%
+                    </div>
+                  )}
+                </div>
 
-          {/* Avantages avec icônes */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-6xl">
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg">
-              <TruckIcon className="h-8 w-8 text-[#DA1D3C] mb-2" />
-              <span className="text-gray-200">Livraison Express</span>
-            </div>
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg">
-              <DumbbellIcon className="h-8 w-8 text-[#DA1D3C] mb-2" />
-              <span className="text-gray-200">Coaching Gratuit</span>
-            </div>
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg">
-              <BookIcon className="h-8 w-8 text-[#DA1D3C] mb-2" />
-              <span className="text-gray-200">Guide Nutrition</span>
-            </div>
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg">
-              <HeadsetIcon className="h-8 w-8 text-[#DA1D3C] mb-2" />
-              <span className="text-gray-200">Support 24/7</span>
-            </div>
-          </div>
+                {/* Product Details */}
+                <div className="p-6 md:p-8 flex flex-col justify-center space-y-4">
+                  <h3 className="text-2xl font-bold text-[#0F2E4E]">
+                    {product.nom}
+                  </h3>
+                  <p className="text-gray-600 line-clamp-3 text-base">
+                    {product.intro}
+                  </p>
+                  
+                  <div className="mt-4">
+                    <PriceView 
+                      price={product.prix} 
+                      discount={product.remise}
+                      className="text-xl font-semibold text-[#0F2E4E]"
+                    />
+                  </div>
+
+                  <Link
+                    href={`/product/${product.slug?.current}`}
+                    className="mt-6 inline-flex items-center gap-2 bg-[#DA1D3C] text-white px-6 py-3 rounded-lg w-fit hover:bg-[#c21834] transition-colors group"
+                  >
+                    <span>Voir l&apos;offre</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
-      </motion.div>
+
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-2 mt-8">
+          {products.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${
+                currentSlide === index 
+                  ? 'bg-[#DA1D3C] w-6' 
+                  : 'bg-[#0F2E4E]/20 hover:bg-[#0F2E4E]/40'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/10 to-transparent" />
+        <div className="absolute bottom-0 right-0 w-1/2 h-full bg-gradient-to-l from-white/10 to-transparent" />
+      </div>
     </section>
   );
 };
 
-// Icônes personnalisées
-const HorlogeIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const TruckIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM12 9v4m-3-3h6m3 0h2a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2h3" />
-  </svg>
-);
-
-const DumbbellIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
-
-const BookIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-  </svg>
-);
-
-const HeadsetIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h3a2 2 0 002-2v-4a2 2 0 00-2-2h-3m-5 0H6a2 2 0 00-2 2v4a2 2 0 002 2h3m5-10V7m0 0h3M9 7h3m0 0V7" />
-  </svg>
-);
-
-export default BannierePromoInfinie;
+export default InfinitePromoBanner;
