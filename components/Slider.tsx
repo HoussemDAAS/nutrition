@@ -1,60 +1,111 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Slider } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
+import { Slider } from "@/sanity.types";
 
 const Sliders = ({ sliders }: { sliders: Slider[] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
 
-  useEffect(() => {
-    const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % sliders.length);
-    }, 3000);
-
-    return () => clearInterval(slideInterval);
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % sliders.length);
   }, [sliders.length]);
 
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + sliders.length) % sliders.length);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, [nextSlide]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStart - touchEnd;
+    if (diff > 5) nextSlide();
+    else if (diff < -5) prevSlide();
+  };
+
   return (
-    <div className="relative w-full overflow-hidden h-[220px] md:h-[280px] lg:h-[600px]">
-      <motion.div
-        className="flex w-full h-full"
-        animate={{
-          x: `-${currentSlide * 100}%`,
-        }}
-        transition={{
-          duration: 1.5,
-          ease: "easeInOut",
-        }}
+    <div className="relative w-full">
+      {/* Navigation Arrows */}
+      <div className="hidden md:flex absolute inset-y-0 w-full justify-between items-center z-10 px-4">
+        <button
+          onClick={prevSlide}
+          className="p-2 rounded-full bg-white/80 hover:bg-white transition-colors shadow-lg"
+          aria-label="Previous slide"
+        >
+          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={nextSlide}
+          className="p-2 rounded-full bg-white/80 hover:bg-white transition-colors shadow-lg"
+          aria-label="Next slide"
+        >
+          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Image Slider */}
+      <div 
+        className="relative h-[19vh] md:h-[80vh] max-h-[600px] w-full"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {sliders.map((slide, index) => (
           <div
             key={slide._id}
-            className="flex-shrink-0 w-full h-full relative group"
+            className={`absolute inset-0 transition-opacity duration-500 ${
+              index === currentSlide 
+                ? "opacity-100 z-10" 
+                : "opacity-0 pointer-events-none"
+            }`}
           >
-            {/* Slide Image */}
-            <Image
-              src={slide?.image ? urlFor(slide.image).url() : ""}
-              alt={slide?.title || "Slide Image"}
-              fill
-              priority={index === 0}
-              className="object-cover object-center w-full h-full"
-            />
-
-            {/* Hover Content */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center px-4 text-white">
-              <Link href={`/${slide?.status}/${slide?.slug?.current}`}>
-                <p className="px-6 py-4 text-md transition-all duration-300 transform hover:scale-110 hover:shadow-xl text-white bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 rounded-md hover:animate-pulse">
-                  Voir Plus
-                </p>
-              </Link>
-            </div>
+            <Link 
+              href={`/${slide?.status}/${slide?.slug?.current}`} 
+              className="block relative w-full h-full"
+            >
+              <Image
+                src={slide.image ? urlFor(slide.image).url() : '/placeholder-image.png'}
+                alt={slide.title || 'Image'}
+                fill
+                priority={index === 0}
+                className="object-cover"
+                quality={100}
+                sizes="100vw"
+              />
+            </Link>
           </div>
         ))}
-      </motion.div>
+      </div>
+
+      {/* Progress Indicators */}
+      <div className="flex justify-center gap-2 py-2">
+        {sliders.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`w-8 h-1 transition-all duration-300 ${
+              index === currentSlide 
+                ? "bg-red-600"
+                : "bg-blue-300"
+            }`}
+            aria-label={`Slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 };

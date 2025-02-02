@@ -5,8 +5,8 @@ import SideBar from "./SideBar";
 import { Category, Brand } from "@/sanity.types";
 
 interface MobileMenuProps {
-  categories: Category[]; // Receive categories
-  brands: Brand[]; // Receive brands
+  categories: Category[];
+  brands: Brand[];
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ categories, brands }) => {
@@ -14,15 +14,19 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ categories, brands }) => {
   
   return (
     <>
-      <button onClick={() => setShowSideBar(!showSideBar)}>
-        <AlignLeft className="w-6 h-6 hover:text-darkColor hoverEffect md:hidden" />
+      <button 
+        onClick={() => setShowSideBar(!showSideBar)} 
+        className="flex items-center gap-1"
+      >
+        <AlignLeft className="w-6 h-6 hover:text-darkColor hoverEffect" />
+        <span className="text-sm">Menu</span>
       </button>
       <div className="md:hidden">
         <SideBar
           isOpen={showSideBar}
           onClose={() => setShowSideBar(false)}
-          categories={categories} // Pass categories
-          brands={brands} // Pass brands
+          categories={categories}
+          brands={brands}
         />
       </div>
     </>
