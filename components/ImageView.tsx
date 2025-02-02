@@ -3,12 +3,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
-import { useState } from "react";
-import { internalGroqTypeReferenceTo, SanityImageCrop, SanityImageHotspot } from "@/sanity.types";
-
+import { useState, useEffect } from "react";
+import type { internalGroqTypeReferenceTo, SanityImageCrop, SanityImageHotspot } from "@/sanity.types";
 
 interface ImageViewProps {
-images: Array<{
+  images: Array<{
     asset?: {
       _ref: string;
       _type: "reference";
@@ -25,9 +24,20 @@ images: Array<{
 
 const ImageView = ({ images = [], productName }: ImageViewProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [zoomStyle, setZoomStyle] = useState({ backgroundPosition: '0% 0%' });
 
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
+    
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
@@ -39,7 +49,7 @@ const ImageView = ({ images = [], productName }: ImageViewProps) => {
       <div 
         className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group"
         onMouseMove={handleMouseMove}
-        onMouseLeave={() => setZoomStyle({ backgroundPosition: '0% 0%' })}
+        onMouseLeave={() => !isMobile && setZoomStyle({ backgroundPosition: '0% 0%' })}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -50,6 +60,7 @@ const ImageView = ({ images = [], productName }: ImageViewProps) => {
             transition={{ duration: 0.2 }}
             className="relative w-full h-full"
           >
+            {/* Main Image */}
             <Image
               src={urlFor(images[selectedImage]).width(800).format('webp').url()}
               alt={productName?.toLowerCase() || 'Product Image'}
@@ -59,25 +70,32 @@ const ImageView = ({ images = [], productName }: ImageViewProps) => {
               priority
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            
-            {/* Zoom overlay */}
-            <div 
-              className="hidden md:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{
-                backgroundImage: `url(${urlFor(images[selectedImage]).width(1200).format('webp').url()})`,
-                ...zoomStyle,
-                backgroundSize: '150%',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
+
+            {/* Zoom Overlay (Desktop only) */}
+            {!isMobile && (
+              <div 
+                className="hidden md:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  backgroundImage: `url(${urlFor(images[selectedImage]).width(1200).format('webp').url()})`,
+                  ...zoomStyle,
+                  backgroundSize: '150%',
+                  backgroundRepeat: 'no-repeat',
+                  zIndex: 10,
+                }}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
 
-        <div className="absolute bottom-2 right-2 bg-white/90 px-2 py-1 rounded-full text-sm flex items-center gap-1">
-          <span>Survoler pour zoomer</span>
-        </div>
+        {/* Zoom Indicator (Desktop only) */}
+        {!isMobile && (
+          <div className="absolute bottom-2 right-2 bg-white/90 px-2 py-1 rounded-full text-sm flex items-center gap-1">
+            <span>Survoler pour zoomer</span>
+          </div>
+        )}
       </div>
 
+      {/* Thumbnail Grid */}
       <div className="grid grid-cols-5 gap-2">
         {images.map((image, index) => (
           <button
