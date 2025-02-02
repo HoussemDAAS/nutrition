@@ -13,6 +13,7 @@ import { getAllBrands, getAllCategories, getAllSlides } from "@/helpers/query";
 import { client } from "@/sanity/lib/client";
 
 export default async function Home() {
+  // Fetch data in parallel
   const slidersPromise = getAllSlides();
   const categoriesPromise = getAllCategories();
   const brandsPromise = getAllBrands();
@@ -22,11 +23,15 @@ export default async function Home() {
     categoriesPromise,
     brandsPromise,
   ]);
+
+  // Fetch promotional products
   const promoProducts = await client.fetch(
     `*[_type == "produit" && Status == "Promotion"] | order(_createdAt desc)[0...3]`
   );
+
   return (
     <div>
+      {/* Slider Section */}
       <section>
         {sliders.length > 0 ? (
           <Sliders sliders={sliders} />
@@ -36,17 +41,20 @@ export default async function Home() {
       </section>
 
       <Container className="py-10">
-        <section>
-
+        {/* Infinite Promo Banner Section */}
+        <section className="mb-10">
           <InfinitePromoBanner products={promoProducts} />
         </section>
 
-        <section className="py-10">
-          <TitleSection title={"Nouveau Produits"} />
+        {/* New Products Section */}
+        <section className="mb-10">
+          <TitleSection title="Nouveau Produits" />
           <ProductCarousel status="Nouveau" />
         </section>
-        <section className="py-10">
-          <TitleSection title={"Categories"} />
+
+        {/* Categories Section */}
+        <section className="mb-10">
+          <TitleSection title="Categories" />
           {categories.length > 0 ? (
             <Scrollableliste categories={categories} />
           ) : (
@@ -60,19 +68,27 @@ export default async function Home() {
             </div>
           )}
         </section>
-        <section>
-          <TitleSection title={"Packs Exclusifs"} />
-          <ProductCarousel variant={"Packs Exclusifs"} />
+
+        {/* Exclusive Packs Section */}
+        <section className="mb-10">
+          <TitleSection title="Packs Exclusifs" />
+          <ProductCarousel variant="Packs Exclusifs" />
         </section>
-        <PosterDisplay />
-        <section>
+
+        {/* Poster Display Section */}
+        <section className="mb-10">
+          <PosterDisplay />
+        </section>
+
+        {/* Gamme Section */}
+        <section className="mb-10">
           <TitleSection title="Nos Gammes" />
           <Gamme />
         </section>
-        <section>
-          <TitleSection title={"Marques"} />
-        </section>
-        <section>
+
+        {/* Brands Section */}
+        <section className="mb-10">
+          <TitleSection title="Marques" />
           {brands.length > 0 ? (
             <LogoCarousel Brands={brands} />
           ) : (
@@ -84,7 +100,8 @@ export default async function Home() {
           )}
         </section>
       </Container>
-      {/* Add the ScrollToTop arrow so it appears on every page */}
+
+      {/* Scroll To Top Button */}
       <ScrollToTop />
     </div>
   );

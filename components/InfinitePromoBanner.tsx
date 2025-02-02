@@ -37,7 +37,7 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
   if (!products.length) return null;
 
   return (
-    <section className="relative overflow-hidden rounded-md bg-gradient-to-br from-[#a4c3e2] via-[#398fe6] to-[#144585] py-16 my-12">
+    <section className="relative overflow-hidden rounded-md bg-gradient-to-br from-[#a4c3e2] via-[#398fe6] to-[#144585] py-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12 ">
