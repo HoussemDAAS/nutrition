@@ -83,6 +83,7 @@ export type Command = {
     city?: string;
   };
   items?: Array<{
+    gout?: string;
     product?: {
       _ref: string;
       _type: "reference";
@@ -237,6 +238,8 @@ export type Produit = {
     };
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
     _type: "image";
     _key: string;
   }>;
@@ -245,6 +248,8 @@ export type Produit = {
   stock?: number;
   Status?: "Nouveau" | "Indisponible" | "Disponible" | "Promotion";
   variantes?: "Promotion" | "Packs Exclusifs" | "Pre-Workout";
+  gouts?: Array<string>;
+  selectedFlavor?: string; 
   images?: Array<{
     asset?: {
       _ref: string;

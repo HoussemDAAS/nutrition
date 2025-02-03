@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Produit } from './sanity.types';
+import { CartProduit } from './types';
 
 export interface CartItem {
-  product: Produit;
+  product: CartProduit;
   quantity: number;
 }
+
 
 interface CartState {
   items: CartItem[];
@@ -29,24 +31,32 @@ const useCartStore = create<CartState>()(
       isCartOpen: false,
       openCart: () => set({ isCartOpen: true }),
       closeCart: () => set({ isCartOpen: false }),
-      addItem: (product) => {
+ addItem: (productWithFlavor) => {
         set((state) => {
           const existingItem = state.items.find(
-            (item) => item.product._id === product._id
+            (item) => 
+              item.product._id === productWithFlavor._id &&
+              item.product.selectedFlavor === productWithFlavor.selectedFlavor
           );
+          
           if (existingItem) {
             return {
               items: state.items.map((item) =>
-                item.product._id === product._id
+                item.product._id === productWithFlavor._id &&
+                item.product.selectedFlavor === productWithFlavor.selectedFlavor
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
               ),
             };
           } else {
-            return { items: [...state.items, { product, quantity: 1 }] };
+            return { 
+              items: [...state.items, { 
+                product: productWithFlavor, 
+                quantity: 1 
+              }] 
+            };
           }
         });
-        // get().openCart();  // add product to cart
       },
       removeItem: (productId) => {
         set((state) => ({
