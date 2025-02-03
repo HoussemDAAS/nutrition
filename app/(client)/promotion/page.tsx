@@ -1,9 +1,12 @@
+import { Suspense } from 'react';
 import Container from '@/components/Container';
-
-import { getPromotionProducts } from '@/helpers/query';
-import React from 'react'
 import TitleAcceuil from '@/components/TitleAcceuil';
 import PromotionProducts from '@/components/PromotionProducts';
+import Loading from '@/components/Loading';
+import { getPromotionProducts } from '@/helpers/query';
+
+// Add this export to opt-out of static rendering
+export const dynamic = 'force-dynamic';
 
 const PromotionPage = async () => {
   const products = await getPromotionProducts();
@@ -14,9 +17,11 @@ const PromotionPage = async () => {
         title="Promotions en cours" 
         subtitle="Découvrez nos offres spéciales et économisez sur vos produits préférés" 
       />
-      <PromotionProducts products={products} />
+      <Suspense fallback={<Loading />}>
+        <PromotionProducts products={products} />
+      </Suspense>
     </Container>
   )
 }
 
-export default PromotionPage
+export default PromotionPage;
