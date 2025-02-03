@@ -106,6 +106,14 @@ export const productType = defineType({
       type: "number",
       validation: (Rule) => Rule.min(0),
     }),
+    // schemas/product.ts
+defineField({
+  name: "gouts",
+  title: "Gouts du produit",
+  type: "array",
+  of: [{ type: "string" }],
+  description: "Ajouter les gouts du produit",
+}),
     defineField({
       name: "Status",
       title: "Status du produit",

@@ -1,6 +1,6 @@
+// components/AddToCardButton.tsx
 "use client";
 import { Produit } from "@/sanity.types";
-import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -9,29 +9,38 @@ import PriceFormater from "./PriceFormater";
 import useCartStore from "@/store";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface AddToCardButtonProps {
   product: Produit;
   className?: string;
+  selectedFlavor?: string;
 }
 
-const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
+const AddToCardButton = ({ product, className, selectedFlavor }: AddToCardButtonProps) => {
   const { addItem, getItemCount, openCart } = useCartStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const itemCount = getItemCount(product?._id);
+  const itemCount = getItemCount(product._id);
 
   const handleAddToCart = () => {
-    addItem(product);
+    addItem({
+      ...product,
+      ...(selectedFlavor && { selectedFlavor })
+    });
     toast.success(
-      `${product?.nom?.substring(0, 15)}... a été ajouté au panier`
+      `${product.nom?.substring(0, 15)}... ${
+        selectedFlavor ? `(${selectedFlavor}) ` : ""
+      }a été ajouté au panier`
     );
     setShowConfirmation(true);
   };
+
   useEffect(() => {
     if (itemCount === 0) {
       setShowConfirmation(false);
     }
   }, [itemCount]);
+
   return (
     <div className="w-full h-12 items-center">
       {itemCount ? (
@@ -42,40 +51,19 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
           </div>
           <div className="flex items-center justify-between border-t border-t-gray-300 pt-1">
             <span className="text-xs font-semibold">Total: </span>
-            <PriceFormater
-              amount={product?.prix ? product?.prix * itemCount : 0}
-            />
+            <PriceFormater amount={(product.prix || 0) * itemCount} />
           </div>
         </div>
       ) : (
-        <>
-          <Button
-            className={cn(
-              "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
-              className
-            )}
-            onClick={handleAddToCart} // Use the handler function here
-          >
-            <div className="hidden md:block">
-              <svg
-                className="w-4 h-4 mr-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.4 5M10 21h4m-4-4h4"
-                ></path>
-              </svg>
-            </div>
-            Ajouter au panier
-          </Button>
-        
-        </>
+        <Button
+          className={cn(
+            "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
+            className
+          )}
+          onClick={handleAddToCart}
+        >
+          Ajouter au panier
+        </Button>
       )}
         {showConfirmation && (
             <ConfirmationDialog

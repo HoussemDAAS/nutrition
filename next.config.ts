@@ -1,11 +1,15 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-
+// next.config.js
+const nextConfig = {
   images: {
-    domains: ["cdn.sanity.io",'www.pexels.com','via.placeholder.com'],
-
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        port: '',
+        pathname: '/images/**',
+      },
+    ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

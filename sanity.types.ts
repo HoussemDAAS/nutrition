@@ -237,12 +237,15 @@ export type Produit = {
     };
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
     _type: "image";
     _key: string;
   }>;
   prix?: number;
   remise?: number;
   stock?: number;
+  gouts?: Array<string>;
   Status?: "Nouveau" | "Indisponible" | "Disponible" | "Promotion";
   variantes?: "Promotion" | "Packs Exclusifs" | "Pre-Workout";
   images?: Array<{
