@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import useCartStore, { CartItem } from '@/store';
@@ -91,6 +91,17 @@ export default function CheckoutPage() {
   const items = getGroupedItems();
   const total = getTotalPrice();
 
+  // Replace useMemo with direct calculation
+  const isFormComplete = (
+    formData.customer.firstName.trim() !== '' &&
+    formData.customer.lastName.trim() !== '' &&
+    formData.customer.email.trim() !== '' &&
+    formData.customer.address.trim() !== '' &&
+    formData.customer.city.trim() !== '' &&
+    formData.customer.phone.trim() !== '' &&
+    formData.termsAccepted
+  );
+
   useEffect(() => {
     setIsMounted(true);
     window.scrollTo(0, 0);
@@ -99,6 +110,7 @@ export default function CheckoutPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [orderSuccess]);
+
   if (!isMounted || isLoading) {
     return <Loading />;
   }
@@ -165,18 +177,6 @@ export default function CheckoutPage() {
   };
 
   // Compute if the form is complete.
-  const isFormComplete = useMemo(() => {
-    const { firstName, lastName, email, address, city, phone } = formData.customer;
-    return (
-      firstName.trim() !== '' &&
-      lastName.trim() !== '' &&
-      email.trim() !== '' &&
-      address.trim() !== '' &&
-      city.trim() !== '' &&
-      phone.trim() !== '' &&
-      formData.termsAccepted
-    );
-  }, [formData]);
 
   // This function will be triggered when the form is submitted (via pressing Enter on a field)
   const handleFormSubmit = (e: React.FormEvent) => {
