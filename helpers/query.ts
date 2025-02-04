@@ -5,6 +5,8 @@ export const getProductBySlug = async (slug: string) => {
    const PRODUCT_BY_SLUG_Query = defineQuery(`
      *[_type == "produit" && slug.current == $slug][0] {
        ...,
+       gouts,
+       "slug": slug.current,
        description[] {
     ...,
     _type == "image" => {

@@ -133,6 +133,12 @@ export const productType = defineType({
         },
 
       }),
+      defineField({
+        name: "gouts",
+        title: "Gouts du produit",
+        type: "array",
+        of: [{ type: "string" }],
+      }),
     defineField({
       name: "images",
       title: "Images du produit",

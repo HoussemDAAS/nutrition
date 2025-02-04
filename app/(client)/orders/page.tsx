@@ -24,6 +24,7 @@ type OrderItem = {
   quantity?: number;
   price?: number;
   product?: Produit;
+  gout?: string;
 };
 
 type OrderWithProducts = Omit<Command, 'items'> & {
@@ -52,12 +53,14 @@ export default function OrdersPage() {
         customer,
         items[] {
           _key,
+            gout, 
           quantity,
           price,
           product->{
             _id,
             nom,
             slug,
+        
             images[] {
               ...,
               asset->
@@ -151,6 +154,9 @@ export default function OrdersPage() {
                         >
                           {item.product?.nom || 'Unnamed Product'}
                         </Link>
+                        {item.gout && (  // Now properly typed
+        <p className="text-sm text-gray-500">Parfum: {item.gout}</p>
+      )}
                         <p className="text-gray-500">
                           Quantity: {item.quantity}
                         </p>

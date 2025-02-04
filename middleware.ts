@@ -1,12 +1,24 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default clerkMiddleware();
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next();
 
-export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
-}; 
+  // Cache static assets for 1 year
+  if (request.nextUrl.pathname.match(/\.(png|jpg|jpeg|webp|avif|ico|svg|css|js)$/)) {
+    response.headers.set(
+      'Cache-Control',
+      'public, max-age=31536000, immutable'
+    );
+  }
+
+  // Cache API responses for 10 minutes
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=600, stale-while-revalidate=300'
+    );
+  }
+
+  return response;
+}

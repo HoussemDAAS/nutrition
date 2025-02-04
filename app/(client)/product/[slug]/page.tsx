@@ -14,6 +14,9 @@ import { notFound } from "next/navigation";
 import { PortableText } from '@portabletext/react'
 import SanityImage from "@/components/SanityImage";
 import SimilarProducts from "@/components/SimilarProducts";
+import FlavorSelector from "@/components/FlavorSelector";
+import { Suspense } from "react";
+import Loading2 from "@/app/(client)/product/[slug]/loading";
 // import ProductVariants from "@/components/ProductVariants";
 import { Metadata } from 'next';
 import { urlFor } from "@/sanity/lib/image";
@@ -117,7 +120,6 @@ const SingleProductPage = async ({
   }
   return (
     <>
-      <ProductStructuredData product={product} />
     <Container className="py-10 flex flex-col gap-8 ">
       <div className="py-10 flex flex-col md:flex-row gap-8 md:gap-12">
       {product?.images && <ImageView images={product?.images} productName={product?.noms}  />}
@@ -159,6 +161,7 @@ const SingleProductPage = async ({
         )}
         <p className="text-sm text-gray-600 tracking-wide">{product?.intro}</p>
         <div className="flex items-center gap-2.5 lg:gap-5">
+        {product.gouts?.length > 0 && <FlavorSelector flavors={product.gouts} />}
           <AddToCardButton
             product={product}
             className="bg-AccentColor/80 text-white  hover:bg-AccentColor hoverEffect border-AccentColor/30 "
@@ -254,7 +257,7 @@ const SingleProductPage = async ({
    
     </Container>
   
-    </>
+    </Suspense>
     
   );
 };

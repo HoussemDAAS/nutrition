@@ -46,12 +46,9 @@ export const commandType = defineType({
           title: 'City',
           validation: Rule => Rule.required()
         }),
-        // defineField({
-        //   name: 'birthdate',
-        //   type: 'date',
-        //   title: 'Birthdate',
-        //   validation: Rule => Rule.required()
-        // }),
+  
+    
+       
       ]
     }),
     defineField({
@@ -62,6 +59,11 @@ export const commandType = defineType({
         name: 'orderItem',
         type: 'object',
         fields: [
+          defineField({
+            name: 'gout',
+            type: 'string',
+            title: 'Selected Flavor'
+          }),
           defineField({
             name: 'product',
             type: 'reference',

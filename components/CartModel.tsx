@@ -99,6 +99,9 @@ const CartModel = ({ onClose }: CartModelProps) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium truncate">{product.nom}</h3>
+                        {product.selectedFlavor && (
+    <p className="text-xs text-gray-500">Parfum: {product.selectedFlavor}</p>
+  )}
                         <div className="text-sm text-gray-500 mb-1">In Stock</div>
                         <div className="flex justify-between items-center">
                           <PriceFormater
@@ -181,6 +184,7 @@ const CartModel = ({ onClose }: CartModelProps) => {
                     <div className="flex flex-col justify-between w-full gap-2">
                       <div className="flex items-center justify-between gap-4">
                         <h3 className="text-sm font-semibold">{product.nom}</h3>
+                        
                         <div className="p-1 bg-gray-50 rounded-sm">
                           <PriceFormater
                             amount={(product?.prix as number) * itemCount}
@@ -188,6 +192,9 @@ const CartModel = ({ onClose }: CartModelProps) => {
                           />
                         </div>
                       </div>
+                      {product.selectedFlavor && (
+    <p className="text-xs text-gray-500">Parfum: {product.selectedFlavor}</p>
+  )}
                       <div className="text-sm text-gray-500">available</div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">{itemCount}</span>

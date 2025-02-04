@@ -418,6 +418,13 @@
           "of": {
             "type": "object",
             "attributes": {
+              "gout": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
               "product": {
                 "type": "objectAttribute",
                 "value": {
@@ -1410,6 +1417,20 @@
                     },
                     "optional": true
                   },
+                  "alt": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "caption": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  },
                   "_type": {
                     "type": "objectAttribute",
                     "value": {
@@ -1499,6 +1520,16 @@
               "value": "Pre-Workout"
             }
           ]
+        },
+        "optional": true
+      },
+      "gouts": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
         },
         "optional": true
       },

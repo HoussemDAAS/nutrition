@@ -34,6 +34,7 @@ const CartPage = () => {
 
   React.useEffect(() => {
     setIsClient(true);
+    window.scrollTo(0, 0); // Add scroll to top
   }, []);
 
   if (!isClient) {
@@ -70,7 +71,7 @@ const CartPage = () => {
                       >
                         {/* Image Section */}
                         <Link
-                          href={`product/${product?.slug?.current}`}
+                          href={`product/${product?.slug?.current || ""}`}
                           className="w-16 h-16 flex-shrink-0"
                         >
                           <div className="relative aspect-square rounded-md overflow-hidden border-2 border-gray-100">
@@ -91,6 +92,9 @@ const CartPage = () => {
                               <h2 className="font-medium text-sm line-clamp-2">
                                 {product?.nom}
                               </h2>
+                              {product.selectedFlavor && (
+  <p className="text-sm text-gray-500">Parfum: {product.selectedFlavor}</p>
+)}
                               <div className="mt-1 space-y-0.5">
                                 <p className="text-xs text-gray-500 line-clamp-1">
                                   {product?.intro}

@@ -1,5 +1,5 @@
 "use client";
-import { Produit } from "@/sanity.types";
+
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -9,9 +9,11 @@ import PriceFormater from "./PriceFormater";
 import useCartStore from "@/store";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { CartProduit } from "@/types";
 
 interface AddToCardButtonProps {
-  product: Produit;
+  product: CartProduit;
   className?: string;
 }
 
@@ -19,9 +21,17 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
   const { addItem, getItemCount, openCart } = useCartStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const itemCount = getItemCount(product?._id);
-
+  const searchParams = useSearchParams();
+  const selectedFlavor = searchParams.get('flavor') || '';
   const handleAddToCart = () => {
-    addItem(product);
+    if ((product.gouts?.length ?? 0) > 0 && !selectedFlavor) {
+      toast.error("Veuillez sélectionner un parfum");
+      return;
+    }
+    addItem({
+      ...product,
+      selectedFlavor: selectedFlavor || undefined
+    });
     toast.success(
       `${product?.nom?.substring(0, 15)}... a été ajouté au panier`
     );
