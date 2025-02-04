@@ -119,7 +119,9 @@ const SingleProductPage = async ({
     return notFound();
   }
   return (
-    <>
+  
+    <Suspense fallback={<Loading2 />}>
+      <ProductStructuredData product={product} />
     <Container className="py-10 flex flex-col gap-8 ">
       <div className="py-10 flex flex-col md:flex-row gap-8 md:gap-12">
       {product?.images && <ImageView images={product?.images} productName={product?.noms}  />}
