@@ -28,7 +28,8 @@ export async function generateMetadata({
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
-  const { slug } =await  params
+  const { slug } =await params;
+
   const product = await getProductBySlug(slug);
 
   // SEO Optimized French keywords for Tunisia
@@ -87,9 +88,10 @@ function ProductStructuredData({ product }: { product: Produit }) {
       priceCurrency: 'TND',
       price: product.prix,
         // @ts-ignore
-      availability: product?.stock > 0 ? 
-        'https://schema.org/InStock' : 
-        'https://schema.org/OutOfStock',
+        availability: (product?.stock ?? 0) > 0
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+      
       url: `https://bizerte-nutrition.tn/produit/${product?.slug?.current}`,
       seller: {
         '@type': 'Organization',
@@ -109,10 +111,10 @@ function ProductStructuredData({ product }: { product: Produit }) {
 const SingleProductPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) => {
   const { slug } = await params;
-    const product = await getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
     // console.log('Image asset:', product.description.find((item: { _type: string; }) => item._type === 'image')?.asset)
     // const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]);
   if (!product) {
