@@ -28,8 +28,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
-  const { slug } =await params;
-
+  const { slug } = await params;
   const product = await getProductBySlug(slug);
 
   // SEO Optimized French keywords for Tunisia
@@ -113,10 +112,9 @@ const SingleProductPage = async ({
 }: {
   params: { slug: string };
 }) => {
-  const { slug } = await params;
+  const { slug } =await  params;
   const product = await getProductBySlug(slug);
-    // console.log('Image asset:', product.description.find((item: { _type: string; }) => item._type === 'image')?.asset)
-    // const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0]);
+
   if (!product) {
     return notFound();
   }
@@ -164,8 +162,9 @@ const SingleProductPage = async ({
           </p>
         )}
         <p className="text-sm text-gray-600 tracking-wide">{product?.intro}</p>
-        <div className="flex items-center gap-2.5 lg:gap-5">
         {product.gouts?.length > 0 && <FlavorSelector flavors={product.gouts} />}
+        <div className="flex items-center gap-2.5 lg:gap-5">
+        
           <AddToCardButton
             product={product}
             className="bg-AccentColor/80 text-white  hover:bg-AccentColor hoverEffect border-AccentColor/30 "

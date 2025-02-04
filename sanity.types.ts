@@ -196,7 +196,7 @@ export type Produit = {
   _updatedAt: string;
   _rev: string;
   nom?: string;
-  slug?: Slug;
+ slug?: { current: string };
   intro?: string;
   categorie?: Array<{
     _ref: string;

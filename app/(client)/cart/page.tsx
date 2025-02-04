@@ -71,7 +71,7 @@ const CartPage = () => {
                       >
                         {/* Image Section */}
                         <Link
-                          href={`product/${product?.slug?.current || ""}`}
+                          href={`product/${product?.slug?.current}`}
                           className="w-16 h-16 flex-shrink-0"
                         >
                           <div className="relative aspect-square rounded-md overflow-hidden border-2 border-gray-100">
