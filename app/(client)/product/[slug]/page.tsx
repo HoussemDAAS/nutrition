@@ -11,7 +11,7 @@ import SanityImage from "@/components/SanityImage";
 import SimilarProducts from "@/components/SimilarProducts";
 import FlavorSelector from "@/components/FlavorSelector";
 import BrandImage from "@/components/BrandImage";
-
+export const dynamic = 'force-dynamic';
 interface PageProps {
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -23,11 +23,10 @@ const SingleProductPage = async ({ params,searchParams }: PageProps) => {
   if (!product) return notFound();
 
   // Get selected flavor from URL params
-  const flavorParam = searchParams && searchParams.flavor ? searchParams.flavor : "";
-
+  const flavorParam = searchParams?.flavor ?? '';
   const selectedFlavor = Array.isArray(flavorParam) 
     ? flavorParam[0] 
-    : flavorParam || product.gouts?.[0] || '';
+    : (flavorParam || product.gouts?.[0] || '');
 
   return (
     <Container className="py-10 flex flex-col gap-8">
