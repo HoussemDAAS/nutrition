@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import AddToCardButton from "@/components/AddToCardButton";
 import Container from "@/components/Container";
 import ImageView from "@/components/ImageView";
@@ -14,9 +15,94 @@ import { PortableText } from '@portabletext/react'
 import SanityImage from "@/components/SanityImage";
 import SimilarProducts from "@/components/SimilarProducts";
 // import ProductVariants from "@/components/ProductVariants";
+import { Metadata } from 'next';
+import { urlFor } from "@/sanity/lib/image";
+import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { Produit } from "@/sanity.types";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
+  const { slug } =await  params
+  const product = await getProductBySlug(slug);
 
+  // SEO Optimized French keywords for Tunisia
+  const keywords = [
+    'nutrition sportive',
+    'compléments alimentaires Tunisie',
+    'protéines musculation',
+    'achat produits fitness',
+    product.nom,
+    ...(product.gouts || []),
+    'livraison rapide Tunisie',
+    'meilleur prix nutrition sportive'
+  ];
 
+  return {
+    title: `${product.nom} | Nutrition Sportive Tunisie - ${product.brand?.[0]?.name || 'House Protein'}`,
+    description: product.intro || `Achetez ${product.nom} en Tunisie - ${product.variantes}. Livraison rapide, prix compétitifs et qualité garantie.`,
+    openGraph: {
+      type: 'website',
+      locale: 'fr_TN',
+      siteName: 'Bizerte Nutrition',
+      title: product.nom,
+      description: product.intro || `Produit de nutrition sportive ${product.nom} disponible en Tunisie`,
+      images: product.images?.map((image: SanityImageSource) => ({
+        url: urlFor(image).width(1200).height(630).url(),
+        width: 1200,
+        height: 630,
+        alt: `${product.nom} - Nutrition Sportive Tunisie`,
+      })),
+    },
+    alternates: {
+      canonical: `https://houseprotein.tn/produit/${product.slug.current}`,
+    },
+    keywords,
+    twitter: {
+      card: 'summary_large_image',
+      site: '@BizerteNutrition',
+    },
+  };
+}
+
+// Add structured data for Google
+function ProductStructuredData({ product }: { product: Produit }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.nom,
+    image: product.images?.map((image: SanityImageSource) => urlFor(image).url()),
+    description: product.intro,
+    brand: {
+      '@type': 'Brand',
+      name: product.brand?.[0]?._ref || 'House Protein'
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'TND',
+      price: product.prix,
+        // @ts-ignore
+      availability: product?.stock > 0 ? 
+        'https://schema.org/InStock' : 
+        'https://schema.org/OutOfStock',
+      url: `https://bizerte-nutrition.tn/produit/${product?.slug?.current}`,
+      seller: {
+        '@type': 'Organization',
+        name: 'Bizerte Nutrition',
+        url: 'https://bizerte-nutrition.tn'
+      }
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
 const SingleProductPage = async ({
   params,
 }: {
@@ -31,6 +117,7 @@ const SingleProductPage = async ({
   }
   return (
     <>
+      <ProductStructuredData product={product} />
     <Container className="py-10 flex flex-col gap-8 ">
       <div className="py-10 flex flex-col md:flex-row gap-8 md:gap-12">
       {product?.images && <ImageView images={product?.images} productName={product?.noms}  />}

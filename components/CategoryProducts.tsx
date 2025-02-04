@@ -1,6 +1,6 @@
 "use client";
 import { Category, Produit } from '@/sanity.types';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Input } from './ui/input';
 import { AnimatePresence, motion } from 'motion/react';
@@ -76,6 +76,7 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
   };
 
   return (
+    <Suspense fallback={<LoadingSkeleton />}>
     <div className="py-5 flex flex-col md:flex-row items-start gap-5">
       {/* Filters Section */}
       <div className="flex flex-col md:min-w-78">
@@ -248,7 +249,18 @@ const CategoryProducts = ({ categories, slug }: CategoryProductsProps) => {
         )}
       </div>
     </div>
+    </Suspense>
   );
 };
 
 export default CategoryProducts;
+const LoadingSkeleton = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+    <div className="grid grid-cols-4 gap-4">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
+      ))}
+    </div>
+  </div>
+);
