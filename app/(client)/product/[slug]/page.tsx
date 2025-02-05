@@ -118,6 +118,11 @@ const SingleProductPage = async ({
   if (!product) {
     return notFound();
   }
+  const searchParams = new URLSearchParams();
+  if (product.gouts?.length === 1) {
+    searchParams.set('flavor', product.gouts[0]);
+  }
+
   return (
   
     <Suspense fallback={<Loading2 />}>
@@ -165,10 +170,11 @@ const SingleProductPage = async ({
         {product.gouts?.length > 0 && <FlavorSelector flavors={product.gouts} />}
         <div className="flex items-center gap-2.5 lg:gap-5">
         
-          <AddToCardButton
-            product={product}
-            className="bg-AccentColor/80 text-white  hover:bg-AccentColor hoverEffect border-AccentColor/30 "
-          />
+        <AddToCardButton
+              product={product}
+              
+              className="bg-AccentColor/80 text-white hover:bg-AccentColor hoverEffect border-AccentColor/30"
+            />
           {/* <button className=" border-2 border-darkColor/30 text-darkColor/60 px-2.5 py-1.5 rounded-md  hover:bg-darkColor hover:border-darkColor hover:text-white hoverEffect">
             <Heart className="w-5 h-5" />
           </button> */}

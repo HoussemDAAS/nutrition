@@ -5,6 +5,8 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { useState, useEffect } from "react";
 import type { internalGroqTypeReferenceTo, SanityImageCrop, SanityImageHotspot } from "@/sanity.types";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ImageViewProps {
   images: Array<{
@@ -26,9 +28,11 @@ const ImageView = ({ images = [], productName }: ImageViewProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [zoomStyle, setZoomStyle] = useState({ backgroundPosition: '0% 0%' });
-
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isClient, setIsClient] = useState(false)
   // Detect mobile devices
   useEffect(() => {
+    setIsClient(true);
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -43,13 +47,36 @@ const ImageView = ({ images = [], productName }: ImageViewProps) => {
     const y = ((e.clientY - top) / height) * 100;
     setZoomStyle({ backgroundPosition: `${x}% ${y}%` });
   };
-
+  const toggleFullscreen = () => {
+    if (isMobile) {
+      setIsFullscreen(!isFullscreen);
+    }
+  };
+  if (!isClient) return null;
   return (
     <div className="w-full md:w-1/2 space-y-4">
+       <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
+        <DialogContent className="max-w-none w-full h-full p-0 bg-black/90">
+          <VisuallyHidden>
+            <DialogTitle>Fullscreen View - {productName}</DialogTitle>
+          </VisuallyHidden>
+          <div className="relative w-full h-full flex items-center justify-center">
+          <Image
+              src={urlFor(images[selectedImage]).width(1200).format('webp').url()}
+              alt={productName?.toLowerCase() || 'Product Image'}
+              fill
+              className="object-contain p-4"
+              quality={100}
+              onClick={toggleFullscreen}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
       <div 
         className="relative aspect-square bg-gray-50 rounded-xl overflow-hidden group"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => !isMobile && setZoomStyle({ backgroundPosition: '0% 0%' })}
+        onClick={toggleFullscreen}
       >
         <AnimatePresence mode="wait">
           <motion.div

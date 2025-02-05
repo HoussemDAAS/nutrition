@@ -8,12 +8,13 @@ import Image from 'next/image';
 import PriceView from './PriceView';
 import AddToCardButton from './AddToCardButton';
 import { urlFor } from '@/sanity/lib/image';
+import { cn } from '@/lib/utils';
 
 const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boolean }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const [hoverImageLoaded, setHoverImageLoaded] = useState(false);
-
+  const flavorParam = product.gouts?.length === 1 ? `?flavor=${encodeURIComponent(product.gouts[0])}` : '';
   // Optimize image URL with Sanity's built-in parameters
   const imageUrl = (image: any) => urlFor(image)
     .width(600)
@@ -97,7 +98,23 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
         <h2 className='font-semibold line-clamp-1'>{product?.nom}</h2>
         <p className='line-clamp-1 text-sm text-gray-500'>{product?.intro}</p>
         <PriceView price={product?.prix} discount={product?.remise} className='text-sm' />
-        <AddToCardButton product={product} className='text-AccentColor hover:bg-AccentColor' />
+        {product.gouts?.length && product.gouts.length > 1 ? (
+          <Link 
+            href={`/product/${product?.slug?.current || ''}`}
+            className={cn(
+              "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
+              "text-center py-2 rounded-md"
+            )}
+          >
+            Voir les produits
+          </Link>
+        ) : (
+          <AddToCardButton 
+            product={product} 
+            className='text-AccentColor hover:bg-AccentColor'
+            flavor={product.gouts?.length === 1 ? product.gouts[0] : undefined}
+          />
+        )}
       </div>
     </div>
   );

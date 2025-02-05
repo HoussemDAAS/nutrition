@@ -15,22 +15,25 @@ import { CartProduit } from "@/types";
 interface AddToCardButtonProps {
   product: CartProduit;
   className?: string;
+  flavor?: string;
 }
+  
 
-const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
+const AddToCardButton = ({ product, className, flavor }: AddToCardButtonProps) => {
   const { addItem, getItemCount, openCart } = useCartStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const itemCount = getItemCount(product?._id);
   const searchParams = useSearchParams();
   const selectedFlavor = searchParams.get('flavor') || '';
   const handleAddToCart = () => {
-    if ((product.gouts?.length ?? 0) > 0 && !selectedFlavor) {
+    const finalFlavor = flavor || selectedFlavor;
+    if ((product.gouts?.length ?? 0) > 0 && !finalFlavor) {
       toast.error("Veuillez sélectionner un parfum");
       return;
     }
     addItem({
       ...product,
-      selectedFlavor: selectedFlavor || undefined
+      selectedFlavor: finalFlavor || undefined
     });
     toast.success(
       `${product?.nom?.substring(0, 15)}... a été ajouté au panier`
@@ -42,6 +45,8 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
       setShowConfirmation(false);
     }
   }, [itemCount]);
+  //ts-ignore
+  const isDisabled = (product.gouts?.length??0) > 1 && !selectedFlavor;
   return (
     <div className="w-full h-12 items-center">
       {itemCount ? (
@@ -64,7 +69,8 @@ const AddToCardButton = ({ product, className }: AddToCardButtonProps) => {
               "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
               className
             )}
-            onClick={handleAddToCart} // Use the handler function here
+            onClick={handleAddToCart}
+            disabled={isDisabled} // Use the handler function here
           >
             <div className="hidden md:block">
               <svg
