@@ -31,19 +31,25 @@ const useCartStore = create<CartState>()(
       isCartOpen: false,
       openCart: () => set({ isCartOpen: true }),
       closeCart: () => set({ isCartOpen: false }),
- addItem: (productWithFlavor) => {
+      addItem: (productWithFlavor) => {
         set((state) => {
+          // Normalize the slug format
+          const normalizedProduct = {
+            ...productWithFlavor,
+            slug: productWithFlavor.slug?.current || productWithFlavor.slug
+          };
+      
           const existingItem = state.items.find(
             (item) => 
-              item.product._id === productWithFlavor._id &&
-              item.product.selectedFlavor === productWithFlavor.selectedFlavor
+              item.product._id === normalizedProduct._id &&
+              item.product.selectedFlavor === normalizedProduct.selectedFlavor
           );
           
           if (existingItem) {
             return {
               items: state.items.map((item) =>
-                item.product._id === productWithFlavor._id &&
-                item.product.selectedFlavor === productWithFlavor.selectedFlavor
+                item.product._id === normalizedProduct._id &&
+                item.product.selectedFlavor === normalizedProduct.selectedFlavor
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
               ),
@@ -51,7 +57,7 @@ const useCartStore = create<CartState>()(
           } else {
             return { 
               items: [...state.items, { 
-                product: productWithFlavor, 
+                product: normalizedProduct,
                 quantity: 1 
               }] 
             };

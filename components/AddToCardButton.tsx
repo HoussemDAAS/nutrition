@@ -33,7 +33,8 @@ const AddToCardButton = ({ product, className, flavor }: AddToCardButtonProps) =
     }
     addItem({
       ...product,
-      selectedFlavor: finalFlavor || undefined
+      selectedFlavor: finalFlavor || undefined,
+      slug: typeof product.slug === 'string' ? product.slug : product.slug?.current // Handle both string and object cases
     });
     toast.success(
       `${product?.nom?.substring(0, 15)}... a été ajouté au panier`

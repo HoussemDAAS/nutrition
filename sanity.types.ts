@@ -108,7 +108,7 @@ export type Poster = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  slug?: Slug;
+  slug?: { current: string };
   status?: "category" | "product" | "brand" | "Promotion";
   image?: {
     asset?: {
@@ -130,7 +130,7 @@ export type Slider = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  slug?: Slug;
+  slug?: { current: string };
   status?: "category" | "product" | "brand" | "Promotion";
   image?: {
     asset?: {
@@ -152,7 +152,7 @@ export type Brand = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  slug?: Slug;
+  slug?: { current: string };
   description?: string;
   image?: {
     asset?: {
@@ -174,7 +174,7 @@ export type Category = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  slug?: Slug;
+  slug?: { current: string };
   description?: string;
   image?: {
     asset?: {
