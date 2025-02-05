@@ -154,3 +154,27 @@
     transition: none;
   }
 }
+@layer components {
+  /* Improve close button visibility */
+  [data-radix-popper-content-wrapper] button[aria-label="Close"] {
+    @apply text-white hover:text-gray-200 transition-colors;
+    @apply absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-white/10;
+  }
+
+  /* Mobile pinch-zoom */
+  .touch-pan-x touch-pan-y {
+    touch-action: pan-x pan-y;
+  }
+}
+[data-radix-popper-content-wrapper] button[aria-label="Close"] {
+  color: white !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  background: rgba(255,255,255,0.1) !important;
+  padding: 0.5rem !important;
+  border-radius: 50% !important;
+}
+
+[data-radix-popper-content-wrapper] button[aria-label="Close"]:hover {
+  background: rgba(255,255,255,0.2) !important;
+}

@@ -63,9 +63,7 @@ const CartPage = () => {
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow-sm">
                   {cartProducts?.map(({ product }) => {
-                    const slug = String(product?.slug);
-
-
+              
                     const itemCount = getItemCount(product?._id);
                     return (
                       <div
@@ -74,7 +72,10 @@ const CartPage = () => {
                       >
                         {/* Image Section */}
                         <Link
-                href={`/product/${slug}`}
+              href={{
+                pathname: `/product/${product?.slug ?? product?.slug?.current}`,
+                query: { flavor: product.selectedFlavor }
+              }}
                 
 
                           className="w-16 h-16 flex-shrink-0"
