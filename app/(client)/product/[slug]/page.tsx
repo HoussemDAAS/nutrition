@@ -169,14 +169,41 @@ const SingleProductPage = async ({
           </p>
         )}
         <p className="text-sm text-gray-600 tracking-wide">{product?.intro}</p>
+
+        <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-lg">
+  {product.Status && product.Status !== 'Disponible' && (
+    <span className="text-sm font-semibold text-AccentColor">
+      {product.Status} {product.Status === 'Promotion' && `- ${product.remise}% de réduction`}
+    </span>
+  )}
+  
+  <div className="flex items-center justify-between">
+    <span className="text-sm text-gray-600">Quantité disponible:</span>
+    <span className={`font-semibold ${product.stock && product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+      {product.stock && product.stock > 0 ? `${product.stock} unités` : 'Hors stock'}
+    </span>
+  </div>
+
+
+
+  {product.brand && product.brand[0]?.name && (
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-gray-600">Marque:</span>
+      <span className="font-semibold">{product.brand[0].name}</span>
+    </div>
+  )}
+</div>  
         {product.gouts && product.gouts.length > 0 && (
   <div className="space-y-2">
     <FlavorSelector flavors={product.gouts} />
     {product.gouts.length === 1 && (
-      <p className="text-sm text-gray-500 ml-1">
-        Parfum disponilbe <span className="font-semibold text-AccentColor animate-pulse">{product.gouts[0]}</span>
-      </p>
-    )}
+  <p className="text-sm text-gray-500 ml-1">
+    Parfum unique disponible: 
+    <span className="font-semibold text-AccentColor ml-1">
+      {product.gouts[0]}
+    </span>
+  </p>
+)}
   </div>
 )}
         <div className="flex items-center gap-2.5 lg:gap-5">
@@ -192,23 +219,23 @@ const SingleProductPage = async ({
         </div>
         <ProductCaracteristique product={product}/>
         <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-gray-200 py-5 -mt-2">
-          <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-            <BoxIcon  className="w-5 h-5"/>
-            <p>Verifier le produit</p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-            <LucideMessageCircleQuestion  className="w-5 h-5"/>
-            <p>Ask a question</p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-            <ListOrderedIcon  className="w-5 h-5"/>
-            <p>Delivery and return</p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-            <Share2Icon  className="w-5 h-5"/>
-            <p>Share</p>
-          </div>
-        </div>
+  <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
+    <BoxIcon className="w-5 h-5"/>
+    <p>Certification: {product.brand && product.brand[0]?.name ? 'Original' : 'Maison'}</p>
+  </div>
+  <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
+    <LucideMessageCircleQuestion className="w-5 h-5"/>
+    <p>Poser une question</p>
+  </div>
+  <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
+    <ListOrderedIcon className="w-5 h-5"/>
+    <p>Livraison & Retours</p>
+  </div>
+  <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
+    <Share2Icon className="w-5 h-5"/>
+    <p>Partager</p>
+  </div>
+</div>
         <div className="flex flex-wrap lg:flex-nowrap items-center gap-5">
   <div className="border border-darkBlue/20 text-center p-3 hover:border-darkBlue rounded-md hoverEffect flex-1">
     <p className="text-base font-semibold text-darkColor">Livraison gratuite</p>

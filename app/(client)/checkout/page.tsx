@@ -196,7 +196,7 @@ export default function CheckoutPage() {
       return;
     }
     setSubmitting(true);
-
+    const transaction = client.transaction();
     try {
       await client.create({
         _type: 'command',
@@ -213,6 +213,12 @@ export default function CheckoutPage() {
         status: 'pending',
         createdAt: new Date().toISOString(),
       });
+      items.forEach(item => {
+        transaction.patch(item.product._id, patch => 
+          patch.dec({ stock: item.quantity })
+        );
+      });
+      await transaction.commit();
       clearCart();
       setOrderSuccess(true);
       toast.success('Commande passée avec succès!');

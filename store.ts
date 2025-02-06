@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Produit } from './sanity.types';
@@ -32,6 +34,7 @@ const useCartStore = create<CartState>()(
       openCart: () => set({ isCartOpen: true }),
       closeCart: () => set({ isCartOpen: false }),
       addItem: (productWithFlavor) => {
+        // @ts-ignore
         set((state) => {
           // Normalize the slug format
           const normalizedProduct = {

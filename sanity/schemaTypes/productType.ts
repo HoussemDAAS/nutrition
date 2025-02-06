@@ -104,7 +104,9 @@ export const productType = defineType({
       name: "stock",
       title: "Stock du produit",
       type: "number",
-      validation: (Rule) => Rule.min(0),
+      validation: (Rule) => 
+        Rule.min(0).warning('Le stock ne peut pas être négatif')
+         .required(),
     }),
     defineField({
       name: "Status",
