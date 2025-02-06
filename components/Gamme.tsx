@@ -10,8 +10,8 @@ const Gamme = () => {
       image: '/endurance.jpg',
     },
     {
-        title: 'bruleur-de-graisse',
-        categorySlug: 'pre-workout',
+        title: 'Brunleur de Graisse',
+        categorySlug: 'bruleur-de-graisse',
         image: '/loseweight.jpg',
       },
       {

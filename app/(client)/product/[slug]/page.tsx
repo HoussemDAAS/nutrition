@@ -127,7 +127,9 @@ const SingleProductPage = async ({
   
     <Suspense fallback={<Loading2 />}>
       <ProductStructuredData product={product} />
+      <script dangerouslySetInnerHTML={{ __html: "window.scrollTo(0, 0);" }} />
     <Container className="py-10 flex flex-col gap-8 ">
+
       <div className="py-10 flex flex-col md:flex-row gap-8 md:gap-12">
       {product?.images && <ImageView images={product?.images} productName={product?.noms}  />}
       <div className="w-full md:w-1/2 flex flex-col gap-6">
