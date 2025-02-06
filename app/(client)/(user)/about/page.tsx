@@ -57,7 +57,7 @@ const AboutPage = () => {
           className="text-4xl font-extrabold text-darkColor mb-6 text-center lg:text-left"
           variants={headingVariants}
         >
-          À propos de House Nutrition
+          À propos de House Protein
         </motion.h1>
 
         {/* Animated text sections */}
@@ -65,7 +65,7 @@ const AboutPage = () => {
           className="mb-6 text-lg text-gray-700 leading-relaxed"
           variants={textVariants}
         >
-          Bienvenue chez <strong>House Nutrition</strong>, votre boutique de référence pour la <strong>nutrition sportive</strong> à <strong>Bizerte, Tunisie</strong>. Depuis <strong>2018</strong>, nous nous engageons à fournir des produits de qualité supérieure pour répondre aux besoins des sportifs, des amateurs de fitness et des professionnels à travers toute la Tunisie.
+          Bienvenue chez <strong>House Protein</strong>, votre boutique de référence pour la <strong>nutrition sportive</strong> à <strong>Bizerte, Tunisie</strong>. Depuis <strong>2018</strong>, nous nous engageons à fournir des produits de qualité supérieure pour répondre aux besoins des sportifs, des amateurs de fitness et des professionnels à travers toute la Tunisie.
         </motion.p>
         <motion.p
           className="mb-6 text-lg text-gray-700 leading-relaxed"
@@ -77,7 +77,7 @@ const AboutPage = () => {
           className="mb-6 text-lg text-gray-700 leading-relaxed"
           variants={textVariants}
         >
-          Chez <strong>House Nutrition</strong>, notre priorité est votre succès. Que vous cherchiez à <strong>gagner en muscle</strong>, à <strong>perdre du poids</strong>, ou à améliorer vos performances sportives, nous avons les solutions adaptées. Faites confiance à notre expertise pour transformer votre passion en résultats concrets. Découvrez dès aujourd’hui pourquoi nous sommes le choix numéro un en <strong>nutrition sportive en Tunisie</strong>.
+          Chez <strong>House Protein</strong>, notre priorité est votre succès. Que vous cherchiez à <strong>gagner en muscle</strong>, à <strong>perdre du poids</strong>, ou à améliorer vos performances sportives, nous avons les solutions adaptées. Faites confiance à notre expertise pour transformer votre passion en résultats concrets. Découvrez dès aujourd’hui pourquoi nous sommes le choix numéro un en <strong>nutrition sportive en Tunisie</strong>.
         </motion.p>
       </Container>
     </motion.div>

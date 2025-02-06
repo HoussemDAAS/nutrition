@@ -8,12 +8,12 @@ interface Props {
 const data: Props[] = [
     {
         title: 'Visitez notre magasin',
-        subtitle: 'Jarda, Bizerte, 7000',
+        subtitle: 'Rue ibn khaldoun derrière dar lihlib 7000 bizerte',
         icon: (<MapPin className='text-gray-600 group-hover:text-darkColor transition-colors' />)
     },
     {
         title: 'Appelez-nous',
-        subtitle: '+216 22 222 222',
+        subtitle: '+216 50999210',
         icon: (<Phone className='text-gray-600 group-hover:text-darkColor transition-colors' />)
     },
     {
@@ -23,7 +23,7 @@ const data: Props[] = [
     },
     {
         title: 'Envoyez-nous un email',
-        subtitle: 'nutrition@bizerte.com',
+        subtitle: 'Akram_comptefb2@yahoo.fr',
         icon: (<Mail className='text-gray-600 group-hover:text-darkColor transition-colors' />)
     },
     

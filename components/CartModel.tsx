@@ -67,7 +67,7 @@ const CartModel = ({ onClose }: CartModelProps) => {
       >
         <div className="h-full flex flex-col p-4 border-l border-gray-200">
           <div className="flex justify-between items-center pb-3 mb-3 border-b">
-            <h2 className="text-lg font-bold">Your Cart</h2>
+            <h2 className="text-lg font-bold">Panier</h2>
             <button 
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded-full"
@@ -102,7 +102,7 @@ const CartModel = ({ onClose }: CartModelProps) => {
                         {product.selectedFlavor && (
     <p className="text-xs text-gray-500">Parfum: {product.selectedFlavor}</p>
   )}
-                        <div className="text-sm text-gray-500 mb-1">In Stock</div>
+                        <div className="text-sm text-gray-500 mb-1">En stock</div>
                         <div className="flex justify-between items-center">
                           <PriceFormater
                             amount={(product?.prix || 0) * itemCount}
@@ -120,7 +120,7 @@ const CartModel = ({ onClose }: CartModelProps) => {
                                 toast.success(`${product?.nom?.substring(0, 15)}... removed`);
                               }}
                             >
-                              Remove
+                              Supprimer
                             </button>
                           </div>
                         </div>
@@ -141,12 +141,12 @@ const CartModel = ({ onClose }: CartModelProps) => {
                 <div className="grid gap-2">
                   <Link href="/cart" onClick={onClose}>
                     <Button className="w-full" variant="outline">
-                      View Cart
+                      Voir le panier
                     </Button>
                   </Link>
                   <Link href="/checkout" onClick={onClose}>
                     <Button className="w-full bg-AccentColor hover:bg-AccentColor/90">
-                      Checkout
+                      Commander
                     </Button>
                   </Link>
                 </div>
@@ -166,7 +166,7 @@ const CartModel = ({ onClose }: CartModelProps) => {
           <div className="text-center p-5">pas de produit</div>
         ) : (
           <>
-            <h2 className="text-lg font-semibold">Shopping Cart</h2>
+            <h2 className="text-lg font-semibold">Panier</h2>
             <div className="flex flex-col gap-6 max-h-60 overflow-y-auto">
               {cartProducts.map(({ product }, index) => {
                 const itemCount = getItemCount(product?._id);
@@ -195,7 +195,7 @@ const CartModel = ({ onClose }: CartModelProps) => {
                       {product.selectedFlavor && (
     <p className="text-xs text-gray-500">Parfum: {product.selectedFlavor}</p>
   )}
-                      <div className="text-sm text-gray-500">available</div>
+                      <div className="text-sm text-gray-500">En stock</div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">{itemCount}</span>
                         <button

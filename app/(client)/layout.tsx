@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.png",
-        width: 1200,
-        height: 630,
+        width: 700,
+        height: 300,
         alt: "Bizerte Nutrition - Votre spécialiste en nutrition sportive"
       }
     ]

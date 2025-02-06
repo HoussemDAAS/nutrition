@@ -10,7 +10,7 @@ const PrivacyPage = () => {
           <section>
             <h2 className='text-xl font-semibold mb-2'>1. Introduction</h2>
             <p>
-              Chez <strong>House Nutrition</strong>, nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles. Cette politique de confidentialité décrit les informations que nous collectons, comment nous les utilisons et comment nous les protégeons. En utilisant nos services, vous acceptez les termes de cette politique.
+              Chez <strong>House Protein</strong>, nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles. Cette politique de confidentialité décrit les informations que nous collectons, comment nous les utilisons et comment nous les protégeons. En utilisant nos services, vous acceptez les termes de cette politique.
             </p>
           </section>
 

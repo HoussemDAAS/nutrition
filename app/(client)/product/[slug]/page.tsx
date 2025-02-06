@@ -167,7 +167,16 @@ const SingleProductPage = async ({
           </p>
         )}
         <p className="text-sm text-gray-600 tracking-wide">{product?.intro}</p>
-        {product.gouts?.length > 0 && <FlavorSelector flavors={product.gouts} />}
+        {product.gouts && product.gouts.length > 0 && (
+  <div className="space-y-2">
+    <FlavorSelector flavors={product.gouts} />
+    {product.gouts.length === 1 && (
+      <p className="text-sm text-gray-500 ml-1">
+        Parfum disponilbe <span className="font-semibold text-AccentColor animate-pulse">{product.gouts[0]}</span>
+      </p>
+    )}
+  </div>
+)}
         <div className="flex items-center gap-2.5 lg:gap-5">
         
         <AddToCardButton
