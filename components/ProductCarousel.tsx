@@ -6,7 +6,8 @@ import { client } from "@/sanity/lib/client";
 import { motion } from "framer-motion";
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 import NoProducts from "./NoProducts";
-import { useInView } from 'react-intersection-observer';
+import { useInView } from "react-intersection-observer";
+
 const ProductCarousel = ({ variant, status }: { variant?: string; status?: string }) => {
   const [products, setProducts] = useState<Produit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -15,8 +16,9 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
   const itemsRef = useRef<HTMLElement[]>([]);
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: '200px 0px',
+    rootMargin: "200px 0px",
   });
+
   // Fetch data from Sanity
   useEffect(() => {
     const fetchData = async () => {
@@ -41,13 +43,20 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
     fetchData();
   }, [variant, status]);
 
+  // Update the itemsRef whenever products change
+  useEffect(() => {
+    if (carouselRef.current) {
+      itemsRef.current = Array.from(carouselRef.current.children) as HTMLElement[];
+    }
+  }, [products]);
+
   // Update current index based on scroll position
   const updateCurrentIndex = useCallback(() => {
     if (!carouselRef.current) return;
-    
+
     const carousel = carouselRef.current;
     const scrollPosition = carousel.scrollLeft + carousel.offsetWidth / 2;
-    
+
     itemsRef.current.some((item, index) => {
       if (item.offsetLeft + item.offsetWidth >= scrollPosition) {
         setCurrentIndex(index);
@@ -57,40 +66,35 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
     });
   }, []);
 
-  // Set up scroll listener to update active index
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-
-    itemsRef.current = Array.from(carousel.children) as HTMLElement[];
-    let timeoutId: NodeJS.Timeout;
-
-    const handleScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(updateCurrentIndex, 100);
-    };
-
-    carousel.addEventListener("scroll", handleScroll);
-    return () => carousel.removeEventListener("scroll", handleScroll);
-  }, [products, updateCurrentIndex]);
+  // Instead of adding a manual event listener,
+  // attach the onScroll handler directly on the motion.div.
+  const handleScroll = () => {
+    updateCurrentIndex();
+  };
 
   // Scroll handlers for arrow navigation
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -carouselRef.current.offsetWidth, behavior: "smooth" });
+      carouselRef.current.scrollBy({
+        left: -carouselRef.current.offsetWidth,
+        behavior: "smooth",
+      });
     }
   };
 
   const scrollRight = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: carouselRef.current.offsetWidth, behavior: "smooth" });
+      carouselRef.current.scrollBy({
+        left: carouselRef.current.offsetWidth,
+        behavior: "smooth",
+      });
     }
   };
 
   return (
     <div className="my-10 w-full relative" ref={ref}>
-      {inView && (
-        isLoading ? (
+      {inView &&
+        (isLoading ? (
           <div className="flex justify-center items-center py-10 w-full">
             <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
             <span className="ml-2 text-lg font-semibold">Loading...</span>
@@ -101,6 +105,7 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
             <div className="relative">
               <motion.div
                 ref={carouselRef}
+                onScroll={handleScroll}
                 className="flex overflow-x-auto pb-4 snap-x snap-mandatory no-scrollbar w-full -ml-4"
                 whileTap={{ cursor: "grabbing" }}
               >
@@ -112,12 +117,15 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
-                    <ProductCard product={product} isNew={product.Status === "Nouveau"} />
+                    <ProductCard
+                      product={product}
+                      isNew={product.Status === "Nouveau"}
+                    />
                   </motion.div>
                 ))}
               </motion.div>
-              
-              {/* Left & Right Navigation Arrows (visible on all devices) */}
+
+              {/* Left & Right Navigation Arrows */}
               <button
                 onClick={scrollLeft}
                 aria-label="Scroll Left"
@@ -133,7 +141,7 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
                 <ArrowRight className="w-5 h-5 text-gray-800" />
               </button>
             </div>
-            
+
             {/* Circular Indicator Pagination */}
             <div className="flex justify-center mt-4 space-x-2">
               <IndicatorPagination total={products.length} currentIndex={currentIndex} />
@@ -141,8 +149,7 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
           </>
         ) : (
           <NoProducts selectedTab={variant || status || "default"} />
-        )
-      )}
+        ))}
     </div>
   );
 };

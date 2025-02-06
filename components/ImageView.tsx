@@ -89,6 +89,11 @@ const ImageView = ({ images = [], productName }: ImageViewProps) => {
                 onClick={toggleFullscreen}
               />
             </motion.div>
+            {zoom === 1 && (  // Optionally hide this message when zoomed in
+          <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+            double click pour zoomer
+          </div>
+        )}
           </div>
         </DialogContent>
       </Dialog>
