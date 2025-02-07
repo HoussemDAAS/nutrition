@@ -53,9 +53,9 @@ export async function generateMetadata({
       title: product.nom,
       description: product.intro || `Produit de nutrition sportive ${product.nom} disponible en Tunisie`,
       images: product.images?.map((image: SanityImageSource) => ({
-        url: urlFor(image).width(1200).height(630).url(),
+        url: urlFor(image).width(1200).height(1200).fit('scale').url(),
         width: 1200,
-        height: 630,
+        height: 1200,
         alt: `${product.nom} - Nutrition Sportive Tunisie`,
       })),
     },

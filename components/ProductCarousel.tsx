@@ -43,53 +43,53 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
     fetchData();
   }, [variant, status]);
 
-  // Update the itemsRef whenever products change
+  // Update items reference when products change
   useEffect(() => {
     if (carouselRef.current) {
       itemsRef.current = Array.from(carouselRef.current.children) as HTMLElement[];
     }
   }, [products]);
 
-  // Update current index based on scroll position
+  // Calculate current index based on scroll position
   const updateCurrentIndex = useCallback(() => {
-    if (!carouselRef.current) return;
-
     const carousel = carouselRef.current;
-    const scrollPosition = carousel.scrollLeft + carousel.offsetWidth / 2;
+    if (!carousel) return;
 
-    itemsRef.current.some((item, index) => {
-      if (item.offsetLeft + item.offsetWidth >= scrollPosition) {
-        setCurrentIndex(index);
-        return true;
+    const scrollPosition = carousel.scrollLeft + carousel.offsetWidth / 2;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    itemsRef.current.forEach((item, index) => {
+      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+      const distance = Math.abs(scrollPosition - itemCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
       }
-      return false;
+    });
+
+    setCurrentIndex(closestIndex);
+  }, []);
+
+  // Scroll handler with debounce
+  const handleScroll = useCallback(() => {
+    updateCurrentIndex();
+  }, [updateCurrentIndex]);
+
+  // Navigation handlers
+  const scrollLeft = useCallback(() => {
+    carouselRef.current?.scrollBy({
+      left: -carouselRef.current.offsetWidth,
+      behavior: "smooth",
     });
   }, []);
 
-  // Instead of adding a manual event listener,
-  // attach the onScroll handler directly on the motion.div.
-  const handleScroll = () => {
-    updateCurrentIndex();
-  };
-
-  // Scroll handlers for arrow navigation
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({
-        left: -carouselRef.current.offsetWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({
-        left: carouselRef.current.offsetWidth,
-        behavior: "smooth",
-      });
-    }
-  };
+  const scrollRight = useCallback(() => {
+    carouselRef.current?.scrollBy({
+      left: carouselRef.current.offsetWidth,
+      behavior: "smooth",
+    });
+  }, []);
 
   return (
     <div className="my-10 w-full relative" ref={ref}>
@@ -101,7 +101,6 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
           </div>
         ) : products.length > 0 ? (
           <>
-            {/* Carousel Container */}
             <div className="relative">
               <motion.div
                 ref={carouselRef}
@@ -125,7 +124,6 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
                 ))}
               </motion.div>
 
-              {/* Left & Right Navigation Arrows */}
               <button
                 onClick={scrollLeft}
                 aria-label="Scroll Left"
@@ -142,7 +140,6 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
               </button>
             </div>
 
-            {/* Circular Indicator Pagination */}
             <div className="flex justify-center mt-4 space-x-2">
               <IndicatorPagination total={products.length} currentIndex={currentIndex} />
             </div>
@@ -154,19 +151,13 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
   );
 };
 
-interface IndicatorPaginationProps {
-  total: number;
-  currentIndex: number;
-}
-
-const IndicatorPagination = ({ total, currentIndex }: IndicatorPaginationProps) => {
+const IndicatorPagination = ({ total, currentIndex }: { total: number; currentIndex: number }) => {
   return (
     <>
       {Array.from({ length: total }).map((_, index) => (
         <motion.span
           key={index}
           className="h-3 w-3 rounded-full"
-          initial={false}
           animate={{
             scale: currentIndex === index ? 1.2 : 1,
             backgroundColor: currentIndex === index ? "#DA1D3C" : "#D1D5DB",

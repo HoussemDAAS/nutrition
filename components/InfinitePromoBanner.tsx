@@ -6,9 +6,9 @@ import Link from 'next/link';
 import { Produit } from '@/sanity.types';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-
 import PriceView from './PriceView';
 import { urlFor } from '@/sanity/lib/image';
+
 
 const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -25,34 +25,33 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
   if (!products.length) return null;
 
   return (
-    <section className="relative overflow-hidden shadow-xl my-16 lg:my-24 w-full">
+    <section className="relative overflow-hidden shadow-xl my-12 lg:my-20 w-full">
       <div className="absolute inset-0 bg-gradient-to-br from-darkColor/20 via-darkColor/20 to-darkColor/30" />
       
-      <div className="relative w-full px-4 py-16 lg:py-20">
+      <div className="relative w-full px-4 py-12 lg:py-16">
         {/* Header */}
-        <div className="text-center mb-14 space-y-4">
+        <div className="text-center mb-10 space-y-4">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl lg:text-5xl font-bold text-[#0F2E4E] mb-4 tracking-tighter"
+            className="text-3xl lg:text-4xl font-bold text-[#0F2E4E] mb-4 tracking-wider uppercase"
           >
             Offres Spéciales
-            <span className="text-[#DA1D3C]"> Nutrition</span>
-            <span className="text-[#0F2E4E]/80">.</span>
+            <span className="text-[#DA1D3C]">.</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-lg lg:text-xl text-[#0F2E4E]/90 font-medium max-w-2xl mx-auto"
+            className="text-base lg:text-lg text-[#0F2E4E]/90 font-medium max-w-2xl mx-auto"
           >
             Découvrez nos programmes nutritionnels premium à des prix exceptionnels
           </motion.p>
         </div>
 
         {/* Carousel Container */}
-        <div className="relative h-[600px] lg:h-[700px] w-full">
+        <div className="relative h-[500px] lg:h-[600px] w-full">
           <AnimatePresence initial={false} mode='wait'>
             {products.map((product, index) => (
               currentSlide === index && (
@@ -62,33 +61,33 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="absolute inset-0 flex flex-col lg:flex-row items-center justify-center gap-8 p-6"
+                  className="absolute inset-0 flex flex-col lg:flex-row items-center justify-center gap-6 p-4"
                 >
                   {/* Image Container */}
-                  <div className="relative w-full lg:w-1/2 h-96 lg:h-full bg-white/20 rounded-3xl p-8 backdrop-blur-sm">
+                  <div className="relative w-full lg:w-1/2 h-[300px] lg:h-[400px] bg-white/20 rounded-2xl p-6 backdrop-blur-sm flex-1">
                     <div className="relative h-full w-full">
                       <Image
                         src={product.images?.[0] ? urlFor(product.images[0]).width(1200).url() : '/placeholder.jpg'}
                         alt={product.nom || 'Product image'}
                         fill
-                        className="object-contain drop-shadow-2xl"
+                        className="object-contain drop-shadow-xl"
                         priority
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     </div>
                     {product.remise && (
-                      <div className="absolute top-6 right-6 bg-white text-[#DA1D3C] px-4 py-2 rounded-full text-lg font-bold shadow-lg">
+                      <div className="absolute top-4 right-4 bg-white text-[#DA1D3C] px-3 py-1 rounded-full text-base font-bold shadow-md">
                         -{product.remise}%
                       </div>
                     )}
                   </div>
 
                   {/* Content Container */}
-                  <div className="w-full lg:w-1/2 space-y-6 text-center lg:text-left">
+                  <div className="w-full lg:w-1/2 space-y-4 text-center lg:text-left flex-1">
                     <motion.h3
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-3xl lg:text-4xl font-extrabold text-[#0F2E4E]"
+                      className="text-2xl lg:text-3xl font-extrabold text-[#0F2E4E]"
                     >
                       {product.nom}
                     </motion.h3>
@@ -97,7 +96,7 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      className="text-lg lg:text-xl text-[#0F2E4E]/90 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+                      className="text-base lg:text-lg text-[#0F2E4E]/90 leading-relaxed max-w-2xl mx-auto lg:mx-0"
                     >
                       {product.intro}
                     </motion.p>
@@ -106,12 +105,12 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.4 }}
-                      className="mt-8"
+                      className="mt-6"
                     >
                       <PriceView 
                         price={product.prix} 
                         discount={product.remise}
-                        className="text-3xl font-bold text-[#DA1D3C]"
+                        className="text-2xl font-bold text-[#DA1D3C]"
                       />
                     </motion.div>
 
@@ -119,14 +118,14 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.6 }}
-                      className="mt-10"
+                      className="mt-8"
                     >
                       <Link
                         href={`/product/${product.slug?.current}`}
-                        className="inline-flex items-center gap-3 bg-[#DA1D3C] hover:bg-[#DA1D3C]/90 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[#DA1D3C]/20"
+                        className="inline-flex items-center gap-2 bg-[#DA1D3C] hover:bg-[#DA1D3C]/90 text-white px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-[#DA1D3C]/20"
                       >
                         <span>Commencer maintenant</span>
-                        <ArrowRight className="w-5 h-5" />
+                        <ArrowRight className="w-4 h-4" />
                       </Link>
                     </motion.div>
                   </div>
@@ -137,14 +136,14 @@ const InfinitePromoBanner = ({ products }: { products: Produit[] }) => {
         </div>
 
         {/* Pagination Dots */}
-        <div className="flex justify-center gap-3 mt-12">
+        <div className="flex justify-center gap-3 mt-10">
           {products.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 currentSlide === index 
-                  ? 'bg-[#0F2E4E] w-8 scale-125' 
+                  ? 'bg-[#0F2E4E] w-6 scale-110' 
                   : 'bg-white/50 hover:bg-white/80'
               }`}
             />
