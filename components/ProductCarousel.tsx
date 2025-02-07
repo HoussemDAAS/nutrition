@@ -13,7 +13,6 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<HTMLElement[]>([]);
   const { ref, inView } = useInView({
     triggerOnce: true,
     rootMargin: "200px 0px",
@@ -43,25 +42,20 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
     fetchData();
   }, [variant, status]);
 
-  // Update items reference when products change
-  useEffect(() => {
-    if (carouselRef.current) {
-      itemsRef.current = Array.from(carouselRef.current.children) as HTMLElement[];
-    }
-  }, [products]);
-
-  // Calculate current index based on scroll position
+  // Improved index calculation
   const updateCurrentIndex = useCallback(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
 
-    const scrollPosition = carousel.scrollLeft + carousel.offsetWidth / 2;
+    const scrollPos = carousel.scrollLeft + carousel.offsetWidth / 2;
+    const items = Array.from(carousel.children) as HTMLElement[];
+    
     let closestIndex = 0;
     let minDistance = Infinity;
 
-    itemsRef.current.forEach((item, index) => {
-      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-      const distance = Math.abs(scrollPosition - itemCenter);
+    items.forEach((item, index) => {
+      const itemPos = item.offsetLeft + item.offsetWidth / 2;
+      const distance = Math.abs(scrollPos - itemPos);
       if (distance < minDistance) {
         minDistance = distance;
         closestIndex = index;
@@ -71,25 +65,34 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
     setCurrentIndex(closestIndex);
   }, []);
 
-  // Scroll handler with debounce
-  const handleScroll = useCallback(() => {
-    updateCurrentIndex();
-  }, [updateCurrentIndex]);
-
-  // Navigation handlers
+  // Scroll handlers
   const scrollLeft = useCallback(() => {
-    carouselRef.current?.scrollBy({
-      left: -carouselRef.current.offsetWidth,
-      behavior: "smooth",
-    });
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({
+        left: -carouselRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
   }, []);
 
   const scrollRight = useCallback(() => {
-    carouselRef.current?.scrollBy({
-      left: carouselRef.current.offsetWidth,
-      behavior: "smooth",
-    });
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({
+        left: carouselRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
   }, []);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    const handleScroll = () => updateCurrentIndex();
+    carousel.addEventListener('scroll', handleScroll);
+    return () => carousel.removeEventListener('scroll', handleScroll);
+  }, [updateCurrentIndex]);
 
   return (
     <div className="my-10 w-full relative" ref={ref}>
@@ -104,7 +107,6 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
             <div className="relative">
               <motion.div
                 ref={carouselRef}
-                onScroll={handleScroll}
                 className="flex overflow-x-auto pb-4 snap-x snap-mandatory no-scrollbar w-full -ml-4"
                 whileTap={{ cursor: "grabbing" }}
               >
@@ -157,7 +159,7 @@ const IndicatorPagination = ({ total, currentIndex }: { total: number; currentIn
       {Array.from({ length: total }).map((_, index) => (
         <motion.span
           key={index}
-          className="h-3 w-3 rounded-full"
+          className="h-3 w-3 rounded-full block"
           animate={{
             scale: currentIndex === index ? 1.2 : 1,
             backgroundColor: currentIndex === index ? "#DA1D3C" : "#D1D5DB",

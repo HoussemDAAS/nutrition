@@ -2,7 +2,7 @@
 // components/CategoryProducts.tsx
 "use client";
 import { Brand, Category, Produit } from '@/sanity.types';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Input } from './ui/input';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -27,6 +27,20 @@ const CategoryProducts = ({ categories, brands, slug }: CategoryProductsProps) =
   const [selectedCategories, setSelectedCategories] = useState<string[]>([slug]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sort, setSort] = useState('nom-asc');
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMobileOpen]);
 
   const filteredCategories = categories.filter(c => 
     c.title?.toLowerCase().includes(categorySearch.toLowerCase())
@@ -149,7 +163,7 @@ const CategoryProducts = ({ categories, brands, slug }: CategoryProductsProps) =
 
       {/* Mobile Filters */}
       <button
-        className="md:hidden px-4 py-2 bg-AccentColor text-white rounded-lg flex items-center gap-2"
+        className="md:hidden px-4 py-2 bg-[#DA1D3C] text-white rounded-lg flex items-center gap-2"
         onClick={() => setIsMobileOpen(true)}
       >
         <Filter className="w-4 h-4" />
@@ -163,8 +177,9 @@ const CategoryProducts = ({ categories, brands, slug }: CategoryProductsProps) =
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             className="fixed inset-0 bg-white z-50 p-4 shadow-xl"
+            ref={modalRef}
           >
-            <div className="flex justify-between items-center p-4 border-b">
+            <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white">
               <h2 className="text-xl font-bold text-[#0F2E4E]">Filtres</h2>
               <button 
                 onClick={() => setIsMobileOpen(false)}
@@ -174,7 +189,7 @@ const CategoryProducts = ({ categories, brands, slug }: CategoryProductsProps) =
               </button>
             </div>
 
-            <div className="p-4 space-y-6">
+            <div className="p-4 space-y-6 h-[calc(100vh-120px)] overflow-y-auto">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-[#0F2E4E]">Catégories</h3>
                 <Input

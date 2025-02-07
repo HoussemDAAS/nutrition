@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,7 +34,7 @@ const Sliders = ({ sliders }: { sliders: Slider[] }) => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-hidden">
       {/* Navigation Arrows */}
       <div className="hidden md:flex absolute inset-y-0 w-full justify-between items-center z-10 px-4">
         <button
@@ -60,7 +59,7 @@ const Sliders = ({ sliders }: { sliders: Slider[] }) => {
 
       {/* Image Slider */}
       <div 
-        className="relative h-[19vh] md:h-[80vh] max-h-[600px] w-full"
+        className="relative aspect-[1440/500] w-full"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -78,13 +77,17 @@ const Sliders = ({ sliders }: { sliders: Slider[] }) => {
               className="block relative w-full h-full"
             >
               <Image
-                src={slide.image ? urlFor(slide.image).url() : '/placeholder-image.png'}
-                alt={slide.title || 'Image'}
+                src={slide.image ? urlFor(slide.image)
+                  .width(1440)
+                  .height(500)
+                  .fit('clip')
+                  .url() : '/placeholder-image.png'}
+                alt={slide.title || 'Slider Image'}
                 fill
                 priority={index === 0}
-                className="object-cover"
-                quality={100}
-                sizes="100vw"
+                className="object-contain"
+                quality={95}
+                sizes="(max-width: 768px) 100vw, 1440px"
               />
             </Link>
           </div>
