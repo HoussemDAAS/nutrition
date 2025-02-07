@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import localFont from 'next/font/local'
 import { Toaster } from "react-hot-toast";
-
+import { Analytics } from '@vercel/analytics/next';
 const raleway = localFont({
   src: '../fonts/Raleway.woff2',
   variable:'--font-raleway',
@@ -57,6 +57,7 @@ export default function RootLayout({
         <Header />
       
         {children}
+        <Analytics />
         <SpeedInsights dsn="5iV1AJTNj13san7iTNVYYug2J14" />
         <Footer />
         <Toaster  position="bottom-right" toastOptions={{ 

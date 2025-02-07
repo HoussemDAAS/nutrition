@@ -39,12 +39,14 @@ export default async function Home() {
           <Skeleton className="h-80 w-full bg-gray-200" />
         )}
       </section>
-
+      <section className="mb-20 lg:mb-28 mt-8"> {/* Increased margins */}
+  <InfinitePromoBanner products={promoProducts} />
+</section>
       <Container className="py-10">
         {/* Infinite Promo Banner Section */}
-        <section className="mb-10">
+        {/* <section className="mb-10">
           <InfinitePromoBanner products={promoProducts} />
-        </section>
+        </section> */}
 
         {/* New Products Section */}
         <section className="mb-10">
