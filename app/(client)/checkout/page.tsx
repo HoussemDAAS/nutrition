@@ -174,7 +174,7 @@ export default function CheckoutPage() {
           product: { _type: 'reference', _ref: item.product._id },
           quantity: item.quantity,
           price: item.product.prix,
-          images: item.product.images 
+    
         })),
         total: couponApplied ? total * 0.9 : total,
         status: 'pending',
@@ -200,7 +200,9 @@ export default function CheckoutPage() {
           items: items.map(item => ({
             product: {
               nom: item.product.nom,
-              prix: item.product.prix
+              prix: item.product.prix,
+              slug: { current: item.product.slug },
+              images: item.product.images 
             },
             gout: item.product.selectedFlavor,
             quantity: item.quantity,

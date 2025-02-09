@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Produit } from './sanity.types';
 import { CartProduit } from './types';
+import toast from 'react-hot-toast';
 
 export interface CartItem {
   product: CartProduit;
@@ -33,40 +34,48 @@ const useCartStore = create<CartState>()(
       isCartOpen: false,
       openCart: () => set({ isCartOpen: true }),
       closeCart: () => set({ isCartOpen: false }),
-      addItem: (productWithFlavor) => {
-        // @ts-ignore
-        set((state) => {
-          // Normalize the slug format
-          const normalizedProduct = {
-            ...productWithFlavor,
-            slug: productWithFlavor.slug?.current || productWithFlavor.slug
-          };
-      
-          const existingItem = state.items.find(
-            (item) => 
-              item.product._id === normalizedProduct._id &&
-              item.product.selectedFlavor === normalizedProduct.selectedFlavor
-          );
-          
-          if (existingItem) {
-            return {
-              items: state.items.map((item) =>
-                item.product._id === normalizedProduct._id &&
-                item.product.selectedFlavor === normalizedProduct.selectedFlavor
-                  ? { ...item, quantity: item.quantity + 1 }
-                  : item
-              ),
-            };
-          } else {
-            return { 
-              items: [...state.items, { 
-                product: normalizedProduct,
-                quantity: 1 
-              }] 
-            };
-          }
-        });
-      },
+      // Update the addItem function in your cart store
+addItem: (productWithFlavor) => {
+  set((state) => {
+    const normalizedProduct = {
+      ...productWithFlavor,
+      // Ensure slug is properly formatted
+      slug: productWithFlavor.slug?.current || productWithFlavor.slug,
+      // Preserve selected flavor when adding existing items
+      selectedFlavor: productWithFlavor.selectedFlavor || 
+        (productWithFlavor.gouts?.length === 1 ? productWithFlavor.gouts[0] : undefined)
+    };
+
+    const existingItem = state.items.find(item =>
+      item.product._id === normalizedProduct._id &&
+      item.product.selectedFlavor === normalizedProduct.selectedFlavor
+    );
+
+    // Check stock before adding
+    if (existingItem && existingItem.quantity >= (normalizedProduct.stock || 0)) {
+      toast.error('Quantité non disponible en stock');
+      return state;
+    }
+
+    if (existingItem) {
+      return {
+        items: state.items.map(item =>
+          item.product._id === normalizedProduct._id &&
+          item.product.selectedFlavor === normalizedProduct.selectedFlavor
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        ),
+      };
+    } else {
+      return { 
+        items: [...state.items, { 
+          product: normalizedProduct,
+          quantity: 1 
+        }] 
+      };
+    }
+  });
+},
       removeItem: (productId) => {
         set((state) => ({
           items: state.items.reduce((acc, item) => {

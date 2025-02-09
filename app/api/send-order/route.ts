@@ -9,14 +9,17 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const orderData = await request.json();
+    
         console.log("Product images:", orderData.items.map((item: any) => ({
-      images: item.product.images,
-      url: item.product.images?.[0] ? urlFor(item.product.images[0]).url() : null
+       
+      // images: item.product.images,
+      // url: item.product.images?.[0] ? urlFor(item.product.images[0]).url() : null,
+      slug: item.product.slug,
     })));
     // Send email to admin
     const { data, error } = await resend.emails.send({
       from: 'orders@house-protein.tn',
-      to: "akramboujatla0@gmail.com",
+      to: "houssemdaas2@gmail.com",
       subject: `Nouvelle commande - ${orderData.reference}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -36,15 +39,23 @@ export async function POST(request: Request) {
             <ul style="list-style: none; padding: 0;">
               ${orderData.items.map((item: any) => `
                 <li style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
-                  <div style="display: flex; align-items: center; gap: 15px;">
-
+            <a href="https://house-protein.tn/product/${item.product.slug?.current}" 
+   style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 15px;">
+ ${item.product.images?.length > 0 ? `
+                      <img src="${urlFor(item.product.images[0]).width(200).url()}" 
+                        alt="${item.product.nom}" 
+                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;"
+                      />
+                    ` : `
+                      <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 4px;"></div>
+                    `}
 
                     <div>
                       <strong>${item.product.nom}</strong> (${item.gout})<br>
                       Quantité: ${item.quantity}<br>
                       Prix: ${item.price} TND
                     </div>
-                  </div>
+                  </a>
                 </li>
               `).join('')}
             </ul>

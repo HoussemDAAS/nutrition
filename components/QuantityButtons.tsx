@@ -31,9 +31,15 @@ const QuantityButtons = ({
       <span className="font-semibold w-8 text-center text-darkColor">
         {itemCount}
       </span>
-      <Button variant="outline" size="icon" className="w-6 h-6"
+      <Button 
+        disabled={itemCount >= (product.stock || 0)}
+      variant="outline" size="icon" className="w-6 h-6"
       onClick={() => {
-        addItem(product);
+        addItem({
+          ...product,
+          selectedFlavor: product.selectedFlavor || 
+            (product.gouts?.length === 1 ? product.gouts[0] : undefined)
+        });
         toast.success(
           `${product?.nom?.substring(0, 15)}... a été ajouté au panier`
         );

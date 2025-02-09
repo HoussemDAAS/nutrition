@@ -49,8 +49,7 @@ const AddToCardButton = ({ product, className, flavor }: AddToCardButtonProps) =
   //ts-ignore
 const isDisabled = 
   (product.gouts?.length ?? 0) > 1 && !selectedFlavor || // Existing flavor check
-  product.stock === 0 || // New stock check
-  product.Status === "Indisponible"; // New status check
+  product.stock < 1 || product.Status === "Indisponible"; // New status check
   return (
     <div className="w-full h-12 items-center">
       {itemCount ? (
