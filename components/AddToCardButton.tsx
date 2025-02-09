@@ -47,7 +47,10 @@ const AddToCardButton = ({ product, className, flavor }: AddToCardButtonProps) =
     }
   }, [itemCount]);
   //ts-ignore
-  const isDisabled = (product.gouts?.length??0) > 1 && !selectedFlavor;
+const isDisabled = 
+  (product.gouts?.length ?? 0) > 1 && !selectedFlavor || // Existing flavor check
+  product.stock === 0 || // New stock check
+  product.Status === "Indisponible"; // New status check
   return (
     <div className="w-full h-12 items-center">
       {itemCount ? (
@@ -89,7 +92,7 @@ const AddToCardButton = ({ product, className, flavor }: AddToCardButtonProps) =
                 ></path>
               </svg>
             </div>
-            Ajouter au panier
+            {isDisabled ? "Non disponible" : "Ajouter au panier"}
           </Button>
         
         </>

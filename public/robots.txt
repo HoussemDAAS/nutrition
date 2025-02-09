@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.house-protein.tn/
+
+# Sitemaps
+Sitemap: https://www.house-protein.tn/sitemap.xml

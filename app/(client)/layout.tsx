@@ -7,6 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import localFont from 'next/font/local'
 import { Toaster } from "react-hot-toast";
 import { Analytics } from '@vercel/analytics/next';
+import Head from "next/head";
 const raleway = localFont({
   src: '../fonts/Raleway.woff2',
   variable:'--font-raleway',
@@ -54,6 +55,9 @@ export default function RootLayout({
       <body
         className={`${raleway.variable} antialiased`}
       >
+        <Head>
+          <meta name="google-site-verification" content="XBJuQG42g2exmGtWuaBYtQaYp09j5Kn8TtIXaapakSQ" />
+        </Head>
         <Header />
       
         {children}

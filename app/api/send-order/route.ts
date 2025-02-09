@@ -15,12 +15,12 @@ export async function POST(request: Request) {
     })));
     // Send email to admin
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: "houssemdaas2@gmail.com",
+      from: 'orders@house-protein.tn',
+      to: "akramboujatla0@gmail.com",
       subject: `Nouvelle commande - ${orderData.reference}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <img src="https://nutrition-houssems-projects-ddb9e94e.vercel.app/logo.png" alt="House Protein Logo" style="max-width: 200px; margin-bottom: 20px;">
+          <img src="https://house-protein.tn/logo.png" alt="House Protein Logo" style="max-width: 200px; margin-bottom: 20px;">
           <h1 style="color: #2d3748;">Nouvelle commande reçue</h1>
           <div style="background: #f7fafc; padding: 20px; border-radius: 8px;">
             <h2 style="color: #4a5568;">Référence: ${orderData.reference}</h2>

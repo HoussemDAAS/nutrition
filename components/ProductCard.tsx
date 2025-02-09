@@ -80,13 +80,13 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
           )}
           {product?.stock === 0 && (
             <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-              En rupture de stock
+             En rupture bientôt disponible
             </div>
           )}
         </div>
 
         {/* Discount Badge */}
-        {(product?.remise ?? 0) > 0 && (
+        {(product?.remise ?? 0) > 0 && product?.stock > 0 && (
           <div className="absolute top-2 right-2 bg-AccentColor text-white text-xs font-bold px-2 py-1 rounded z-20">
             -{product.remise || 0}%
           </div>

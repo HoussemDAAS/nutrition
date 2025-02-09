@@ -32,14 +32,14 @@ export async function generateMetadata({
   const product = await getProductBySlug(slug);
 
   const keywords = [
-    'nutrition sportive',
+    'House Protein',
     'compléments alimentaires Tunisie',
     'protéines musculation',
     'achat produits fitness',
     product.nom,
     ...(product.gouts || []),
     'livraison rapide Tunisie',
-    'meilleur prix nutrition sportive'
+    'meilleur prix House Protein'
   ];
 
   // Optimized image handling
@@ -51,23 +51,23 @@ export async function generateMetadata({
       .url(),
     width: 1200,
     height: 630,
-    alt: `${product.nom} - Nutrition Sportive Tunisie`,
+    alt: `${product.nom} - House Protein Tunisie`,
   }));
 
   return {
-    title: `${product.nom} | Nutrition Sportive Tunisie - ${product.brand?.[0]?.name || 'House Protein'}`,
+    title: `${product.nom} | House Protein Tunisie - ${product.brand?.[0]?.name || 'House Protein'}`,
     description: product.intro || `Achetez ${product.nom} en Tunisie - ${product.variantes}. Livraison rapide, prix compétitifs et qualité garantie.`,
     openGraph: {
       type: 'website',
       locale: 'fr_TN',
       siteName: 'Bizerte Nutrition',
       title: product.nom,
-      description: product.intro || `Produit de nutrition sportive ${product.nom} disponible en Tunisie`,
-      url: `https://houseprotein.tn/produit/${product.slug.current}`,
+      description: product.intro || `Produit de House Protein ${product.nom} disponible en Tunisie`,
+      url: `https://house-protein.tn/product/it/${product.slug.current}`,
       images: ogImages,
     },
     alternates: {
-      canonical: `https://houseprotein.tn/produit/${product.slug.current}`,
+      canonical: `https://house-protein.tn/product/${product.slug.current}`,
     },
     keywords,
     twitter: {
@@ -191,13 +191,17 @@ const SingleProductPage = async ({
           />
         )} */}
       
-        {product?.stock && (
-          <p
-            className={`w-fit p-2.5 text-sm text-center font-semibold rounded-lg ${product?.stock === 0 ? "text-red-500 bg-red-100" : "text-green-500 bg-green-100"}`}
-          >
-            {product?.stock === 0 ? "En rupture de stock" : "Disponible"}
-          </p>
-        )}
+      {product.Status === "Indisponible" ? (
+  <p className="w-fit p-2.5 text-sm text-center font-semibold rounded-lg text-red-500 bg-red-100">
+    Indisponible
+  </p>
+) : (
+  <p className={`w-fit p-2.5 text-sm text-center font-semibold rounded-lg ${
+    product.stock === 0 ? "text-red-500 bg-red-100" : "text-green-500 bg-green-100"
+  }`}>
+    {product.stock === 0 ? "En rupture de stock" : "Disponible"}
+  </p>
+)}
         <p className="text-sm text-gray-600 tracking-wide">{product?.intro}</p>
 
         <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-lg">
@@ -273,7 +277,7 @@ const SingleProductPage = async ({
   </div>
   <div className="border border-darkBlue/20 text-center p-3 hover:border-darkBlue rounded-md hoverEffect flex-1">
     <p className="text-base font-semibold text-darkColor">Optimisation nutritionnelle</p>
-    <p className="text-sm text-gray-500">Découvrez nos conseils pour une nutrition sportive efficace</p>
+    <p className="text-sm text-gray-500">Découvrez nos conseils pour une House Protein efficace</p>
   </div>
 </div>
 <div className="mt-5 border-t border-gray-200 pt-5">
