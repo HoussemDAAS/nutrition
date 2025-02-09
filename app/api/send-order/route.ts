@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     // Send email to admin
     const { data, error } = await resend.emails.send({
       from: 'orders@house-protein.tn',
-      to: "houssemdaas2@gmail.com",
+      to: "akram_comptefb2@yahoo.fr",
       subject: `Nouvelle commande - ${orderData.reference}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
