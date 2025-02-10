@@ -46,8 +46,8 @@ const PromoBanner = ({ products }: { products: Produit[] }) => {
                   className="relative h-[400px] lg:h-[500px] rounded-xl overflow-hidden shadow-l"
                 >
                   <Image
-                    src={urlFor(product.images?.[0]).width(1200).url()}
-                    alt={product.nom}
+                    src={product.images?.[0] ? urlFor(product.images[0]).width(1200).url() : '/placeholder-image.png'}
+                    alt={product.nom || 'Product image'}
                     fill
                     className="object-contain object-center"
                     priority
@@ -104,7 +104,7 @@ const PromoBanner = ({ products }: { products: Produit[] }) => {
                       href={`/promotion`}
                       className="inline-flex items-center gap-3 bg-[#0F2E4E] hover:bg-[#1A446B] text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 group"
                     >
-                      <span>Voir l&apos;offre</span>
+                      <span>Voir plus</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </motion.div>

@@ -90,7 +90,7 @@ export const getAllBrands = async () => {
 
    export const getPromotionProducts = async () => {
       const PROMOTION_QUERY = defineQuery(`
-       *[_type == 'produit' && variantes == "Promotion"] | order(nom asc)
+       *[_type == 'produit' && Status == "Promotion"] | order(nom asc)
       `);
     
       try {
