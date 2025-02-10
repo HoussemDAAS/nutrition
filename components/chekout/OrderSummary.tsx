@@ -26,6 +26,7 @@ export const OrderSummary = ({
         <span>Sous-total</span>
         <PriceFormater amount={total} />
       </div>
+      
       {couponApplied && (
         <div className="flex justify-between text-green-600 text-sm md:text-base">
           <span>Réduction</span>

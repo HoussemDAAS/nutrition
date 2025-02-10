@@ -55,9 +55,11 @@ export default function RootLayout({
       <body
         className={`${raleway.variable} antialiased`}
       >
-        <Head>
-          <meta name="google-site-verification" content="XBJuQG42g2exmGtWuaBYtQaYp09j5Kn8TtIXaapakSQ" />
-        </Head>
+     <Head>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <meta name="google-site-verification" content="XBJuQG42g2exmGtWuaBYtQaYp09j5Kn8TtIXaapakSQ" />
+</Head>
+
         <Header />
       
         {children}
