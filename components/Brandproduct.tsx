@@ -269,6 +269,7 @@ const BrandProducts = ({ brands, categories, slug }: BrandProductsProps) => {
               <SelectValue placeholder="Trier par" />
             </SelectTrigger>
             <SelectContent className="border-gray-200 shadow-lg">
+              <SelectItem value="_createdAt-desc">Récent (A-Z)</SelectItem>
               <SelectItem value="nom-asc">Nom (A-Z)</SelectItem>
               <SelectItem value="nom-desc">Nom (Z-A)</SelectItem>
               <SelectItem value="prix-asc">Prix croissant</SelectItem>

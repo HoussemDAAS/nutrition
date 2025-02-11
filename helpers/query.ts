@@ -41,7 +41,7 @@ export const getProductBySlug = async (slug: string) => {
    }
  };
 export const getProductCategorieBySlug = async (slug: string) => {
-   const CATEGORIE_BY_SLUG_QUERY=defineQuery(`*[_type == 'categorie' && slug.current == $slug] | order(nom asc)[0]`);
+   const CATEGORIE_BY_SLUG_QUERY=defineQuery(`*[_type == 'categorie' && slug.current == $slug] | order( _createdAt asc)[0]`);
    try {
       
       const categorie = await sanityFetch({
@@ -54,7 +54,7 @@ export const getProductCategorieBySlug = async (slug: string) => {
    }
 }
 export const getAllCategories = async () => {
-const CATEGORIES_QUERY=defineQuery(`*[_type == 'category'] | order(title asc)`);
+const CATEGORIES_QUERY=defineQuery(`*[_type == 'category'] | order( _createdAt asc)`);
 
 try {
    
@@ -71,7 +71,7 @@ return [];
 
 }
 export const getAllBrands = async () => {
-   const CATEGORIES_QUERY=defineQuery(`*[_type == 'brand'] | order(title asc)`);
+   const CATEGORIES_QUERY=defineQuery(`*[_type == 'brand'] | order( _createdAt asc)`);
    
    try {
       
