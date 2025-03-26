@@ -78,9 +78,9 @@ export default async function Home() {
         </section>
 
         {/* Poster Display Section */}
-        <section className="mb-10">
+        {/* <section className="mb-10">
           <PosterDisplay />
-        </section>
+        </section> */}
 
         {/* Gamme Section */}
         <section className="mb-10">
