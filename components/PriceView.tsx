@@ -20,7 +20,7 @@ const PriceView = ({ price, discount, className }: Props) => {
         <PriceFormater 
           amount={price} 
           className={cn('text-xl font-bold', {
-            'text-[#DA1D3C]': discount
+            'text-SecondaryColor': discount
           })}
         />
         {discount && (

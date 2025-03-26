@@ -5,50 +5,67 @@ import SearchBar from './SearchBar';
 import Carticon from './Carticon';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllBrands, getAllCategories } from '@/helpers/query'; // Ensure correct import
+import { getAllBrands, getAllCategories } from '@/helpers/query';
 
 const Header = async () => {
-  // Fetch categories data
   const categories = await getAllCategories();
   const brands = await getAllBrands();
 
   return (
-    <header className="bg-white border-b border-b-gray-300 py-4 sticky top-0 z-50 shadow-sm md:py-5">
-      <Container className="flex items-center justify-between gap-7 text-lightColor">
-        {/* Left Section */}
-        <div className="w-auto md:w-1/3 flex items-center justify-start">
-          {/* Mobile: show MobileMenu */}
-          <div className="md:hidden">
+    <header className="bg-white  border-b-gray-300 sticky top-0 z-50 shadow-sm">
+      {/* Top Row - Logo, Search, Cart */}
+      <Container className="flex items-center justify-between py-4 md:py-5">
+        {/* Logo - Left */}
+        <div className="flex items-center">
+          {/* Mobile Menu Button - only on mobile */}
+          <div className="mr-4 md:hidden">
             <MobileMenu categories={categories} brands={brands} />
           </div>
-          {/* Desktop: show full header menu */}
-          <div className="hidden md:block">
-            <HeaderMenu categories={categories} brands={brands} />
-          </div>
-        </div>
-
-        {/* Center Section: Logo centered */}
-        <div className="w-auto md:w-1/3 flex items-center justify-center">
-          <Link href={'/'} className="flex items-center justify-center h-14 md:h-16">
+          
+          <Link href={'/'} className="flex items-center h-14 md:h-16">
             <Image
               src={'/logo.png'}
               alt="logo"
-              width={100} 
-              height={100}
-              className="w-[80px] h-auto md:w-[120px]" 
+              width={120}
+              height={60}
+              className="w-[80px] h-auto md:w-[120px]"
+              priority
             />
           </Link>
         </div>
 
-        {/* Right Section */}
-        <div className="w-auto md:w-1/3 flex items-center justify-end gap-5">
-          {/* On mobile, hide SearchBar */}
-        
+        {/* Search Bar - Center (stretching) */}
+        <div className="hidden md:flex flex-1 mx-8 max-w-2xl">
+          <SearchBar inline />
+        </div>
+
+        {/* Right Section - Icons */}
+        <div className="flex items-center gap-4">
+          {/* Mobile Search */}
+          <div className="md:hidden">
             <SearchBar />
-     
-          <Carticon />
+          </div>
+{/*           
+          <Carticon /> */}
         </div>
       </Container>
+
+      {/* Bottom Row - Desktop Menu (right aligned) */}
+      <div className="hidden md:block  py-3 bg-lightColor">
+      <Container className="flex items-center justify-between">
+          <HeaderMenu categories={categories} brands={brands} />
+          <div className="ml-4">
+            <Carticon />
+          </div>
+        </Container>
+      </div>
+
+      {/* Mobile Menu - Bottom Row */}
+      <div className="md:hidden  border-gray-200 bg-white">
+        <Container>
+          <HeaderMenu categories={categories} brands={brands} />
+        </Container>
+      </div>
     </header>
   );
 };

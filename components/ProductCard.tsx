@@ -74,12 +74,12 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
         {/* Product Status Badges */}
         <div className='absolute top-2 left-2 flex space-x-2 z-20'>
           {isNew && product.Status === "Nouveau" && (
-            <div className="animate-bounce bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+            <div className="animate-bounce bg-green-400 text-white text-xs font-bold px-2 py-1 rounded">
               Nouveau
             </div>
           )}
           {product?.stock === 0 && (
-            <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+            <div className="bg-red-400 text-white text-xs font-bold px-2 py-1 rounded">
              En rupture bientôt disponible
             </div>
           )}
@@ -87,7 +87,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
 
         {/* Discount Badge */}
         {(product?.remise ?? 0) > 0 && product?.stock > 0 && (
-          <div className="absolute top-2 right-2 bg-AccentColor text-white text-xs font-bold px-2 py-1 rounded z-20">
+          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-20">
             -{product.remise || 0}%
           </div>
         )}
@@ -102,7 +102,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
           <Link 
             href={`/product/${product?.slug?.current || ''}`}
             className={cn(
-              "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:bg-darkColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
+              "w-full bg-transparent text-SecondaryColor shadow-none border border-SecondaryColor/30 font-semibold tracking-wide hover:bg-SecondaryColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
               "text-center py-2 rounded-md"
             )}
           >
@@ -111,7 +111,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
         ) : (
           <AddToCardButton 
             product={product} 
-            className='text-AccentColor hover:bg-AccentColor'
+            className='text-SecondaryColor hover:bg-SecondaryColor'
             flavor={product.gouts?.length === 1 ? product.gouts[0] : undefined}
           />
         )}

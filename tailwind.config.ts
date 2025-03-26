@@ -12,9 +12,10 @@ export default {
   		colors: {
 			// Our colors start
 darkColor: '#0F2E4E',
-SecondaryColor: '#C9D1D9',
+
+SecondaryColor: '#1f8bd8',
 AccentColor:'#DA1D3C',
-lightColor: '#52525b',
+lightColor: '#0f2e4e',
 lightOrange: '#fca99b',
 lightBlue: '#7688DB',
 darkBlue: '#6c7fd8',

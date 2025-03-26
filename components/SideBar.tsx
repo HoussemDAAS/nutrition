@@ -90,7 +90,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
             onClick={() => setActiveTab("categories")}
             className={`flex-1 py-4 text-center text-sm font-medium uppercase ${
               activeTab === "categories"
-                ? "border-b-2 border-darkColor text-AccentColor bg-gray-200"
+                ? "border-b-2 border-darkColor text-SecondaryColor bg-gray-200"
                 : "text-black"
             }`}
           >
@@ -100,7 +100,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
             onClick={() => setActiveTab("liens")}
             className={`flex-1 py-4 text-center text-sm font-medium uppercase ${
               activeTab === "liens"
-                ? "border-b-2 border-darkColor text-AccentColor bg-gray-200"
+                ? "border-b-2 border-darkColor text-SecondaryColor bg-gray-200"
                 : "text-black"
             }`}
           >
@@ -130,7 +130,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                           onClick={() => toggleGroup(groupKey)}
                           className={`flex items-center justify-between w-full px-4 py-4 border-b border-gray-200 transition-colors ${
                             isOpenGroup
-                              ? "bg-red-500 border-l-4 border-red-500 text-white"
+                              ? "bg-SecondaryColor border-l-4 border-SecondaryColor text-white"
                               : "hover:bg-gray-300 text-black/80"
                           }`}
                         >
@@ -192,7 +192,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                     key={index}
                     href={item.href}
                     className={`block py-4 px-4 hover:bg-gray-200 rounded-md text-sm font-semibold border-b border-gray-200 ${
-                    pathname === item.href ? "text-AccentColor" : "text-black/80"
+                    pathname === item.href ? "text-SecondaryColor" : "text-black/80"
                     } uppercase`}
                     onClick={onClose}
                   >
@@ -208,7 +208,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, onClose, categories, brands }
                     onClick={() => setBrandOpen((prev) => !prev)}
                     className={`flex items-center justify-between w-full px-4 py-4 border-b border-gray-200 transition-colors ${
                       isBrandOpen
-                        ? "bg-red-500 border-l-4 border-red-500 text-white"
+                        ? "bg-SecondaryColor border-l-4 border-SecondaryColor text-white"
                         : "hover:bg-gray-300 text-black/80"
                     }`}
                   >

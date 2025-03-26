@@ -8,14 +8,14 @@ const CartIcon = () => {
   const { items, isCartOpen, openCart, closeCart } = useCartStore();
 
   // Set default color to #DA1D3C, change to #0F2E4E when the cart is open (clicked/selected)
-  const color = isCartOpen ? "#0F2E4E" : "#DA1D3C";
+  const color = isCartOpen ? "#FFFFFF" : "#F5F5F5";
 
   return (
     <div className="relative">
       <div onClick={isCartOpen ? closeCart : openCart} className="cursor-pointer">
         <svg
-          width="32"
-          height="32"
+          width="40"
+          height="40"
           viewBox="0 0 32 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

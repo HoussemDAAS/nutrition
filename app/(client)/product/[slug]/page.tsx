@@ -206,7 +206,7 @@ const SingleProductPage = async ({
 
         <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-lg">
   {product.Status && product.Status !== 'Disponible' && (
-    <span className="text-sm font-semibold text-AccentColor">
+    <span className="text-sm font-semibold text-SecondaryColor">
       {product.Status} {product.Status === 'Promotion' && `- ${product.remise}% de réduction`}
     </span>
   )}
@@ -245,7 +245,7 @@ const SingleProductPage = async ({
         <AddToCardButton
               product={product}
               
-              className="bg-AccentColor/80 text-white hover:bg-AccentColor hoverEffect border-AccentColor/30"
+              className="bg-SecondaryColor/80 text-white hover:bg-SecondaryColor hoverEffect border-SecondaryColor/30"
             />
           {/* <button className=" border-2 border-darkColor/30 text-darkColor/60 px-2.5 py-1.5 rounded-md  hover:bg-darkColor hover:border-darkColor hover:text-white hoverEffect">
             <Heart className="w-5 h-5" />

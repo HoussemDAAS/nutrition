@@ -16,7 +16,7 @@ const PriceFormater = ({ amount, className }: {
   });
 
   return (
-    <span className={cn('font-medium text-darkColor', className)}>
+    <span className={cn('font-medium text-SecondaryColor', className)}>
       {formatPrice}
     </span>
   )
