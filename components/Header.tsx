@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import Carticon from './Carticon';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllBrands, getAllCategories } from '@/helpers/query';
+import { getAllBrands, getAllCategories } from '@/helpers/query'; // Ensure correct import
 
 const Header = async () => {
   const categories = await getAllCategories();
@@ -44,20 +44,20 @@ const Header = async () => {
           {/* Mobile Search and Cart */}
           <div className="md:hidden flex items-center gap-4">
             <SearchBar />
-            <div className="text-darkColor"> {/* Blue color for mobile */}
-              <Carticon mobile />
-            </div>
           </div>
+            <div className=""> {/* Blue color for mobile */}
+              <Carticon  />
+            </div>
         </div>
       </Container>
 
       {/* Bottom Row - Desktop Menu (right aligned) */}
-      <div className="hidden md:block  py-3 bg-lightColor">
-      <Container className="flex items-center justify-between">
+      <div className="hidden md:block  py-5 px-5 bg-lightColor">
+      <Container className="flex items-center justify-between  px-6">
           <HeaderMenu categories={categories} brands={brands} />
-          <div className="ml-4">
+          {/* <div className="ml-4">
             <Carticon />
-          </div>
+          </div> */}
         </Container>
       </div>
 

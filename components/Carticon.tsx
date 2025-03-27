@@ -1,18 +1,18 @@
-"use client";
+"use client"
 import dynamic from "next/dynamic";
 import useCartStore from "@/store";
 
 const CartModel = dynamic(() => import("./CartModel"), { ssr: false });
 
-const CartIcon = ({ mobile = false }: { mobile?: boolean }) => {
+const CartIcon = () => {
   const { items, isCartOpen, openCart, closeCart } = useCartStore();
 
-  // Color logic - blue for mobile, white/off-white for desktop based on state
-  const color = mobile ? "#3B82F6" : (isCartOpen ? "#FFFFFF" : "#F5F5F5");
+  // Set default color to #DA1D3C, change to #0F2E4E when the cart is open (clicked/selected)
+  const color = isCartOpen ? "#1f8bd8" : "#0F2E4E";
 
   return (
     <div className="relative">
-      <div onClick={isCartOpen ? closeCart : openCart} className="cursor-pointer hover:opacity-80 transition-opacity">
+      <div onClick={isCartOpen ? closeCart : openCart} className="cursor-pointer">
         <svg
           width="32"
           height="32"
