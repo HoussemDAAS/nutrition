@@ -4,18 +4,18 @@ import useCartStore from "@/store";
 
 const CartModel = dynamic(() => import("./CartModel"), { ssr: false });
 
-const CartIcon = () => {
+const CartIcon = ({ mobile = false }: { mobile?: boolean }) => {
   const { items, isCartOpen, openCart, closeCart } = useCartStore();
 
-  // Set default color to #DA1D3C, change to #0F2E4E when the cart is open (clicked/selected)
-  const color = isCartOpen ? "#FFFFFF" : "#F5F5F5";
+  // Color logic - blue for mobile, white/off-white for desktop based on state
+  const color = mobile ? "#3B82F6" : (isCartOpen ? "#FFFFFF" : "#F5F5F5");
 
   return (
     <div className="relative">
-      <div onClick={isCartOpen ? closeCart : openCart} className="cursor-pointer">
+      <div onClick={isCartOpen ? closeCart : openCart} className="cursor-pointer hover:opacity-80 transition-opacity">
         <svg
-          width="40"
-          height="40"
+          width="32"
+          height="32"
           viewBox="0 0 32 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

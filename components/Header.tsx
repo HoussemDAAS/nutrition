@@ -41,12 +41,13 @@ const Header = async () => {
 
         {/* Right Section - Icons */}
         <div className="flex items-center gap-4">
-          {/* Mobile Search */}
-          <div className="md:hidden">
+          {/* Mobile Search and Cart */}
+          <div className="md:hidden flex items-center gap-4">
             <SearchBar />
+            <div className="text-darkColor"> {/* Blue color for mobile */}
+              <Carticon mobile />
+            </div>
           </div>
-{/*           
-          <Carticon /> */}
         </div>
       </Container>
 
