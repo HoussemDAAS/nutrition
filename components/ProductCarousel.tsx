@@ -11,7 +11,7 @@ import { useInView } from "react-intersection-observer";
 const ProductCarousel = ({ variant, status }: { variant?: string; status?: string }) => {
   const [products, setProducts] = useState<Produit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -50,19 +50,19 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
     const scrollPos = carousel.scrollLeft + carousel.offsetWidth / 2;
     const items = Array.from(carousel.children) as HTMLElement[];
     
-    let closestIndex = 0;
+    // let closestIndex = 0;
     let minDistance = Infinity;
 
-    items.forEach((item, index) => {
+    items.forEach((item) => {
       const itemPos = item.offsetLeft + item.offsetWidth / 2;
       const distance = Math.abs(scrollPos - itemPos);
       if (distance < minDistance) {
         minDistance = distance;
-        closestIndex = index;
+        // closestIndex = index;
       }
     });
 
-    setCurrentIndex(closestIndex);
+    // setCurrentIndex(closestIndex);
   }, []);
 
   // Scroll handlers
@@ -142,9 +142,9 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
               </button>
             </div>
 
-            <div className="flex justify-center mt-4 space-x-2">
+            {/* <div className="flex justify-center mt-4 space-x-2">
               <IndicatorPagination total={products.length} currentIndex={currentIndex} />
-            </div>
+            </div> */}
           </>
         ) : (
           <NoProducts selectedTab={variant || status || "default"} />
@@ -153,22 +153,22 @@ const ProductCarousel = ({ variant, status }: { variant?: string; status?: strin
   );
 };
 
-const IndicatorPagination = ({ total, currentIndex }: { total: number; currentIndex: number }) => {
-  return (
-    <>
-      {Array.from({ length: total }).map((_, index) => (
-        <motion.span
-          key={index}
-          className="h-3 w-3 rounded-full block"
-          animate={{
-            scale: currentIndex === index ? 1.2 : 1,
-            backgroundColor: currentIndex === index ? "#DA1D3C" : "#D1D5DB",
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        />
-      ))}
-    </>
-  );
-};
+// const IndicatorPagination = ({ total, currentIndex }: { total: number; currentIndex: number }) => {
+//   return (
+//     <>
+//       {Array.from({ length: total }).map((_, index) => (
+//         <motion.span
+//           key={index}
+//           className="h-3 w-3 rounded-full block"
+//           animate={{
+//             scale: currentIndex === index ? 1.2 : 1,
+//             backgroundColor: currentIndex === index ? "#DA1D3C" : "#D1D5DB",
+//           }}
+//           transition={{ type: "spring", stiffness: 300, damping: 20 }}
+//         />
+//       ))}
+//     </>
+//   );
+// };
 
 export default ProductCarousel;

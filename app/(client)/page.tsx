@@ -1,33 +1,35 @@
 import Container from "@/components/Container";
 import Gamme from "@/components/Gamme";
-import InfinitePromoBanner from "@/components/InfinitePromoBanner";
 import LogoCarousel from "@/components/LogoCarrousel";
 import ProductCarousel from "@/components/ProductCarousel";
 import Scrollableliste from "@/components/ScrollableList";
 import Skeleton from "@/components/Skeleton";
 import Sliders from "@/components/Slider";
 import TitleSection from "@/components/TitleSection";
-import PosterDisplay from "@/components/ui/PosterDisplay";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getAllBrands, getAllCategories, getAllSlides } from "@/helpers/query";
-import { client } from "@/sanity/lib/client";
+import ProductCarousel3D from "@/components/ProductCarousel3D";
+import { Suspense } from "react";
+
+// Skeleton component for carousels
+const CarouselSkeleton = () => (
+  <div className="flex gap-4 overflow-hidden py-4">
+    {[...Array(4)].map((_, i) => (
+      <Skeleton
+        key={i}
+        className="h-[400px] w-[300px] rounded-xl bg-gray-200"
+      />
+    ))}
+  </div>
+);
 
 export default async function Home() {
   // Fetch data in parallel
-  const slidersPromise = getAllSlides();
-  const categoriesPromise = getAllCategories();
-  const brandsPromise = getAllBrands();
-
   const [sliders, categories, brands] = await Promise.all([
-    slidersPromise,
-    categoriesPromise,
-    brandsPromise,
+    getAllSlides(),
+    getAllCategories(),
+    getAllBrands(),
   ]);
-
-  // Fetch promotional products
-  const promoProducts = await client.fetch(
-    `*[_type == "produit" && Status == "Promotion"] | order(_createdAt desc)[0...3]`
-  );
 
   return (
     <div>
@@ -39,19 +41,14 @@ export default async function Home() {
           <Skeleton className="h-80 w-full bg-gray-200" />
         )}
       </section>
-      <section className="mb-20 lg:mb-28 mt-8"> {/* Increased margins */}
-  <InfinitePromoBanner products={promoProducts} />
-</section>
-      <Container className="py-10">
-        {/* Infinite Promo Banner Section */}
-        {/* <section className="mb-10">
-          <InfinitePromoBanner products={promoProducts} />
-        </section> */}
 
-        {/* New Products Section */}
+      <Container className="py-10">
+        {/* Promo Section */}
         <section className="mb-10">
-          <TitleSection title="Nouveau Produits" />
-          <ProductCarousel status="Nouveau" />
+          <TitleSection title="Nos Promo" />
+          <Suspense fallback={<CarouselSkeleton />}>
+            <ProductCarousel3D status="Promotion" />
+          </Suspense>
         </section>
 
         {/* Categories Section */}
@@ -60,7 +57,7 @@ export default async function Home() {
           {categories.length > 0 ? (
             <Scrollableliste categories={categories} />
           ) : (
-            <div className="flex space-x-4 overflow-hidden">
+            <div className="flex gap-4 overflow-hidden">
               {[...Array(4)].map((_, i) => (
                 <Skeleton
                   key={i}
@@ -71,21 +68,30 @@ export default async function Home() {
           )}
         </section>
 
+        {/* New Products Section */}
+        <section className="mb-10">
+          <TitleSection title="Nouveau Produits" />
+          <Suspense fallback={<CarouselSkeleton />}>
+            <ProductCarousel3D status="Nouveau" />
+          </Suspense>
+        </section>
+
         {/* Exclusive Packs Section */}
         <section className="mb-10">
           <TitleSection title="Packs Exclusifs" />
-          <ProductCarousel variant="Packs Exclusifs" />
+          <Suspense fallback={<CarouselSkeleton />}>
+            <ProductCarousel3D variant="Packs Exclusifs" />
+          </Suspense>
         </section>
-
-        {/* Poster Display Section */}
-        {/* <section className="mb-10">
-          <PosterDisplay />
-        </section> */}
 
         {/* Gamme Section */}
         <section className="mb-10">
           <TitleSection title="Nos Gammes" />
+  
+   
           <Gamme />
+      
+      
         </section>
 
         {/* Brands Section */}
@@ -94,16 +100,18 @@ export default async function Home() {
           {brands.length > 0 ? (
             <LogoCarousel Brands={brands} />
           ) : (
-            <div className="flex space-x-4 overflow-hidden animate-pulse">
+            <div className="flex gap-4 overflow-hidden animate-pulse">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-24 w-48 bg-gray-200 rounded-lg" />
+                <Skeleton
+                  key={i}
+                  className="h-24 w-48 bg-gray-200 rounded-lg"
+                />
               ))}
             </div>
           )}
         </section>
       </Container>
 
-      {/* Scroll To Top Button */}
       <ScrollToTop />
     </div>
   );
