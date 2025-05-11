@@ -3,7 +3,7 @@
 "use client";
 import { Produit } from '@/sanity.types';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import PriceView from './PriceView';
 import AddToCardButton from './AddToCardButton';
@@ -14,11 +14,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
   const [isLoading, setIsLoading] = useState(true);
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const [hoverImageLoaded, setHoverImageLoaded] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [hasHoverImage, setHasHoverImage] = useState(false);
   const flavorParam = product.gouts?.length === 1 ? `?flavor=${encodeURIComponent(product.gouts[0])}` : '';
-
   // Optimize image URL with Sanity's built-in parameters
   const imageUrl = (image: any) => urlFor(image)
     .width(600)
@@ -28,31 +24,8 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
     .quality(85)
     .url();
 
-  useEffect(() => {
-    setHasHoverImage(!!product.images?.[1]);
-  }, [product.images]);
-
-  useEffect(() => {
-    if (!hasHoverImage) return;
-
-    let timer: NodeJS.Timeout;
-    if (isHovered) {
-      timer = setTimeout(() => {
-        setCurrentImageIndex(1);
-      }, 200);
-    } else {
-      setCurrentImageIndex(0);
-    }
-
-    return () => clearTimeout(timer);
-  }, [isHovered, hasHoverImage]);
-
   return (
-    <div 
-      className='rounded-lg text-sm overflow-hidden relative'
-      onMouseEnter={() => hasHoverImage && setIsHovered(true)}
-      onMouseLeave={() => hasHoverImage && setIsHovered(false)}
-    >
+    <div className='rounded-lg group text-sm overflow-hidden'>
       <div className='bg-gradient-to-t from-zinc-100 via-zinc-200 to-zinc-100 overflow-hidden relative'>
         {/* Skeleton loader */}
         {isLoading && (
@@ -60,9 +33,9 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
         )}
 
         {product?.images && (
-          <Link href={`/product/${product?.slug?.current || ''}${flavorParam}`}>
-            <div className="relative w-full h-[300px] cursor-pointer">
-              {/* Main Image */}
+          <Link href={`/product/${product?.slug?.current || ''}`}>
+            <div className="relative w-full h-[300px]">
+              {/* Main Image - Prioritized */}
               <Image
                 src={imageUrl(product.images[0])}
                 alt={product?.nom || 'Product Image'}
@@ -70,8 +43,8 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
                 height={600}
                 priority
                 className={`w-full h-full object-contain transition-opacity duration-300 ${
-                  currentImageIndex === 0 ? 'opacity-100' : 'opacity-0'
-                }`}
+                  product?.images[1] ? 'group-hover:opacity-0' : 'group-hover:scale-95'
+                } ${!mainImageLoaded ? 'opacity-0' : 'opacity-100'}`}
                 onLoadingComplete={() => {
                   setMainImageLoaded(true);
                   setIsLoading(false);
@@ -80,16 +53,14 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
                 blurDataURL={urlFor(product.images[0]).width(40).quality(20).url()}
               />
 
-              {/* Hover Image */}
-              {hasHoverImage && (
+              {/* Hover Image - Loaded in background */}
+              {product?.images[1] && (
                 <Image
                   src={imageUrl(product.images[1])}
                   alt={product?.nom || 'Product Image'}
                   width={600}
                   height={600}
-                  className={`absolute top-0 left-0 w-full h-full object-contain transition-opacity duration-300 ${
-                    currentImageIndex === 1 ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className="absolute top-0 left-0 w-full h-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   onLoadingComplete={() => setHoverImageLoaded(true)}
                   placeholder="blur"
                   blurDataURL={urlFor(product.images[1]).width(40).quality(20).url()}
@@ -109,7 +80,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
           )}
           {product?.stock === 0 && (
             <div className="bg-red-400 text-white text-xs font-bold px-2 py-1 rounded">
-              En rupture bientôt disponible
+             En rupture bientôt disponible
             </div>
           )}
         </div>
@@ -131,7 +102,7 @@ const ProductCard = ({ product, isNew = false }: { product: Produit, isNew?: boo
           <Link 
             href={`/product/${product?.slug?.current || ''}`}
             className={cn(
-              "w-full bg-transparent text-SecondaryColor shadow-none border border-SecondaryColor/30 font-semibold tracking-wide hover:bg-SecondaryColor hover:text-white flex items-center justify-center transition-transform duration-300",
+              "w-full bg-transparent text-SecondaryColor shadow-none border border-SecondaryColor/30 font-semibold tracking-wide hover:bg-SecondaryColor hover:text-white flex items-center justify-center transition-transform duration-500 transform hover:scale-105",
               "text-center py-2 rounded-md"
             )}
           >
